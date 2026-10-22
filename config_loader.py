@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""配置加载器 - 统一管理外部配置"""
+
+import json
+import os
+
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(PROJECT_DIR, "config.json")
+ACCOUNTS_FILE = os.path.join(os.path.dirname(__file__), "accounts.yaml")
+_config = None
+_accounts_cache = None
+
+def load_config():
+    """加载配置文件"""
+    global _config
+    if _config is None:
+        try:
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                _config = json.load(f)
+        except FileNotFoundError:
+            print(f"⚠️ 配置文件不存在: {CONFIG_FILE}")
+            _config = {}
+        except json.JSONDecodeError as e:
+            print(f"⚠️ 配置文件格式错误: {e}")
+            _config = {}
+    return _config
+
+
+def _load_accounts_yaml():
+    """从 accounts.yaml 加载账号
+
+    返回 dict:
+      - company: 所有公司账号 handle (set)
+      - researcher: 所有研究者账号 handle (set)
+      - company_whitelist: 带 feed_whitelist 的公司账号 (set, 用于分类)
+      - researcher_whitelist: 带 feed_whitelist 的研究者账号 (set, 用于分类)
+    """
+    global _accounts_cache
+    if _accounts_cache is not None:
+        return _accounts_cache
+
+    _accounts_cache = {
+        "company": set(), "researcher": set(),
+        "company_whitelist": set(), "researcher_whitelist": set(),
+    }
+    if not os.path.exists(ACCOUNTS_FILE):
+        return _accounts_cache
+
+    try:
+        import yaml
+        with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+        for acc in data.get("accounts", []):
+            handle = acc.get("handle", "").lower()
+            if not handle:
+                continue
+            category = acc.get("category", "")
+            is_whitelist = acc.get("feed_whitelist", False)
+            if category == "Company":
+                _accounts_cache["company"].add(handle)
+                if is_whitelist:
+                    _accounts_cache["company_whitelist"].add(handle)
+            elif category == "Researcher":
+                _accounts_cache["researcher"].add(handle)
+                if is_whitelist:
+                    _accounts_cache["researcher_whitelist"].add(handle)
+    except Exception as e:
+        print(f"⚠️ accounts.yaml 加载失败: {e}")
+
+    return _accounts_cache
+
+def get(path, default=None):
+    """获取配置项，支持路径访问
+    
+    Examples:
+        get("twitter.company_accounts") -> [...]
+        get("research.subfields.LLM/大语言模型.keywords") -> [...]
+    """
+    config = load_config()
+    keys = path.split(".")
+    value = config
+    for key in keys:
+        if isinstance(value, dict) and key in value:
+            value = value[key]
+        else:
+            return default
+    return value
+
+# 便捷访问函数
+def twitter_company_accounts():
+    """从 accounts.yaml 读取带 feed_whitelist 的公司账号（分类白名单）
+
+    只有 feed_whitelist: true 的账号会自动通过 is_ai_related() 检查。
+    其他账号只被 tweet_fetcher 抓取，需要通过内容关键词才能进入管线。
+    """
+    accounts = _load_accounts_yaml()
+    return accounts.get("company_whitelist", set()) or set(a.lower() for a in get("twitter.company_accounts", []))
+
+def twitter_researcher_accounts():
+    """从 accounts.yaml 读取带 feed_whitelist 的研究者账号（分类白名单）"""
+    accounts = _load_accounts_yaml()
+    return accounts.get("researcher_whitelist", set()) or set(a.lower() for a in get("twitter.researcher_accounts", []))
+
+def tier1_ai_companies():
+    return get("companies.tier1_ai_companies", [])
+
+def research_subfields():
+    return get("research.subfields", {})
+
+def top_conferences():
+    return get("research.conferences", {})
+
+def high_citation_authors():
+    return get("research.high_citation_authors", {})
+
+def official_sources():
+    return get("companies.official_sources", {})
+
+def compute_keywords():
+    return get("classification.compute_keywords", [])
+
+def capex_keywords():
+    return get("classification.capex_keywords", [])
+
+def research_keywords():
+    return get("classification.research_keywords", [])
+
+def funding_keywords():
+    return get("classification.funding_keywords", [])
+
+def model_keywords():
+    return get("classification.model_keywords", [])
+
+def non_news_keywords():
+    return get("filter.non_news_keywords", [])
+
+def get_path(key, default=None):
+    """获取路径配置；相对路径按项目目录解析"""
+    value = get(f"paths.{key}", default)
+    if isinstance(value, str) and not os.path.isabs(value):
+        value = os.path.normpath(os.path.join(PROJECT_DIR, value))
+    return value
+
+def base_dir():
+    return get_path("base_dir", ".")
+
+def archive_dir():
+    return get_path("archive_dir", "archive")
+
+def output_md(date_str=None):
+    from datetime import datetime as _dt
+    base = get_path("base_dir", ".")
+    day = date_str if date_str else _dt.now().strftime('%Y-%m-%d')
+    return os.path.join(base, f"daily-ai-news-{day}.md")
+
+def output_html():
+    return get_path("output_html", "daily-ai-news.html")
+
+# 别名，保持向后兼容
+output_html_path = output_html
+
+def summary_md():
+    return get_path("summary_md", "daily-ai-news-summary.md")
+
+def cache_file():
+    return get_path("cache_file", "cache_raw_news.json")
+
+def tweet_cache():
+    return get_path("tweet_cache", "tweet_fetcher/cache.json")
+
+def opml_file():
+    return get_path("opml_file", "Subscriptions-OnMyMac.opml")
+
+if __name__ == "__main__":
+    # 测试配置加载
+    print("📦 配置加载测试")
+    print(f"  公司账号: {len(twitter_company_accounts())} 个")
+    print(f"  研究者账号: {len(twitter_researcher_accounts())} 个")
+    print(f"  研究领域: {len(research_subfields())} 个")
+    print(f"  算力关键词: {len(compute_keywords())} 个")
+    print(f"  过滤关键词: {len(non_news_keywords())} 个")

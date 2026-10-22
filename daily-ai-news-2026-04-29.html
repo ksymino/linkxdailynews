@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>04月29日 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-04-29</div>
+            <h1>NVIDIA发布Nemotron 3 Nano Omni，统一视觉/音频/语言多模态能力</h1>
+            <div class="header-sub">14 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">NVIDIA发布Nemotron 3 Nano Omni（30B MoE，3B active），统一视觉/音频/语言多模态，最高9倍效率提升</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">Lovable上线iOS/Android端vibe-coding应用</span>
+                    <span class="sum-item">Anthropic发布Claude创意连接器生态（Adobe/Blender/Autodesk/Ableton等8家合作）</span>
+                    <span class="sum-item">曦智科技港交所上市，发行价183.2港元，首日涨360%</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">SemiAnalysis分析AI时代CPU经济结构变化，GPU增速远超CPU导致每单位AI计算CPU占比持续下降</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">David Silver创办Ineffable Intelligence完成$11亿融资（估值$51亿）</span>
+                    <span class="sum-item">MemoraX AI完成千万美元种子轮，用Agentic RL解决大模型"失忆症"（L2F+钟鼎领投）</span>
+                    <span class="sum-item">希奥端完成数亿元Pre-A+轮研发ARM Server CPU（毅达资本领投）</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">SHAPE实现LLM推理准确率+3%/token消耗-30%（ACL 2026）</span>
+                    <span class="sum-item">MedGRPO发布53万医疗视频标注benchmark，7B模型超越GPT-4.1</span>
+                    <span class="sum-item">Pask提出DD-MM-PAS主动agent范式，IntentFlow匹配Gemini 3 Flash</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">Introspection Adapters单个LoRA让微调模型自述训练目标，AuditBench达SOTA</span>
+                    <span class="sum-item">OpenAI回顾GPT-5.4 Pro协助解决60年Erdős数学问题</span>
+                    <span class="sum-item">vLLM首日支持蚂蚁Ling-2.6-flash模型</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">NVIDIA发布Nemotron 3 Nano Omni，统一视觉/音频…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">Lovable上线iOS/Android端vibe-coding应用</a>
+                <a href="#c-产业动态-1" class="nav-item">Anthropic发布Claude创意工具连接器生态：Adobe/Ble…</a>
+                <a href="#c-产业动态-2" class="nav-item">曦智科技港交所上市，发行价183.2港元，首日涨360%</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">SemiAnalysis：AI时代CPU经济结构变化，GPU增速远超CP…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">David Silver创办Ineffable Intelligence…</a>
+                <a href="#c-初创and融资-1" class="nav-item">MemoraX AI完成千万美元种子轮，用Agentic RL解决大模型…</a>
+                <a href="#c-初创and融资-2" class="nav-item">希奥端完成数亿元Pre-A+轮研发ARM Server CPU，毅达资本…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">SHAPE：准确率+3%、token消耗-30%的LLM推理优化框架，被…</a>
+                <a href="#c-研究关注-1" class="nav-item">MedGRPO：首个医疗视频大规模benchmark + 多任务RL训练…</a>
+                <a href="#c-研究关注-2" class="nav-item">Pask：面向意图感知的主动式Agent，融合流式意图检测与长期记忆</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">Introspection Adapters：单个LoRA让微调模型自述…</a>
+                <a href="#c-X讨论-1" class="nav-item">OpenAI回顾：GPT-5.4 Pro协助解决60年Erdős数学问题</a>
+                <a href="#c-X讨论-2" class="nav-item">vLLM首日支持蚂蚁Ling-2.6-flash模型</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h"><span class="ent">NVIDIA</span>发布Nemotron 3 Nano Omni，统一视觉/音频/语言多模态能力</h3>
+            <p class="card-body"><span class="ent">NVIDIA</span>正式发布Nemotron 3 Nano Omni（<strong>30B hybrid Transformer-Mamba MoE，3B active</strong>），首个将视觉、音频、视频和文本统一在单一模型中的多模态AI agent模型。该模型解决了传统agent系统需要分别调用视觉、语音和语言模型导致的上下文丢失和延迟问题，相比多模型协作可实现<strong>最高9倍效率提升</strong>，支持长上下文文档、音频和视频处理。模型已在OpenRouter上线，vLLM同步提供推理支持。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 统一多模态架构是agent系统从"多模型拼接"向"单模型统一"演进的关键节点。<span class="ent">NVIDIA</span>凭借Nemotron系列在开源模型生态中占据一席，与<span class="ent">Meta</span> Llama、<span class="ent">DeepSeek</span>形成三足之势。</div>
+            <div class="card-src"><a href="https://blogs.nvidia.com/blog/nemotron-3-nano-omni-multimodal-ai-agents/" target="_blank">NVIDIA Blog</a> / <a href="https://huggingface.co/blog/nvidia/nemotron-3-nano-omni-multimodal-intelligence" target="_blank">HuggingFace Blog</a> / <a href="https://x.com/vllm_project/status/2049171268344426846#m" target="_blank">vLLM</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h">Lovable上线iOS/Android端vibe-coding应用</h3>
+            <p class="card-body">AI编程平台Lovable正式推出iOS和Android移动端应用，用户可以在手机上通过自然语言<strong>vibe code网页应用和网站</strong>。此前Lovable仅提供Web端服务，移动端发布意味着vibe-coding工作流从桌面延伸到移动场景，用户可以随时随地进行原型开发和迭代。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Vibe-coding从桌面走向移动端是AI编程工具渗透力提升的信号。Lovable与Bolt、v0等竞品的差异化在于移动优先策略，但移动端受限于屏幕尺寸和交互方式，实际使用场景可能更偏向快速原型而非深度开发。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/04/28/lovable-launches-its-vibe-coding-app-on-ios-and-android/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h"><span class="ent">Anthropic</span>发布<span class="ent">Claude</span>创意工具连接器生态：Adobe/Blender/Autodesk/Ableton等8家合作伙伴</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>发布"<span class="ent">Claude</span> for Creative Work"，联合<strong>8家创意工具合作伙伴</strong>推出连接器生态：<strong>Adobe</strong>（50+ Creative Cloud工具，含Photoshop/Premiere/Express）、<strong>Blender</strong>（Python API自然语言接口）、<strong>Autodesk Fusion</strong>（对话式3D建模）、<strong>Ableton</strong>（Live/Push文档接入）、<strong>Affinity by Canva</strong>（批量生产任务自动化）、<strong>Resolume</strong>（实时VJ/视觉演出控制）、<strong>SketchUp</strong>（对话生成3D模型）、<strong>Splice</strong>（音乐采样搜索）。连接器让<span class="ent">Claude</span>直接读写这些工具的项目文件和API。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 这不是单个连接器更新，而是<span class="ent">Anthropic</span>系统性切入创意专业市场的信号。8家合作伙伴覆盖3D建模、视频、音乐、平面设计、实时演出五大创意赛道。与<span class="ent">OpenAI</span>的Plugin生态不同，<span class="ent">Anthropic</span>选择垂直绑定专业工具而非横向开放平台。</div>
+            <div class="card-src"><a href="https://www.anthropic.com/news/claude-for-creative-work" target="_blank">Anthropic Blog</a> / <a href="https://x.com/claudeai/status/2049143438281445811#m" target="_blank">@claudeai</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h">曦智科技港交所上市，发行价183.2港元，首日涨360%</h3>
+            <p class="card-body">2026年4月28日，曦智科技在港交所敲钟上市，代码<strong>01879</strong>，发行价183.2港元，开盘报880港元，截至上午休盘股价842港元，<strong>较发行价上涨360%</strong>。创始人沈亦晨2017年从MIT实验室起步，经历九年发展完成上市。曦智科技是光计算芯片领域的代表企业，光计算被认为是突破传统硅基芯片算力瓶颈的技术路线之一。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 360%的开盘涨幅反映市场对AI算力创新路线的高度追捧，光计算作为非冯·诺依曼架构的代表获得资本验证。但光计算从实验室到规模化商用仍面临良率和生态成熟度挑战。</div>
+            <div class="card-src"><a href="http://mp.weixin.qq.com/s?__biz=MzA3NTIyODUzNA==&mid=2649795699&idx=1&sn=aacc1b384d27b7f09b26eedd23db7136&chksm=8641e815d6349ae3a34e3c93dd4b7b4e309adddf3f189a3d283d0268462800fbbaa16fe407e5&scene=0&xtrack=1#rd" target="_blank">DeepTech深科技</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h">SemiAnalysis：AI时代CPU经济结构变化，GPU增速远超CPU导致每单位AI计算CPU占比下降</h3>
+            <p class="card-body">SemiAnalysis发布系列分析指出，AI时代CPU经济正在发生结构性变化：CPU价值评估不再仅看每核心成本，而是取决于工作负载类型——AI场景关注<strong>每核心性能/延迟</strong>，传统云服务关注<strong>价格/吞吐量</strong>。现代AI基础设施承担的任务远超矩阵乘法，包括强化学习沙箱环境等多样化workloads，CPU在这些场景中仍扮演关键角色。但由于<strong>GPU性能提升速度远超CPU</strong>，每单位AI计算所需的CPU比例正在持续下降，改变了传统AI基础设施的成本结构。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> SemiAnalysis的分析暗示了一个被低估的趋势：CPU在AI训练中的角色正从"必备组件"向"瓶颈约束"转变。对<span class="ent">Intel</span>/<span class="ent">AMD</span>而言，AI场景下CPU的差异化价值不再来自核心数量，而来自单核性能和延迟优化。</div>
+            <div class="card-src"><a href="https://x.com/SemiAnalysis_/status/2049232473725219173#m" target="_blank">@SemiAnalysis_</a> / <a href="https://x.com/SemiAnalysis_/status/2049232468733993226#m" target="_blank">续</a> / <a href="https://x.com/SemiAnalysis_/status/2049232471321964667#m" target="_blank">续</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h">David Silver创办Ineffable <span class="ent">Intel</span>ligence完成$11亿融资，估值$51亿，目标构建无需人类数据的AI</h3>
+            <p class="card-body">DeepMind前首席研究员David Silver（AlphaGo、AlphaZero、AlphaFold核心贡献者）创办的英国AI实验室Ineffable <span class="ent">Intel</span>ligence完成<strong>$11亿美元融资</strong>，估值<strong>$51亿美元</strong>。公司成立仅数月，目标是构建<strong>无需人类标注数据即可学习的AI系统</strong>，延续Silver在强化学习和自博弈领域的研究路线。这是2026年AI领域最大单笔融资之一。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> David Silver是RL领域的标志性人物，从AlphaGo到AlphaFold证明了"AI自我学习"范式的可行性。$51亿估值说明资本市场对"摆脱人类数据依赖"这一方向的押注。如果成功，将直接挑战当前主流的大规模预训练范式（L1+L2层），对整个AI产业链的数据需求假设构成冲击。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/04/27/deepminds-david-silver-just-raised-1-1b-to-build-an-ai-that-learns-without-human-data/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-1">
+            <h3 class="card-h">MemoraX AI完成千万美元种子轮，用Agentic RL解决大模型"失忆症"</h3>
+            <p class="card-body">深圳忆纪元科技（MemoraX AI）宣布完成<strong>千万美元种子轮融资</strong>，由<strong>L2F光源创业者基金、钟鼎资本联合领投</strong>。创始人郝建业为天津大学菁英教授、华为前大模型算法实验室主任，ICML/NeurIPS/ICLR近两年产出全球前10，谷歌学术引用超1.5万次。公司今年3月刚成立，通过<strong>Agentic RL（智能体强化学习）</strong>将记忆能力内化进模型，在LoCoMo-Refined记忆测试集上<strong>领先第二名30%</strong>，训练效率提升<strong>400倍</strong>。团队来自华为、阿里、腾讯的核心技术负责人和国内RL头部研究力量。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> "AI记忆"是当前Agent落地的核心瓶颈之一——今天的Pask研究（流式意图检测+永久记忆）和MemoraX的商业化尝试指向同一趋势。MemoraX用RL训练记忆系统而非简单RAG检索，是技术路线上的差异化。但种子轮即千万美元、成立仅1个月，估值压力和产品落地速度是关键风险。</div>
+            <div class="card-src"><a href="https://mp.weixin.qq.com/s/impd3lB5bIElyAwiHszw0A" target="_blank">投资界</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-2">
+            <h3 class="card-h">希奥端完成数亿元Pre-A+轮研发ARM Server CPU，毅达资本领投</h3>
+            <p class="card-body">希奥端是一家专注于计算芯片研发的科技企业，核心业务聚焦云计算领域，研发<strong>ARM Server CPU及配套解决方案</strong>，同时探索<strong>RISC-V CPU架构</strong>创新。近期完成<strong>数亿元Pre-A+轮融资</strong>，由<strong>毅达资本领投</strong>，钧山资本、锐银资本、现象资本、允泰资本、海锶资本、南创投、扬子基金等7家机构参投，资金主要用于<strong>加速芯片流片进程</strong>。公司已落户南京江北新区。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 国产ARM Server CPU赛道持续吸引资本，美国出口管制背景下国产替代需求明确。但ARM服务器芯片从流片到规模化部署周期长，需关注后续benchmark和客户进展。</div>
+            <div class="card-src"><a href="https://www.itjuzi.com/investevent/14693994" target="_blank">IT桔子</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">SHAPE：准确率+3%、token消耗-30%的LLM推理优化框架，被ACL 2026接收</h3>
+            <p class="card-body">华为泰勒实验室与北大、上海财经大学提出SHAPE，将推理过程建模为"经验可解性状态空间"中的轨迹。核心创新是<strong>层级化信用分配机制</strong>：段落级使用stage-aware advantage函数优先处理低潜力状态的突破，token级使用熵驱动重分配锐化执行信号。在三个基础模型和五个数学推理benchmark上，SHAPE实现<strong>平均准确率提升3%，同时token消耗减少30%</strong>。该论文已被<strong>ACL 2026</strong>接收。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 3%准确率+30%token缩减的组合效果非常实用——这意味着同等推理质量下成本降低约1/3，或同等成本下准确率提升。对需要高频推理调用的应用场景（如代码agent、数学辅导）有直接商业价值。层级化信用分配的思路可能推广到非数学推理场景。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2604.06636" target="_blank">arXiv 2604.06636</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651030763&idx=3&sn=df1ef8d5322e93d1ea0856799361b4ea&chksm=85967f02830f0da2eb8f165635d8f2e97079749e41c34db270ee704876110284fe2cc63d53a4&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">MedGRPO：首个医疗视频大规模benchmark + 多任务RL训练框架</h3>
+            <p class="card-body">研究团队发布MedGRPO，解决VLM在医疗视频理解上的空间精度、时序推理和临床语义三大难题。核心贡献包括：(1) <strong>MedVidBench</strong>：<strong>531,850个视频-指令对</strong>，覆盖8个医疗数据源，涵盖视频/片段/帧级任务，通过专家引导提示和双模型验证的质量保证管线构建；(2) <strong>MedGRPO</strong>：多任务RL框架，创新点包括跨数据集奖励归一化和医疗LLM评判器（5个临床维度对比相似度评分）。基于<span class="ent">Qwen</span>2.5-VL-7B的SFT在所有任务上<strong>超越<span class="ent">GPT-4</span>.1和<span class="ent">Gemini</span> 2.5 Flash</strong>，MedGRPO进一步提升了定位和描述能力。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 医疗视频AI的关键突破在于benchmark的建立——此前该领域缺乏标准化评估。MedVidBench的53万+标注对和开源框架大幅降低了研发门槛。但临床验证和监管审批仍是真正的瓶颈，开源技术方案只是第一步。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2512.06581" target="_blank">arXiv 2512.06581</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651030763&idx=1&sn=9c3e8e595c0f07a91388a3bb94a271ab&chksm=857b552c52b345344b27fc6706a889adeb19c6e9f7dde41a42105e4e862ff3ac9019e41715b5&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">Pask：面向意图感知的主动式Agent，融合流式意图检测与长期记忆</h3>
+            <p class="card-body">NUS和NTU联合发布Pask论文，提出<strong>DD-MM-PAS范式</strong>（Demand Detection → Memory Modeling → Proactive Agent System）用于流式主动AI agent。核心组件包括：<strong>IntentFlow模型</strong>用于流式需求检测，<strong>三层混合记忆架构</strong>（workspace/user/global）用于长期记忆建模，以及PAS基础设施框架形成闭环。团队同步发布<strong>LatentNeeds-Bench</strong>，基于真实用户数据经数千轮人工标注构建的benchmark。实验显示IntentFlow在延迟约束下<strong>匹配<span class="ent">Gemini</span> 3 Flash</strong>，同时能识别更深层的用户意图。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Pask的技术架构是目前AI助手"主动化"方向最完整的实现之一：从被动响应→主动预测用户需求，从无状态→三层记忆。MemoraX AI（今天融资的创业公司）用RL训练记忆系统解决的是同类问题，但Pask走的是架构设计路线。LatentNeeds-Bench作为首个真实场景主动agent基准测试，可能成为该方向的标准化评估工具。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2604.08000" target="_blank">arXiv 2604.08000</a> / <a href="https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652695870&idx=3&sn=87b914aeb294b1abce0ec1a65f5539ba" target="_blank">新智元</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h">Introspection Adapters：单个LoRA让微调模型自述其训练目标，可用于检测恶意微调</h3>
+            <p class="card-body">研究者Keshav Shenoy等发布Introspection Adapters，方法是对基础模型M植入不同行为b_i得到M_i，再用(M_i, b_i)对作为标注数据训练一个<strong>Introspection Adapter（IA）</strong>——单个LoRA adapter能让微调后的模型用自然语言<strong>自我描述其习得的行为</strong>。IA在AuditBench上达到SOTA，能识别<strong>显式隐藏的有害行为</strong>和<strong>加密微调API攻击</strong>，且随模型规模和训练数据多样性提升而scaling。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 这是从"外部审计"到"内省式自报告"的范式转变。对AI安全监管有直接应用价值——监管机构可以用IA快速检测第三方微调模型是否存在隐藏的有害行为，大幅降低审计成本。Neel Nanda对此的推介说明可解释性社区对这一方向的重视。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2604.16812" target="_blank">arXiv 2604.16812</a> / <a href="https://x.com/kshenoy_/status/2049212022399852702" target="_blank">@kshenoy_</a> / <a href="https://x.com/NeelNanda5/status/2049229805598445799#m" target="_blank">@NeelNanda5</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h"><span class="ent">OpenAI</span>回顾：<span class="ent">GPT-5.4</span> Pro协助解决60年Erdős数学问题</h3>
+            <p class="card-body"><span class="ent">OpenAI</span>在社交媒体回顾，本月初一个悬而未决<strong>60年</strong>的Erdős数学问题在<strong><span class="ent">GPT-5.4</span> Pro</strong>帮助下获得解决。<span class="ent">OpenAI</span>以此案例讨论AI在数学研究中的发现能力，引发学术界对AI辅助数学证明的广泛讨论。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 这一案例验证了LLM在高阶数学中的辅助价值，但可复制性仍需更多案例验证。</div>
+            <div class="card-src"><a href="https://x.com/OpenAI/status/2049182118069358967#m" target="_blank">@OpenAI</a></div>
+        </article>
+        <article class="card" id="c-X讨论-2">
+            <h3 class="card-h">vLLM首日支持蚂蚁Ling-2.6-flash模型</h3>
+            <p class="card-body">vLLM在发布首日即支持Ling-2.6-flash模型，该模型由<span class="ent">Ant Group</span>旗下@AntLingAGI打造，是一款面向真实Agent场景的<strong>instant MoE模型</strong>，专注于需要快速响应的推理场景。Day-0支持意味着用户在模型发布当天即可通过vLLM进行高效推理部署。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 蚂蚁持续加码开源模型生态，Ling系列与vLLM的Day-0配合表明推理框架选型中开源模型的可部署性已成为关键考量。</div>
+            <div class="card-src"><a href="https://x.com/vllm_project/status/2049158062666399909#m" target="_blank">@vllm_project</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-04-28.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-04-30.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["NVIDIA releases Nemotron 3 Nano Omni, unifying vision/audio/language multimodal capabilities", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "X Discussion", "Lovable launches vibe-coding app for iOS/Android", "Anthropic releases Claude creative tools connector ecosystem: 8 partners including Adobe/Blender/Autodesk/Ableton", "XiZhi Technology listed on HKEX, IPO price HK$183.2, first day up 360%", "SemiAnalysis: CPU economic structure changes in AI era, GPU growth far exceeds CPU causing CPU share per unit AI compute to decline", "David Silver founded Ineffable Intelligence completes $1.1B funding, valued at $5.1B, aiming to build AI without human data", "MemoraX AI completes multi-million dollar seed round, using Agentic RL to solve LLM \"amnesia\"", "XiAoduan completes hundreds of millions RMB Pre-A+ round to develop ARM Server CPU, led by Yida Capital", "SHAPE: LLM inference optimization framework with +3% accuracy, -30% token consumption, accepted by ACL 2026", "MedGRPO: First Large-Scale Medical Video Benchmark + Multi-Task RL Training Framework", "Pask: Intention-Aware Proactive Agent with Streaming Intention Detection and Long-Term Memory", "Introspection Adapters: Single LoRA Enables Fine-Tuned Models to Self-Report Training Objectives, Can Be Used to Detect Malicious Fine-Tuning", "OpenAI Recap: GPT-5.4 Pro Helps Solve 60-Year-Old Erdős Math Problem", "vLLM Day-One Support for Ant Group's Ling-2.6-flash Model", "NVIDIA Officially Releases Nemotron 3 Nano Omni (30B hybrid Transformer-Mamba MoE, 3B active), the first multimodal AI agent model unifying vision, audio, video, and text in a single model. This model solves the context loss and latency issues caused by traditional agent systems requiring separate calls to vision, speech, and language models, achieving up to 9x efficiency improvement compared to multi-model collaboration, supporting long-context document, audio, and video processing. The model is already available on OpenRouter, with vLLM providing synchronized inference support.", "AI Coding Platform Lovable Officially Launches iOS and Android Mobile App, Allowing Users to Vibe Code Web Apps and Sites via Natural Language on Phones. Previously Lovable only offered web-based services; the mobile release extends vibe-coding workflow from desktop to mobile, enabling users to prototype and iterate anywhere.", "Anthropic Releases \"Claude for Creative Work\", Partnering with 8 Creative Tool Providers to Launch a Connector Ecosystem: Adobe (50+ Creative Cloud tools including Photoshop/Premiere/Express), Blender (Python API natural language interface), Autodesk Fusion (conversational 3D modeling), Ableton (Live/Push document access), Affinity by Canva (batch production task automation), Resolume (real-time VJ/visual performance control), SketchUp (conversational 3D model generation), Splice (music sample search). Connectors enable Claude to directly read and write project files and APIs of these tools.", "On April 28, 2026, LxNexTech rang the bell on HKEX, ticker 01879, with an IPO price of HK$183.2, opening at HK$880. As of midday break, stock price stood at HK$842, representing a 360% increase from the IPO price. Founder Shen Yichen started from an MIT lab in 2017, achieving IPO after nine years of development. LxNexTech is a representative company in optical computing chips, a technology route considered promising for breaking through traditional silicon-based chip computing bottlenecks.", "SemiAnalysis Publishes Series Analysis Pointing Out Structural Changes in CPU Economics in the AI Era: CPU value assessment no longer depends solely on per-core cost, but on workload type—AI scenarios prioritize per-core performance/latency while traditional cloud services focus on price/throughput. Modern AI infrastructure handles tasks far beyond matrix multiplication, including diverse workloads like reinforcement learning sandbox environments, where CPUs still play key roles. However, as GPU performance improvements far outpace CPUs, the CPU ratio per unit of AI computation continues to decline, changing the cost structure of traditional AI infrastructure.", "Ineffable Intelligence, a UK-based AI lab founded by DeepMind former lead researcher David Silver (core contributor to AlphaGo, AlphaZero, and AlphaFold), has completed an $1.1 billion funding round with a valuation of $5.1 billion. The company, founded just months ago, aims to build AI systems that can learn without human-annotated data, continuing Silver's research trajectory in reinforcement learning and self-play. This is one of the largest single funding rounds in AI in 2026.", "Shenzhen MemoraX AI has announced the completion of a multi-million dollar seed round, co-led by L2F Light Source Entrepreneur Fund and Zhongding Capital. Founder Hao Jianye is a distinguished professor at Tianjin University and former director of Huawei's large model algorithm lab, ranking in the global top 10 for ICML/NeurIPS/ICLR output over the past two years with over 15,000 Google Scholar citations. The company was founded in March this year and internalizes memory capabilities into models through Agentic RL (Agentic Reinforcement Learning), outperforming the second-place by 30% on the LoCoMo-Refined memory benchmark with 400x training efficiency improvement. The team comprises core technical leaders from Huawei, Alibaba, and Tencent, along with top domestic RL research talent.", "XIAi is a technology company specializing in computing chip R&D, with core business focused on cloud computing, developing ARM Server CPUs and supporting solutions while exploring RISC-V CPU architecture innovation. Recently completed a Pre-A+ round of hundreds of millions of yuan, led by Yida Capital with participation from 7 institutions including Junshan Capital, Ruiyin Capital, Xianxiang Capital, Yuntai Capital, Haici Capital, NanVC, and Yangtze Fund. The funds will primarily accelerate the chip tape-out process. The company has settled in Nanjing Jiangbei New Area.", "Huawei Taylor Lab, in collaboration with Peking University and Shanghai University of Finance and Economics, proposes SHAPE, modeling the reasoning process as trajectories in an \"empirically solvable state space.\" The core innovation is a hierarchical credit assignment mechanism: paragraph-level uses stage-aware advantage function to prioritize breakthroughs on low-potential states, while token-level uses entropy-driven redistribution to sharpen execution signals. On three base models and five mathematical reasoning benchmarks, SHAPE achieves 3% average accuracy improvement while reducing token consumption by 30%. The paper has been accepted by ACL 2026.", "The research team releases MedGRPO, addressing three major challenges in VLM medical video understanding: spatial precision, temporal reasoning, and clinical semantics. Core contributions include: (1) MedVidBench: 531,850 video-instruction pairs covering 8 medical data sources, encompassing video/clip/frame-level tasks, constructed through expert-guided prompting and quality assurance pipeline with dual-model validation; (2) MedGRPO: a multi-task RL framework with innovations including cross-dataset reward normalization and medical LLM judge (5 clinical dimension comparative similarity scoring). SFT based on Qwen2.5-VL-7B outperforms GPT-4.1 and Gemini 2.5 Flash on all tasks, and MedGRPO further improves localization and description capabilities.", "NUS and NTU jointly release the Pask paper, proposing the DD-MM-PAS paradigm (Demand Detection → Memory Modeling → Proactive Agent System) for streaming proactive AI agents. Core components include: IntentFlow model for streaming demand detection, three-layer hybrid memory architecture (workspace/user/global) for long-term memory modeling, and PAS infrastructure framework for closed-loop formation. The team simultaneously releases LatentNeeds-Bench, a benchmark constructed based on real user data with thousands of rounds of human annotation. Experiments show that IntentFlow matches Gemini 3 Flash under latency constraints while being able to identify deeper user intentions.", "Researchers Keshav Shenoy et al. release Introspection Adapters. The method involves implanting different behaviors b_i into base model M to obtain M_i, then using (M_i, b_i) pairs as annotation data to train an Introspection Adapter (IA) — a single LoRA adapter enables fine-tuned models to self-describe their learned behaviors in natural language. IA achieves SOTA on AuditBench, can identify explicitly hidden harmful behaviors and encrypted fine-tuning API attacks, and scales with model size and training data diversity.", "OpenAI reflected on social media that an unresolved 60-year Erdős mathematical problem was solved this month with the help of GPT-5.4 Pro. OpenAI uses this case to discuss AI's discovery capability in mathematical research, sparking widespread discussion in academia about AI-assisted mathematical proofs.", "vLLM supports the Ling-2.6-flash model on day one of its release. This model, built by @AntLingAGI under Ant Group, is an instant MoE model for real-world Agent scenarios, focused on reasoning scenarios requiring fast responses. Day-0 support means users can deploy efficient inference through vLLM on the same day the model is released.", "Unified multimodal architecture is a key node in agent systems' evolution from \"multi-model stitching\" to \"single-model unification.\" NVIDIA occupies a place in the open-source model ecosystem with the Nemotron series, forming a three-way balance with Meta Llama and DeepSeek.", "Vibe-coding moving from desktop to mobile signals increased penetration of AI programming tools. Lovable's differentiation from competitors like Bolt and v0 lies in its mobile-first strategy, though mobile is constrained by screen size and interaction methods, making actual use cases lean more toward rapid prototyping than deep development.", "This is not a single connector update but a signal of Anthropic's systematic entry into the creative professional market. Eight partners cover five creative tracks: 3D modeling, video, music, graphic design, and live performance. Unlike OpenAI's Plugin ecosystem, Anthropic chooses vertical binding to professional tools rather than horizontal open platforms.", "The 360% opening surge reflects the market's high追捧 for AI computing innovation routes. Optical computing, as a representative of non-von Neumann architecture, gains capital validation. However, optical computing still faces yield and ecosystem maturity challenges from lab to scale commercialization.", "SemiAnalysis's analysis hints at an underestimated trend: CPU's role in AI training is shifting from 'essential component' to 'bottleneck constraint'. For Intel/AMD, CPU's differentiated value in AI scenarios no longer comes from core count but from single-core performance and latency optimization.", "David Silver is an iconic figure in RL, demonstrating the feasibility of the 'AI self-learning' paradigm from AlphaGo to AlphaFold. The $5.1B valuation indicates capital markets' bet on the direction of 'breaking free from human data dependence'. If successful, it will directly challenge the current mainstream large-scale pretraining paradigm (L1+L2 layers), impacting data demand assumptions across the entire AI industry chain.", "'AI memory' is one of the core bottlenecks in current Agent deployment—Pask's research today (streaming intent detection + permanent memory) and MemoraX's commercialization attempts point to the same trend. MemoraX uses RL to train memory systems rather than simple RAG retrieval, a differentiation in technical approach. However, a seed round at tens of millions of dollars with only one month since founding means valuation pressure and product deployment speed are key risks.", "The domestic ARM server CPU track continues to attract capital, with clear domestic substitution demand under US export controls. However, ARM server chips have long cycles from tape-out to scale deployment, requiring close attention to subsequent benchmark and customer progress.", "The combined effect of 3% accuracy improvement and 30% token reduction is highly practical—this means approximately 1/3 cost reduction at equal inference quality, or accuracy improvement at equal cost. It has direct commercial value for application scenarios requiring high-frequency inference calls (such as code agents, math tutoring). The hierarchical credit allocation approach may extend to non-mathematical reasoning scenarios.", "The key breakthrough in medical video AI lies in benchmark establishment—the field previously lacked standardized evaluation. MedVidBench's 530,000+ labeled pairs and open-source framework significantly lower R&D barriers. However, clinical validation and regulatory approval remain the real bottlenecks; open-source technical solutions are only the first step.", "Pask's technical architecture is one of the most complete implementations of the AI assistant 'proactive' direction: from passive response to proactively predicting user needs, from stateless to three-layer memory. MemoraX AI (the startup that raised funding today) uses RL to train memory systems to solve similar problems, but Pask takes the architecture design route. LatentNeeds-Bench, as the first real-scene proactive agent benchmark, may become the standardized evaluation tool for this direction.", "This represents a paradigm shift from 'external audit' to 'introspective self-reporting', with direct applications for AI safety regulation—regulators can use IA to quickly detect hidden harmful behaviors in third-party fine-tuned models, significantly reducing audit costs. Neel Nanda's endorsement indicates the interpretability community's emphasis on this direction.", "This case validates the auxiliary value of LLMs in advanced mathematics, but replicability still requires validation from more cases.", "Ant Group continues to invest heavily in the open-source model ecosystem. The Day-0 integration of the Ling series with vLLM indicates that deployability of open-source models has become a key consideration in inference framework selection.", "NVIDIA releases Nemotron 3 Nano Omni (30B MoE, 3B active), unifying vision/audio/language multimodal processing with up to 9x efficiency improvement", "Anthropic releases Claude Creative Connector ecosystem (8 partners including Adobe/Blender/Autodesk/Ableton)", "SemiAnalysis analyzes CPU economic structure changes in the AI era; GPU growth rate far exceeding CPU leads to continuous decline in CPU proportion per unit of AI computation", "David Silver founded Ineffable Intelligence, completing $1.1B financing (valuation $5.1B)", "MemoraX AI completes multi-million dollar seed round, using Agentic RL to solve LLM 'amnesia' (L2F+Zhongding lead investment)", "Xiaoaiduan completes multi-hundred-million yuan Pre-A+ round for ARM Server CPU development (Yida Capital lead investment)", "SHAPE achieves LLM inference accuracy +3%/token consumption -30% (ACL 2026)", "MedGRPO Releases 530K Medical Video Annotation Benchmark, 7B Model Outperforms GPT-4.1", "Pask Proposes DD-MM-PAS Active Agent Paradigm, IntentFlow Matches Gemini 3 Flash", "Introspection Adapters: Single LoRA Enables Fine-tuned Models to Self-describe Training Objectives, AuditBench Achieves SOTA", "OpenAI Recaps GPT-5.4 Pro Helping Solve 60-year-old Erdos Mathematical Problem", "NVIDIA Releases Nemotron 3 Nano Omni, Unifying Vision/Audio...", "Anthropic Releases Claude Creative Tools Connector Ecosystem: Adobe/Ble...", "SemiAnalysis: CPU Economic Structure Shifts in AI Era, GPU Growth Far Outpaces CP...", "David Silver Founded Ineffable Intelligence...", "MemoraX AI Completes Multi-million Dollar Seed Round, Using Agentic RL to Solve Large Model...", "Xiao Aiduan Completes Multi-hundred Million Yuan Pre-A+ Round to Develop ARM Server CPU, Yida Capital...", "SHAPE: LLM Inference Optimization Framework with +3% Accuracy and -30% Token Consumption, ...", "MedGRPO: First Large-scale Medical Video Benchmark + Multi-task RL Training...", "Introspection Adapters: Single LoRA Enables Fine-tuned Model to Self-describe...", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

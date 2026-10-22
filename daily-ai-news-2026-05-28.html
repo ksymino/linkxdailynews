@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>05月28日周四 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-05-28</div>
+            <h1>Microsoft MAI-Image-2.5登顶Arena文生图第3名，文本渲染和商业图像大幅提升</h1>
+            <div class="header-sub">22 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">Microsoft MAI-Image-2.5登顶Arena文生图第3名，文本渲染和商业图像大幅提升</span>
+                    <span class="sum-item">MiniMax预告开源M3模型，标注#MSA标签引发猜测</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">Anthropic推出Claude Code安全审查插件，Opus 4.6已发现超500个开源漏洞</span>
+                    <span class="sum-item">Meta全球推出Instagram/Facebook/WhatsApp付费订阅，同步测试AI功能</span>
+                    <span class="sum-item">xAI发布grok-build-0.1编程助手</span>
+                    <span class="sum-item">快手Kling AI视频年化收入达5亿美元，Q1同比增长超300%</span>
+                    <span class="sum-item">OpenAI联合Thrive构建自改进税务Agent，处理7000份报税准确率97%</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">字节跳动考虑今年资本开支提升至700亿美元，与高通达成数百万枚ASIC芯片采购协议</span>
+                    <span class="sum-item">Snowflake与AWS签订60亿美元AI芯片五年合同</span>
+                    <span class="sum-item">EAGLE 3.1推测解码方案发布：解决注意力漂移问题，长上下文接受长度提升2x</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">Cognition融资超10亿美元，估值达260亿美元，Devin已提交89%内部代码</span>
+                    <span class="sum-item">Baseten洽谈融资10亿美元，估值或翻倍至110亿美元</span>
+                    <span class="sum-item">新智具身完成近亿元天使轮融资，布局触觉具身智能</span>
+                    <span class="sum-item">ElevenLabs发布Music v2：支持曲中切换风格和分段编辑</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">Language Models Need Sleep：模拟睡眠巩固机制提升长上下文推理</span>
+                    <span class="sum-item">HuggingFace揭示TRL中Delta Weight Sync技术，支撑万亿参数模型分布式训练</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">SemiAnalysis揭示GPU理论算力与实际吞吐量差距，瓶颈在软件层</span>
+                    <span class="sum-item">Qwen3.7-Max登顶Code Arena第4名；Qwen3.5实现580 tps推理速度</span>
+                    <span class="sum-item">Artificial Analysis与IBM Research发布ITBench-AA：Kubernetes运维智能体基准，前沿模型得分均低于50%</span>
+                    <span class="sum-item">Harvey发布法律AI智能体基准LAB：Claude Opus 4.7以7.1%通过率领先，前沿模型仍远未达标</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">Microsoft MAI-Image-2.5登顶Arena文生图第3名…</a>
+                <a href="#c-模型前沿-1" class="nav-item">MiniMax预告开源M3模型，标注#MSA标签引发猜测</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">Anthropic推出Claude Code安全审查插件：AI编码时自动…</a>
+                <a href="#c-产业动态-1" class="nav-item">Meta全球推出Instagram/Facebook/WhatsApp付…</a>
+                <a href="#c-产业动态-2" class="nav-item">xAI发布grok-build-0.1编程助手，集成至KiloCode平…</a>
+                <a href="#c-产业动态-3" class="nav-item">快手Kling AI视频年化收入达5亿美元，Q1同比增长超300%</a>
+                <a href="#c-产业动态-4" class="nav-item">OpenAI联合Thrive构建自改进税务Agent，处理7000份报税…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">字节跳动考虑今年资本开支提升至700亿美元，与高通达成数百万枚ASIC芯…</a>
+                <a href="#c-算力追踪-1" class="nav-item">Snowflake与AWS签订60亿美元Graviton芯片五年合同，云…</a>
+                <a href="#c-算力追踪-2" class="nav-item">EAGLE 3.1推测解码方案发布：解决注意力漂移问题，长上下文接受长度…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">4</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">Cognition融资超10亿美元，估值达260亿美元，Devin已提交…</a>
+                <a href="#c-初创and融资-1" class="nav-item">Baseten洽谈融资10亿美元，估值或翻倍至110亿美元</a>
+                <a href="#c-初创and融资-2" class="nav-item">新智具身完成近亿元天使轮融资，布局触觉具身智能</a>
+                <a href="#c-初创and融资-3" class="nav-item">ElevenLabs发布Music v2：支持曲中切换风格和分段编辑，基…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">Language Models Need Sleep：模拟睡眠巩固机制提…</a>
+                <a href="#c-研究关注-1" class="nav-item">HuggingFace揭示TRL中Delta Weight Sync技术…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">6</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">SemiAnalysis揭示GPU理论算力与实际吞吐量差距，瓶颈在软件层</a>
+                <a href="#c-X讨论-1" class="nav-item">Qwen3.7-Max登顶Code Arena第4名；Qwen3.5实现…</a>
+                <a href="#c-X讨论-2" class="nav-item">SemiAnalysis分析：Anthropic增长与Bedrock组合…</a>
+                <a href="#c-X讨论-3" class="nav-item">Artificial Analysis与IBM Research发布IT…</a>
+                <a href="#c-X讨论-4" class="nav-item">Harvey发布法律AI智能体基准LAB：Claude Opus 4.7…</a>
+                <a href="#c-X讨论-5" class="nav-item">Hy Nguyen观点：人类低估编码代理10年内的能力增长</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h"><span class="ent">Microsoft</span> MAI-Image-2.5登顶Arena文生图第3名，文本渲染和商业图像大幅提升</h3>
+            <p class="card-body"><span class="ent">Microsoft</span> AI超智能团队发布MAI-Image-2.5，在Arena文生图排行榜位列<strong>第3名</strong>。相较于上一代MAI-Image-2，该模型在文本渲染、风格化插画和商业图像方面较上一代显著提升，能更可靠地生成海报文字、产品包装标签和品牌视觉。模型还展示了视觉推理能力，覆盖物体、场景结构、光影、比例和空间关系。目前已在Arena上线，预计两周内接入MAI Playground和Foundry。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Microsoft</span>在文生图赛道持续追赶，MAI-Image系列从1.0到2.5的快速迭代显示其在该领域的投入力度，但与头部竞品的差距仍需Arena长期验证。</div>
+            <div class="card-src"><a href="https://microsoft.ai/news/mai-image-2-5-launches-at-no-3-on-arena-ai/" target="_blank">Microsoft AI</a></div>
+        </article>
+        <article class="card" id="c-模型前沿-1">
+            <h3 class="card-h">MiniMax预告开源M3模型，标注#MSA标签引发猜测</h3>
+            <p class="card-body">MiniMax官方X账号发布预告，引用Skyler Miao的"Something BIG is coming"，标签为<strong>#MSA #OpenSource #M3</strong>。市场猜测M3为MiniMax新一代多模态模型系列，MSA可能指向新的注意力机制架构。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> MiniMax从闭源转向开源的策略延续，M3系列如果搭载新型注意力机制，将在开源模型赛道与<span class="ent">DeepSeek</span>、<span class="ent">Qwen</span>形成更直接的竞争。</div>
+            <div class="card-src"><a href="https://x.com/MiniMax_AI/status/2059286515155599595" target="_blank">@MiniMax_AI</a> / <a href="https://x.com/SkylerMiao7/status/2059285750458544561" target="_blank">@SkylerMiao7</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>推出<span class="ent">Claude Code</span>安全审查插件：AI编码时自动检测并修复漏洞</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>为<span class="ent">Claude Code</span>发布security-guidance插件，在<span class="ent">Claude</span>编写代码的过程中自动审查其代码变更中的安全漏洞，并在同一会话中完成修复。插件可检测<strong>SQL注入、XSS、命令注入、硬编码密钥、认证绕过、业务逻辑缺陷</strong>等漏洞类型，区别于传统规则匹配的SAST工具，采用<span class="ent">Claude</span>的语义推理理解代码意图。同期<span class="ent">Anthropic</span>推出<span class="ent">Claude Code</span> Security产品（limited research preview），使用<span class="ent">Claude Opus</span> 4.6已在生产级开源代码库中发现<strong>超过500个</strong>长期未被检测到的安全漏洞。<span class="ent">Claude Code</span>还内置`/security-review`命令和GitHub Action，可在PR中自动扫描变更文件并评论安全发现。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI编码工具从"生成代码"向"保障代码安全"演进，自审查机制是AI编程助手能力闭环的重要一步，但插件对复杂漏洞的检出率仍需实际验证。</div>
+            <div class="card-src"><a href="https://code.claude.com/docs/en/security-guidance" target="_blank">Claude Code Docs</a> / <a href="https://www.anthropic.com/news/claude-code-security" target="_blank">Anthropic Blog</a> / <a href="https://github.com/anthropics/claude-code-security-review" target="_blank">GitHub</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h"><span class="ent">Meta</span>全球推出Instagram/Facebook/WhatsApp付费订阅，同步测试AI功能</h3>
+            <p class="card-body"><span class="ent">Meta</span>宣布全球推出Instagram Plus（<strong>$3.99/月</strong>）、Facebook Plus（<strong>$3.99/月</strong>）和WhatsApp Plus（<strong>$2.99/月</strong>）订阅服务，提供Story数据洞察、超级互动表情、个人主页定制等额外功能。同步测试AI订阅计划<strong><span class="ent">Meta</span> One Plus</strong>（$7.99/月）和<strong><span class="ent">Meta</span> One Premium</strong>（$19.99/月），Premium版解锁更高算力查询和更多视频/图像生成能力。所有订阅品牌统一为"<strong><span class="ent">Meta</span> One</strong>"。AI计划下月在新加坡、危地马拉和玻利维亚开始测试，后续将扩展至AI眼镜用户。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 社交平台订阅+AI的捆绑模式正在从测试走向规模化，<span class="ent">Meta</span>试图复制<span class="ent">Apple</span>的服务收入逻辑。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/27/meta-officially-launches-instagram-facebook-and-whatsapp-subscriptions-with-more-to-come-including-ai-plans/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h"><span class="ent">xAI</span>发布grok-build-0.1编程助手，集成至KiloCode平台</h3>
+            <p class="card-body"><span class="ent">xAI</span>宣布其编程助手grok-build-0.1已集成至KiloCode平台，向SuperGrok和X Premium+订阅用户开放。该助手针对编码任务优化，支持高速AI辅助编程服务。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">xAI</span>正通过开发者工具扩大Grok模型的应用场景，与现有AI编码工具形成竞争。</div>
+            <div class="card-src"><a href="https://x.com/xai/status/2059666227115819149#m" target="_blank">@xai</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h">快手Kling AI视频年化收入达5亿美元，Q1同比增长超300%</h3>
+            <p class="card-body">快手科技公布其Kling AI视频业务在3月份达到约<strong>5亿美元年化收入</strong>。Kling在2026年第一季度营收超过<strong>6.5亿元人民币（约9600万美元）</strong>，同比增长超过300%。Kling主要开发并销售AI视频生成模型。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Kling的高速收入增长验证了AI视频生成工具的商业化可行性，但5亿美元年化收入相对于快手的AI基础设施投入而言，盈利能力仍有待观察。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/kuaishous-kling-ai-video-unit-reaches-500-million-annualized-revenue" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-产业动态-4">
+            <h3 class="card-h"><span class="ent">OpenAI</span>联合Thrive构建自改进税务Agent，处理7000份报税准确率97%</h3>
+            <p class="card-body"><span class="ent">OpenAI</span>与Thrive Holdings合作，为Crete会计师事务所网络开发Tax AI系统。该系统本季度处理了<strong>7000份税务申报</strong>，节省约三分之一的报税准备时间，准确率最高达<strong>97%</strong>，吞吐量提升约50%。核心创新是三层自改进循环：从业者反馈→生产trace→<span class="ent">Codex</span>驱动的工程迭代。系统上线时仅25%的申报达到75%字段正确率，<strong>六周内提升至86%</strong>。一位资深会计师报税准备时间从去年的180小时降至15小时。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Tax AI展示了AI Agent从"辅助工具"向"自改进系统"的跃迁，从业者反馈→结构化eval→<span class="ent">Codex</span>改进的闭环为垂直场景Agent提供了可复用的工程范式。</div>
+            <div class="card-src"><a href="https://openai.com/index/building-self-improving-tax-agents-with-codex" target="_blank">OpenAI Blog</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h">字节跳动考虑今年资本开支提升至700亿美元，与高通达成数百万枚ASIC芯片采购协议</h3>
+            <p class="card-body">据Bloomberg和The Information报道，字节跳动正考虑将2026年资本开支提升至<strong>700亿美元</strong>，较此前水平翻倍以上，主要用于数据中心和AI基础设施建设。同期，字节跳动与高通达成AI芯片供应协议，将采购<strong>数百万枚ASIC芯片</strong>用于AI数据中心。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 高通此前主要聚焦移动端处理器，此番进入AI数据中心ASIC市场将直接与<span class="ent">NVIDIA</span>竞争。两项动态共同反映了字节跳动在AI算力上的激进扩张策略，芯片供应多元化和Agent应用带来的token消耗暴涨是核心驱动。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/bytedance-mulls-70-billion-capex-year-ai-costs-grow" target="_blank">The Information</a> / <a href="https://www.theinformation.com/briefings/qualcomm-strikes-ai-chip-deal-bytedance" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-1">
+            <h3 class="card-h">Snowflake与AWS签订60亿美元Graviton芯片五年合同，云厂商自研CPU加速替代<span class="ent">NVIDIA</span></h3>
+            <p class="card-body">Snowflake与AWS签订为期五年、价值<strong>60亿美元</strong>的AI芯片采购协议，重点采购AWS自研的<strong>Graviton ARM CPU芯片</strong>用于AI推理和Agent工作负载。作为参照，Snowflake自2012年以来通过AWS Marketplace累计销售总额为70亿美元，而客户2025年在AWS上的支出翻倍至<strong>20亿美元</strong>，AI需求是核心驱动力。此前AWS还与<span class="ent">Meta</span>签订了数百万枚Graviton芯片的供应协议。<span class="ent">NVIDIA</span> CEO Jensen Huang上周回应称其新推出的Vera AI CPU代表一个<strong>2000亿美元</strong>的新市场，已售出<strong>200亿美元</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI从训练走向推理和Agent，CPU需求暴涨为云厂商自研芯片打开了替代窗口——Graviton的单价优势正将<span class="ent">NVIDIA</span>从部分AI工作负载中挤出，但<span class="ent">NVIDIA</span>以Vera CPU反击说明竞争才刚开始。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/27/in-more-good-news-for-amazon-snowflake-signs-6b-deal-with-aws-for-ai-cpu-chips/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-2">
+            <h3 class="card-h">EAGLE 3.1推测解码方案发布：解决注意力漂移问题，长上下文接受长度提升2x</h3>
+            <p class="card-body">EAGLE团队、vLLM团队和TorchSpec团队联合发布EAGLE 3.1推测解码方案。核心改进是解决了"注意力漂移"（attention drift）问题——随着推测深度增加，草稿模型的注意力逐渐偏离sink token。EAGLE 3.1引入<strong>FC normalization</strong>和<strong>post-norm hidden-state feedback</strong>两项架构改进，在长上下文场景中将接受长度较EAGLE 3提升<strong>2倍</strong>。基于<span class="ent">Kimi K2.6</span>的benchmark显示，并发1时每用户输出吞吐量提升<strong>2.03倍</strong>，并发16时仍有<strong>1.66倍</strong>加速。方案已合并至vLLM main分支，将在<strong>v0.22.0</strong>正式发布，同时已开源<span class="ent">Kimi K2.6</span>的EAGLE 3.1草稿模型。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 推测解码正从实验室算法走向生产级部署，EAGLE 3.1对注意力漂移的修复解决了实际部署中长上下文和聊天模板变化导致性能退化的核心痛点，2x接受长度提升对推理成本优化意义重大。</div>
+            <div class="card-src"><a href="https://vllm.ai/blog/2026-05-26-eagle-3-1" target="_blank">vLLM Blog</a> / <a href="https://x.com/vllm_project/status/2059420705834619104#m" target="_blank">@vllm_project</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h">Cognition融资超10亿美元，估值达260亿美元，Devin已提交89%内部代码</h3>
+            <p class="card-body">Cognition完成超<strong>10亿美元</strong>融资，估值达<strong>260亿美元</strong>，由Lux Capital、General Catalyst和8VC领投。Cognition运营AI编码代理Devin，年化收入运转率已达<strong>4.92亿美元</strong>，企业使用量自年初增长超<strong>10倍</strong>。客户包括Citi、Mercedes-Benz、Goldman Sachs、美国陆军和海军；Mercedes-Benz将8个月的传统系统现代化项目压缩至<strong>8天</strong>，Itaú银行用Devin自动修复<strong>70%</strong>的安全漏洞。Cognition自称为独立代理实验室，跨所有基础模型实验室协作，其工程师团队<strong>89%的代码提交</strong>由Devin完成。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI编码代理从辅助工具向生产力核心跃迁，Cognition的89%内部代码提交比例和Mercedes-Benz 8天完成8月项目的案例，标志着"自驱式软件开发"进入规模化阶段。</div>
+            <div class="card-src"><a href="https://cognition.ai/blog/series-d" target="_blank">Cognition Blog</a> / <a href="https://techcrunch.com/2026/05/27/ai-coding-startup-cognition-raises-1b-at-25b-pre-money-valuation/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-1">
+            <h3 class="card-h">Baseten洽谈融资10亿美元，估值或翻倍至110亿美元</h3>
+            <p class="card-body">AI推理服务提供商Baseten正与投资者洽谈融资<strong>10亿美元</strong>，估值达<strong>110亿美元</strong>（含融资），较1月上一轮的50亿美元估值翻倍以上。Baseten年化收入从Q1初的<strong>2亿美元</strong>增长至季度末的<strong>约6亿美元</strong>，较去年3月增长<strong>20倍</strong>。部分投资者甚至给出约<strong>150亿美元</strong>的估值报价。Baseten向应用开发者出租<span class="ent">NVIDIA</span> AI服务器并提供开源模型定制和部署服务，1月获得<span class="ent">NVIDIA</span>、IVP、CapitalG领投的<strong>3亿美元</strong>E轮融资。竞品<span class="ent">Modal</span>近期以<strong>46.5亿美元</strong>估值融资，Together AI以<strong>75亿美元</strong>估值融资后年收入超<strong>10亿美元</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI推理基础设施赛道估值飙升，Baseten三个月翻倍的估值增速显示资本市场对推理层独立服务商的认可，但也反映了当前AI融资的泡沫化风险。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/inference-provider-baseten-talks-double-valuation-11-billion" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-2">
+            <h3 class="card-h">新智具身完成近亿元天使轮融资，布局触觉具身智能</h3>
+            <p class="card-body">新智具身宣布完成近亿元人民币天使轮融资，专注触觉具身智能领域。触觉感知是机器人与物理世界交互的关键能力，该团队认为当前机器人精细操作的瓶颈在于缺乏可靠的触觉反馈系统。新智具身的技术路径聚焦于高密度触觉传感器和触觉学习算法。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 触觉感知正成为具身智能的最后一块拼图，资本开始向机器人感知层倾斜。</div>
+            <div class="card-src"><a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651035341&idx=1&sn=f6bd20a948a53fcc1f07d80de8c02be2&chksm=85caeecb164ca4f38e1de6e68cfd20f2fd803f42d9ae5325e816890926f0e6cc3aeddd71a6cc&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-3">
+            <h3 class="card-h">ElevenLabs发布Music v2：支持曲中切换风格和分段编辑，基于授权数据可商用</h3>
+            <p class="card-body">ElevenLabs发布Music v2音乐生成模型，核心能力包括<strong>曲中风格切换</strong>（如从歌剧到重金属再回来）、快速说唱不丢连贯性、添加非音乐音效，以及<strong>分段选择重建</strong>（修改歌曲某一段而不影响其余部分）。用户可按intro/verse/chorus分段构建完整歌曲。模型基于<strong>授权数据训练</strong>，已获商用许可，避免了Suno和Udio面临的版权诉讼风险。Music v2在跨语言、歌词、人声和编曲方面表现更稳定，已上线ElevenCreative和ElevenMusic平台，API版本即将开放。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> ElevenLabs从语音克隆切入音乐生成，授权数据的合规策略是其核心差异化优势，但面对<span class="ent">Google</span> Flow Music等竞品的生态整合能力仍需观察。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/27/elevenlabss-new-music-generation-model-can-switch-genres-mid-track/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">Language Models Need Sleep：模拟睡眠巩固机制提升长上下文推理</h3>
+            <p class="card-body">卡内基梅隆大学Sangyun Lee等人发表论文"Language Models Need Sleep"，提出类睡眠巩固机制：模型周期性地将近期上下文转换为持久化快权重（fast weights），然后清除KV缓存。在"睡眠"期间，模型对累积上下文执行<strong>N次离线循环遍历</strong>，通过学习到的局部规则更新SSM块的快权重。推理时额外计算转移到睡眠阶段，<strong>保持唤醒阶段的预测延迟不变</strong>。实验表明增加睡眠次数N可提升性能，且在需要更深推理的样本上增益最大，而常规Transformer和SSM-Attention混合模型在这些任务上均失败。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> "睡眠"机制为突破长上下文注意力机制的二次复杂度瓶颈提供了生物启发式方案，将计算从推理时转移到"离线巩固"阶段的思路与<span class="ent">Anthropic</span>的Dreams功能有异曲同工之处。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.26099" target="_blank">arXiv</a> / <a href="https://x.com/iScienceLuvr/status/2059221770075562113" target="_blank">@iScienceLuvr</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">HuggingFace揭示TRL中Delta Weight Sync技术，支撑万亿参数模型分布式训练</h3>
+            <p class="card-body">HuggingFace技术博客披露其TRL库中的<strong>Delta Weight Sync</strong>方案，解决异步RL训练中的权重同步瓶颈。核心发现：相邻RL优化步骤间，<strong>约99%的bf16权重逐比特相同</strong>（最差不低于98%），因此只需传输变化的稀疏增量。在<span class="ent">Qwen</span>3-0.6B上，每步传输量从<strong>1.2 GB降至20-35 MB</strong>（~130×缩减）。架构上trainer和vLLM推理服务器通过<strong>HF Bucket</strong>（基于Xet内容寻址存储）交换权重，无需共享集群、RDMA或VPN。实测完全解耦训练：trainer在一台单GPU机器上，vLLM运行在HF Space中，每次同步推理仅暂停<strong>1.1秒</strong>。对于Llama-3.1-405B，估算每步delta约<strong>6 GB</strong>（vs完整同步810 GB）。理论基础来自PULSE论文（Mihai & Belilovsky, 2026），代码已合并至TRL PR #5417。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 万亿参数训练正从少数超大集群向中型分布式集群迁移，开源工具链加速这一进程。</div>
+            <div class="card-src"><a href="https://huggingface.co/blog/delta-weight-sync" target="_blank">HuggingFace Blog</a> / <a href="https://arxiv.org/abs/2605.27358" target="_blank">arXiv</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h">SemiAnalysis揭示GPU理论算力与实际吞吐量差距，瓶颈在软件层</h3>
+            <p class="card-body">SemiAnalysis发布深度分析文章，指出当前GPU普遍存在理论峰值算力与实际吞吐量严重不符的问题。<strong>手工调优CUDA内核在大规模场景下几乎无法弥合这一差距</strong>，而自动生成的CUDA内核却能超越手工优化的性能。文章引述Makora联合创始人兼CSO <strong>Mohamed Abdelfattah</strong>的观点，并关联其与Kimbo Chen的对谈视频"How Makora Generates CUDA Kernels That Beat Hand-Tuned Code"。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> GPU性能释放的瓶颈正从硬件向软件转移，编译优化和自动化调优成为新的技术投资方向。</div>
+            <div class="card-src"><a href="https://x.com/SemiAnalysis_/status/2059760316687233490#m" target="_blank">@semianalysis_</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h"><span class="ent">Qwen</span>3.7-Max登顶Code Arena第4名；<span class="ent">Qwen</span>3.5实现580 tps推理速度</h3>
+            <p class="card-body">通义千问官方X账号连续发布两项动态：<span class="ent">Qwen</span>3.7-Max在Code Arena排行榜达到<strong>第4名</strong>，与<span class="ent">Claude Opus</span> 4.6能力持平，是中国实验室在大模型编码能力评测中的最高排名；<span class="ent">Qwen</span>3.5在TokenSpeed引擎上实现<strong>580 tps</strong>推理速度，刷新Agent工作负载性能纪录，针对Agent场景优化工具调用和任务规划的延迟。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 中国基础模型在编码维度已逼近头部国际竞品，同时Agent场景的推理吞吐量成为新的差异化指标。</div>
+            <div class="card-src"><a href="https://x.com/Alibaba_Qwen/status/2059445345667747849#m" target="_blank">@alibaba_qwen</a> / <a href="https://x.com/Alibaba_Qwen/status/2059674574397313277#m" target="_blank">@alibaba_qwen</a></div>
+        </article>
+        <article class="card" id="c-X讨论-2">
+            <h3 class="card-h">SemiAnalysis分析：<span class="ent">Anthropic</span>增长与Bedrock组合提升AWS利润率</h3>
+            <p class="card-body">SemiAnalysis发布深度报告，揭示<span class="ent">Anthropic</span>通过AWS Bedrock的增长正在驱动AWS利润率上升。<span class="ent">Anthropic</span>在1Q26新增<strong>$21B ARR</strong>至<strong>$30B ARR</strong>，主要由<span class="ent">Claude Code</span>推动企业API消费爆发。Bedrock收入Q/Q增长<strong>170%</strong>，年化约<strong>$5.5B</strong>，其中<strong>80-90%+客户</strong>使用<span class="ent">Anthropic</span>模型。Bedrock占AWS AI收入比例从1Q25的9%升至<strong>37%</strong>，其EBIT利润率约<strong>55%</strong>，贡献了AWS毛利润同比增量的<strong>30%</strong>（仅占AWS总收入的4%）。AWS EBIT利润率Q/Q增加<strong>213bp</strong>，是唯一利润率上升的CSP。<span class="ent">Anthropic</span>推理毛利率从2024年的<strong>-94%</strong>飙升至当前<strong>mid-60s</strong>，预计2Q在扣除股权激励前实现营业利润。AWS Trainium芯片驱动Bedrock <strong>50%+</strong>的token用量，垂直整合进一步放大利润优势。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Token-as-a-Service模式正在改写云计算利润结构：Bedrock以4%的收入占比贡献30%的毛利润增量，证明模型分发比传统IaaS租赁的利润率高出数倍。<span class="ent">Anthropic</span>单季度新增$21B ARR的速度在AI行业中前所未有。</div>
+            <div class="card-src"><a href="https://newsletter.semianalysis.com/p/anthropic-growth-and-bedrock-mix" target="_blank">SemiAnalysis</a> / <a href="https://x.com/SemiAnalysis_/status/2059683072136630361#m" target="_blank">@semianalysis_</a></div>
+        </article>
+        <article class="card" id="c-X讨论-3">
+            <h3 class="card-h">Artificial Analysis与IBM Research发布ITBench-AA：Kubernetes运维智能体基准，前沿模型得分均低于50%</h3>
+            <p class="card-body">Artificial Analysis与IBM Research联合发布ITBench-AA，首个评估企业IT智能体的基准，首批聚焦站点可靠性工程（SRE）任务。基准包含<strong>59个Kubernetes事故诊断任务</strong>：模型需从告警、日志、链路追踪、指标和应用拓扑中识别根因实体。<span class="ent">Claude Opus</span> 4.7以<strong>47%</strong>领先，<span class="ent">GPT-5</span>.5为<strong>46%</strong>，<span class="ent">Qwen</span>3.7 Max为<strong>42%</strong>，所有前沿模型均<strong>低于50%</strong>，是当前最不饱和的智能体基准之一。开源权重模型中GLM-5.1以<strong>40%</strong>领先，接近<span class="ent">Gemini</span> 3.5 Flash。回 合数与准确率不成正比：<span class="ent">GPT-5</span>.5平均<strong>31回合</strong>达46%，而<span class="ent">Gemini</span> 3.1 Pro Preview平均<strong>83回合</strong>仅30%——过度调查反而引入误报。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> ITBench-AA揭示运维智能体的两个关键瓶颈：一是根因定位准确率仍在50%以下，二是更多推理步数并不等同于更好的诊断——运维场景需要的是精准收敛而非广撒网。</div>
+            <div class="card-src"><a href="https://x.com/ArtificialAnlys/status/2059698327235805258#m" target="_blank">@artificialanlys</a></div>
+        </article>
+        <article class="card" id="c-X讨论-4">
+            <h3 class="card-h">Harvey发布法律AI智能体基准LAB：<span class="ent">Claude Opus</span> 4.7以7.1%通过率领先，前沿模型仍远未达标</h3>
+            <p class="card-body">Harvey联合Artificial Analysis发布LAB（Legal Agent Benchmark），这是首个针对法律智能体的开源评测基准。在严格all-pass标准下，<span class="ent">Claude Opus</span> 4.7以<strong>7.1%</strong>通过率领先，Sonnet 4.6为<strong>5.4%</strong>，Opus 4.6为<strong>4.2%</strong>，<span class="ent">GPT-5</span>.5为<strong>2.1%</strong>，<span class="ent">Gemini</span> 3.5 Flash为<strong>0.8%</strong>——前沿模型在端到端法律任务上完成率均<strong>低于10%</strong>。不同法律领域各模型排名不同：Opus 4.7在企业并购类最强，<span class="ent">GPT-5</span>.5在监管研究类领先，Sonnet 4.6在隐私和税务类表现最佳，呈现"锯齿状智能"特征。最高分模型每任务成本约<strong>$50</strong>、延迟约<strong>22分钟</strong>。行为分析发现代理自纠错（revise-after-check）可提升<strong>1.5分</strong>，是最强正向行为信号。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 法律智能体评测揭示了一个重要现实：即使最强模型在严格标准下也只能完成不到10%的任务，且没有任何单一模型在所有法律领域领先，这意味着生产级法律AI部署必须是多模型架构。</div>
+            <div class="card-src"><a href="https://x.com/gabepereyra/status/2059320727988224128" target="_blank">@gabepereyra</a> / <a href="https://x.com/ArtificialAnlys/status/2059737917602578804#m" target="_blank">@artificialanlys</a></div>
+        </article>
+        <article class="card" id="c-X讨论-5">
+            <h3 class="card-h">Hy Nguyen观点：人类低估编码代理10年内的能力增长</h3>
+            <p class="card-body">开发者Hy Nguyen在X平台发表评论，认为人类倾向于在一周内高估自己能完成的事情，但在10年内低估自己的潜力，更严重低估编码代理在相同时间内的能力增长。该观点指出AI代理的进化速度远超人类经验预期。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 开发者社区对AI代理的预期正从怀疑转向认可，代理能力曲线的陡峭程度超出主流认知。</div>
+            <div class="card-src"><a href="https://x.com/hyhieu226/status/2059424118144213273#m" target="_blank">@hyhieu226</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-05-27.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-05-29.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["Microsoft MAI-Image-2.5 tops Arena text-to-image ranking at #3, significant improvements in text rendering and commercial imagery", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "X Discussion", "MiniMax previews open-source M3 model, #MSA tag sparks speculation", "Anthropic launches Claude Code security review plugin: auto-detects and fixes vulnerabilities during AI coding", "Meta launches paid subscriptions globally for Instagram/Facebook/WhatsApp, simultaneously testing AI features", "xAI releases grok-build-0.1 coding assistant, integrated into KiloCode platform", "Kuaishou Kling AI video reaches $500M annualized revenue, Q1 YoY growth exceeds 300%", "OpenAI and Thrive build self-improving tax agent, 97% accuracy processing 7,000 tax returns", "ByteDance considers increasing capital expenditure to $70B this year, reaches multi-million ASIC chip purchase agreement with Qualcomm", "Snowflake signs $6B Graviton chip five-year contract with AWS, cloud vendors' custom CPUs accelerating NVIDIA replacement", "EAGLE 3.1 speculative decoding solution released: solving attention drift, 2x improvement in long context acceptance length", "Cognition raises over $1B, valuation reaches $26B, Devin has submitted 89% of internal code", "Baseten in talks to raise $1B, valuation may double to $11B", "New Zhi Jushen completes near 100M yuan angel round financing, laying out tactile embodied AI", "ElevenLabs releases Music v2: supports style switching mid-track and segmented editing, commercially usable with licensed data", "Language Models Need Sleep: simulating sleep consolidation mechanism to enhance long context reasoning", "HuggingFace reveals Delta Weight Sync technology in TRL, enabling distributed training for trillion-parameter models", "SemiAnalysis reveals gap between GPU theoretical compute and actual throughput, bottleneck at software layer", "Qwen3.7-Max tops Code Arena at #4; Qwen3.5 achieves 580 tps inference speed", "SemiAnalysis analysis: Anthropic's growth and Bedrock combination boosts AWS profit margins", "Artificial Analysis and IBM Research release ITBench-AA: Kubernetes operations agent benchmark, frontier models score below 50%", "Harvey releases legal AI agent benchmark LAB: Claude Opus 4.7 leads with 7.1% pass rate, frontier models still far from meeting standards", "Hy Nguyen viewpoint: Humans underestimate coding agents' capability growth within a decade", "Microsoft AI superintelligence team releases MAI-Image-2.5, ranking #3 on Arena text-to-image leaderboard. Compared to the previous generation MAI-Image-2, this model shows significant improvements in text rendering, stylized illustrations, and commercial imagery, generating more reliable poster text, product packaging labels, and brand visuals. The model also demonstrates visual reasoning capabilities covering objects, scene structures, lighting, proportions, and spatial relationships. Currently live on Arena, expected to integrate into MAI Playground and Foundry within two weeks.", "MiniMax's official X account releases a preview, quoting Skyler Miao's \"Something BIG is coming\", tagged #MSA #OpenSource #M3. Market speculates M3 is MiniMax's next-generation multimodal model series, with MSA possibly indicating a new attention mechanism architecture.", "Anthropic releases security-guidance plugin for Claude Code, automatically reviewing security vulnerabilities in code changes during coding and completing fixes within the same session. The plugin detects SQL injection, XSS, command injection, hardcoded keys, auth bypass, business logic flaws, and other vulnerability types. Unlike traditional rule-matching SAST tools, it uses Claude's semantic reasoning to understand code intent. Simultaneously, Anthropic launches Claude Code Security product (limited research preview), which using Claude Opus 4.6 has discovered over 500 long-undetected security vulnerabilities in production-level open-source code repositories. Claude Code also includes `/security-review` command and GitHub Action, automatically scanning changed files in PRs and commenting security findings.", "Meta announced global rollout of Instagram Plus ($3.99/month), Facebook Plus ($3.99/month) and WhatsApp Plus ($2.99/month) subscription services, offering Story data insights, Super React emojis, profile customization and other additional features. Simultaneously testing AI subscription plans Meta One Plus ($7.99/month) and Meta One Premium ($19.99/month), with Premium unlocking higher compute queries and more video/image generation capabilities. All subscription brands unified as \"Meta One\". AI plans begin testing next month in Singapore, Guatemala and Bolivia, later expanding to AI glasses users.", "xAI announced its coding assistant grok-build-0.1 has been integrated into the KiloCode platform, open to SuperGrok and X Premium+ subscribers. The assistant is optimized for coding tasks, supporting high-speed AI-assisted programming services.", "Kuaishou Technology announced its Kling AI video business reached approximately $500 million annualized revenue in March. Kling's Q1 2026 revenue exceeded 650 million RMB (approximately $96 million), with year-over-year growth exceeding 300%. Kling primarily develops and sells AI video generation models.", "OpenAI partnered with Thrive Holdings to develop a Tax AI system for the Crete accounting firm network. The system processed 7,000 tax returns this quarter, saving approximately one-third of tax preparation time, with accuracy rates reaching up to 97% and throughput improved by approximately 50%. The core innovation is a three-tier self-improvement loop: practitioner feedback → production traces → Codex-driven engineering iterations. When the system launched, only 25% of returns achieved 75% field accuracy, which improved to 86% within six weeks. A senior accountant's tax preparation time dropped from 180 hours last year to 15 hours.", "According to Bloomberg and The Information, ByteDance is considering increasing its 2026 capital expenditure to $70 billion, more than doubling from previous levels, primarily for data center and AI infrastructure construction. During the same period, ByteDance reached an AI chip supply agreement with Qualcomm, planning to procure millions of ASIC chips for AI data centers.", "Snowflake and AWS signed a five-year, $6 billion AI chip procurement agreement, focusing on AWS's self-developed Graviton ARM CPU chips for AI inference and Agent workloads. As reference, Snowflake's cumulative sales through AWS Marketplace since 2012 total $7 billion, while customer spending on AWS in 2025 doubled to $2 billion, with AI demand as the core driver. Previously AWS also signed a supply agreement with Meta for millions of Graviton chips. NVIDIA CEO Jensen Huang responded last week that its newly launched Vera AI CPU represents a $200 billion new market, with $20 billion already sold.", "The EAGLE team, vLLM team, and TorchSpec team jointly released EAGLE 3.1 speculative decoding scheme. The core improvement solves the \"attention drift\" problem—where the draft model's attention progressively deviates from the sink token as speculation depth increases. EAGLE 3.1 introduces FC normalization and post-norm hidden-state feedback for architectural improvements, doubling the acceptance length compared to EAGLE 3 in long-context scenarios. Benchmark based on Kimi K2.6 shows 2.03× throughput improvement per user output at concurrency 1, with 1.66× acceleration at concurrency 16. The scheme has been merged into vLLM main branch, to be officially released in v0.22.0, with the Kimi K2.6 EAGLE 3.1 draft model already open-sourced.", "Cognition completed a $1 billion+ financing round, valued at $26 billion, led by Lux Capital, General Catalyst, and 8VC. Cognition operates the AI coding agent Devin, with annualized revenue run rate reaching $492 million, and enterprise usage growing over 10× since the beginning of the year. Clients include Citi, Mercedes-Benz, Goldman Sachs, US Army and Navy; Mercedes-Benz compressed an 8-month traditional system modernization project to 8 days, Itaú bank used Devin to automatically fix 70% of security vulnerabilities. Cognition calls itself an independent agent lab, collaborating across all foundation model labs, with 89% of its engineering team's code commits completed by Devin.", "AI inference service provider Baseten is in talks with investors for a $1 billion financing round, valued at $11 billion (post-money), more than doubling from the $5 billion valuation in the previous round in January. Baseten's annualized revenue grew from approximately $200 million at the beginning of Q1 to approximately $600 million by quarter end, a 20× increase from March last year. Some investors have even offered valuation quotes around $15 billion. Baseten rents NVIDIA AI servers to application developers and provides open-source model customization and deployment services. In January, it raised $300 million in Series E financing led by NVIDIA, IVP, and CapitalG. Competitor Modal recently raised at a $4.65 billion valuation, and Together AI reached $7.5 billion valuation with over $1 billion in annual revenue.", "New Embodied Intelligence announced completion of approximately 100 million RMB angel round financing, focusing on tactile embodied intelligence. Tactile perception is the key capability for robots to interact with the physical world. The team believes the current bottleneck in robot fine manipulation lies in the lack of reliable tactile feedback systems. New Embodied Intelligence's technical approach focuses on high-density tactile sensors and tactile learning algorithms.", "ElevenLabs released Music v2 music generation model, with core capabilities including style switching within songs (such as from opera to heavy metal and back), fast rapping without losing coherence, adding non-musical sound effects, and segment-selective reconstruction (modifying a section of a song without affecting the rest). Users can construct complete songs by segments of intro/verse/chorus. The model is trained on licensed data and has obtained commercial licensing, avoiding the copyright lawsuit risks faced by Suno and Udio. Music v2 performs more stably across languages, lyrics, vocals and arrangement, now available on ElevenCreative and ElevenMusic platforms, with API version coming soon.", "Carnegie Mellon University's Sangyun Lee et al. published the paper \"Language Models Need Sleep\", proposing a sleep-like consolidation mechanism: the model periodically converts recent context into persistent fast weights, then clears the KV cache. During \"sleep\", the model performs N offline recurrent traversals on accumulated context, updating fast weights of SSM blocks through learned local rules. Inference-time extra computation is shifted to the sleep phase, maintaining unchanged prediction latency during wake phase. Experiments show increasing sleep iterations N improves performance, with the largest gains on samples requiring deeper reasoning, while regular Transformers and SSM-Attention hybrid models fail on these tasks.", "HuggingFace technical blog disclosed the Delta Weight Sync scheme in their TRL library, solving the weight synchronization bottleneck in asynchronous RL training. Core discovery: between adjacent RL optimization steps, approximately 99% of bf16 weights are bit-identical (worst case no lower than 98%), therefore only changed sparse deltas need to be transmitted. On Qwen3-0.6B, transmission per step reduced from 1.2 GB to 20-35 MB (~130× reduction). Architecturally, trainer and vLLM inference server exchange weights via HF Bucket (based on Xet content-addressed storage), without requiring shared clusters, RDMA, or VPN. Measurements show fully decoupled training: trainer on a single GPU machine, vLLM running in HF Space, with only 1.1 second pause per sync inference. For Llama-3.1-405B, estimated delta per step is approximately 6 GB (vs 810 GB for full sync). Theoretical basis from PULSE paper (Mihai & Belilovsky, 2026), code merged into TRL PR #5417.", "SemiAnalysis published an in-depth analysis article, pointing out that current GPUs generally suffer from a serious mismatch between theoretical peak compute and actual throughput. Hand-tuned CUDA kernels almost cannot bridge this gap at scale, while auto-generated CUDA kernels can surpass hand-optimized performance. The article quotes Mohamed Abdelfattah, co-founder and CSO of Makora, and relates to his interview video with Kimbo Chen \"How Makora Generates CUDA Kernels That Beat Hand-Tuned Code\".", "Qwen's official X account continuously posted two updates: Qwen3.7-Max achieved 4th place on the Code Arena leaderboard, matching Claude Opus 4.6 in capability, representing the highest ranking for Chinese labs in large model coding capability evaluation; Qwen3.5 achieved 580 tps inference speed on the TokenSpeed engine, setting a new record for Agent workload performance, with optimizations for tool calling and task planning latency targeting Agent scenarios.", "SemiAnalysis published an in-depth report revealing that Anthropic's growth through AWS Bedrock is driving AWS profit margins upward. Anthropic added $21B ARR to $30B ARR in 1Q26, primarily driven by explosive enterprise API consumption from Claude Code. Bedrock revenue grew 170% Q/Q, annualized at approximately $5.5B, with 80-90%+ of customers using Anthropic models. Bedrock's share of AWS AI revenue increased from 9% in 1Q25 to 37%, with EBIT profit margin of approximately 55%, contributing 30% of AWS's year-over-year gross profit increase (while only accounting for 4% of total AWS revenue). AWS EBIT profit margin increased 213bp Q/Q, the only CSP with rising profit margins. Anthropic's inference gross margin surged from -94% in 2024 to current mid-60s, expected to achieve operating profit before stock-based compensation in 2Q. AWS Trainium chips drive 50%+ of Bedrock token usage, vertical integration further amplifying profit advantages.", "Artificial Analysis and IBM Research jointly released ITBench-AA, the first benchmark evaluating enterprise IT agents, with initial focus on Site Reliability Engineering (SRE) tasks. The benchmark contains 59 Kubernetes incident diagnosis tasks: models need to identify root cause entities from alerts, logs, distributed tracing, metrics, and application topology. Claude Opus 4.7 leads with 47%, GPT-5.5 at 46%, Qwen3.7 Max at 42%, with all frontier models below 50%, making it one of the most unsaturated agent benchmarks currently. Among open-weight models, GLM-5.1 leads at 40%, close to Gemini 3.5 Flash. Turn count does not correlate with accuracy: GPT-5.5 averages 31 turns to reach 46%, while Gemini 3.1 Pro Preview averages 83 turns for only 30%—excessive investigation introduces false positives.", "Harvey jointly released with Artificial Analysis LAB (Legal Agent Benchmark), the first open-source evaluation benchmark for legal agents. Under strict all-pass criteria, Claude Opus 4.7 leads with 7.1% pass rate, Sonnet 4.6 at 5.4%, Opus 4.6 at 4.2%, GPT-5.5 at 2.1%, and Gemini 3.5 Flash at 0.8%—frontier models all below 10% completion rate on end-to-end legal tasks. Model rankings vary across different legal domains: Opus 4.7 is strongest in corporate M&A, GPT-5.5 leads in regulatory research, Sonnet 4.6 performs best in privacy and tax, exhibiting \"jagged intelligence\" characteristics. The highest-scoring model costs approximately $50 and has approximately 22 minutes latency per task. Behavioral analysis found that agent self-correction (revise-after-check) improves scores by 1.5 points, the strongest positive behavioral signal.", "Developer Hy Nguyen commented on X platform, believing that humans tend to overestimate what they can accomplish within a week, but underestimate their potential over 10 years, and more severely underestimate the capability growth of coding agents within the same timeframe. This viewpoint notes that AI agents are evolving far faster than human experiential expectations.", "Microsoft continues to catch up in the text-to-image race, with the rapid iteration from MAI-Image 1.0 to 2.5 demonstrating its investment in this field, though the gap with top competitors still requires long-term Arena verification.", "MiniMax's strategy shift from closed-source to open-source continues, if the M3 series is equipped with new attention mechanisms, it will create more direct competition with DeepSeek and Qwen in the open-source model race.", "AI coding tools are evolving from \"generating code\" to \"securing code\", and self-review mechanisms are an important step in completing the capability loop of AI programming assistants, but the detection rate of plugins for complex vulnerabilities still requires practical verification.", "The subscription + AI bundled model on social platforms is moving from testing to scaling, with Meta attempting to replicate Apple's services revenue logic.", "xAI is expanding Grok model's application scenarios through developer tools, creating competition with existing AI coding tools.", "Kling's rapid revenue growth validates the commercial viability of AI video generation tools, but the $500 million annualized revenue relative to Kuaishou's AI infrastructure investment means profitability still needs to be observed.", "Tax AI demonstrates AI Agent's leap from \"auxiliary tool\" to \"self-improving system\", with the closed loop of practitioner feedback → structured eval → Codex improvement providing a reusable engineering paradigm for vertical scenario Agents.", "Qualcomm previously focused on mobile processors, and its entry into AI datacenter ASIC market will directly compete with NVIDIA. Both developments reflect ByteDance's aggressive AI computing expansion strategy, with chip supply diversification and token consumption surge from Agent applications as core drivers.", "AI is shifting from training to inference and Agents, with surging CPU demand opening an alternative window for cloud vendors' custom chips — Graviton's unit price advantage is crowding NVIDIA out of some AI workloads, but NVIDIA's Vera CPU counterattack shows the competition has just begun.", "Speculative decoding is transitioning from lab algorithm to production-grade deployment. EAGLE 3.1's fix for attention drift addresses the core pain point of performance degradation caused by long contexts and chat template variations in real deployments, and the 2x acceptance length improvement is significant for inference cost optimization.", "AI coding agents are leaping from auxiliary tools to core productivity. Cognition's 89% internal code commit ratio and Mercedes-Benz completing an 8-month project in 8 days mark \"self-driven software development\" entering a scaled phase.", "AI inference infrastructure赛道估值飙升，Baseten三个月翻倍的估值增速显示资本市场对推理层独立服务商的认可，但也反映了当前AI融资的泡沫化风险。", "Tactile perception is becoming the final piece of the embodied intelligence puzzle, with capital beginning to tilt towards robot perception layers.", "ElevenLabs enters music generation from voice cloning, with licensed data compliance strategy as its core differentiator, but needs to be observed regarding ecosystem integration capability against competitors like Google Flow Music.", "The \"sleep\" mechanism provides a biologically-inspired solution to break through the quadratic complexity bottleneck of long-context attention, with the approach of shifting computation from inference time to \"offline consolidation\" phase being analogous to Anthropic's Dreams functionality.", "Trillion-parameter training is migrating from few ultra-large clusters to mid-sized distributed clusters, with open-source toolchains accelerating this process.", "The bottleneck for GPU performance release is shifting from hardware to software, with compilation optimization and automated tuning becoming new technology investment directions.", "Chinese foundational models have approached top international competitors on coding metrics, while inference throughput in Agent scenarios is becoming a new differentiation indicator.", "Token-as-a-Service model is rewriting cloud computing profit structure: Bedrock contributes 30% gross profit increment with only 4% revenue share, proving model distribution's profit margin is several times higher than traditional IaaS leasing. Anthropic's single-quarter $21B ARR addition is unprecedented in the AI industry.", "ITBench-AA reveals two key bottlenecks for operational agents: first, root cause localization accuracy remains below 50%; second, more reasoning steps do not equal better diagnosis — operational scenarios require precise convergence rather than broad coverage.", "Legal Agent evaluation reveals an important reality: even the strongest models can complete less than 10% of tasks under strict standards, and no single model leads in all legal domains, meaning production-grade legal AI deployment must be a multi-model architecture.", "Developer community expectations for AI agents are shifting from skepticism to recognition, with the steepness of the agent capability curve exceeding mainstream understanding.", "Anthropic launches Claude Code security review plugin, Opus 4.6 has already found over 500 open-source vulnerabilities", "xAI releases grok-build-0.1 programming assistant", "Snowflake signs $6 billion AI chip five-year contract with AWS", "ElevenLabs releases Music v2: supports in-track style switching and segment editing", "Microsoft MAI-Image-2.5 tops Arena text-to-image ranking at #3...", "Anthropic launches Claude Code security review plugin: auto...", "Meta launches Instagram/Facebook/WhatsApp payment globally...", "xAI releases grok-build-0.1 programming assistant, integrated into KiloCode platform...", "OpenAI partners with Thrive to build self-improving tax Agent, processing 7000 tax returns...", "ByteDance Considers Increasing Capital Expenditure to $70 Billion This Year, Reaches Multi-Million ASIC Chip Deal with Qualcomm...", "Snowflake Signs $6 Billion Five-Year Graviton Chip Deal with AWS, Cloud...", "EAGLE 3.1 Speculative Decoding Scheme Released: Solving Attention Drift Problem, Long Context Reception Length...", "Cognition Raises Over $1 Billion, Valuation Reaches $26 Billion, Devin Already Submitted...", "ElevenLabs Releases Music v2: Supports In-Song Style Switching and Segment Editing, Based on...", "Language Models Need Sleep: Simulating Sleep Consolidation Mechanism Improv...", "HuggingFace Reveals Delta Weight Sync Technology in TRL...", "Qwen3.7-Max Tops Code Arena at 4th Place; Qwen3.5 Achieves...", "SemiAnalysis Analyzes: Anthropic Growth and Bedrock Portfolio...", "Artificial Analysis and IBM Research Release IT...", "Harvey Releases Legal AI Agent Benchmark LAB: Claude Opus 4.7...", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>06月08日周一 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-产业动态">产业动态</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-06-08</div>
+            <h1>NVIDIA联合KRAFTON、NC与T1在韩国PC Bang推广RTX Spark：面向个人AI代理的Windows超级芯片</h1>
+            <div class="header-sub">13 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">NVIDIA联合KRAFTON、NC与T1在韩国PC Bang推广RTX Spark：面向个人AI代理的Windows超级芯片</span>
+                    <span class="sum-item">OpenAI仍在推进「超级应用」开发，部分员工认为「Chat已死」</span>
+                    <span class="sum-item">Wall Street Prompt：日收费2.5万美元教华尔街用AI，花旗美银成回头客</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">SpaceX启动史上最大IPO：每股135美元募资750亿美元，估值1.77万亿美元</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">Long-Horizon Q-Learning：利用n步不等式抑制长时域RL的自举误差累积</span>
+                    <span class="sum-item">WLA：统一世界建模、语言推理与动作生成的具身基础模型</span>
+                    <span class="sum-item">Latent Reasoning with Normalizing Flows：用归一化流替代显式CoT的潜在推理</span>
+                    <span class="sum-item">表征学习驱动可扩展多任务深度强化学习</span>
+                    <span class="sum-item">Code2LoRA：超网络生成适配器应对代码模型软件演化</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">OpenRouter展示各模型提供商的缓存命中率和有效价格差异</span>
+                    <span class="sum-item">NVIDIA Nemotron3 Ultra在编程任务Benchmark中被Kimi K2.6与GLM5.1超越</span>
+                    <span class="sum-item">研究员转向直接开源而非通过营销部门：学术论文Alpha时代终结的讨论</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">4</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">NVIDIA联合KRAFTON、NC与T1在韩国PC Bang推广RTX…</a>
+                <a href="#c-产业动态-1" class="nav-item">OpenAI仍在推进「超级应用」开发，部分员工认为「Chat已死」</a>
+                <a href="#c-产业动态-2" class="nav-item">Notion服务中断后恢复Anthropic集成</a>
+                <a href="#c-产业动态-3" class="nav-item">Wall Street Prompt：日收费2.5万美元教华尔街用AI…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">SpaceX启动史上最大IPO：每股135美元募资750亿美元，估值1.…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">Long-Horizon Q-Learning：利用n步不等式抑制长时域…</a>
+                <a href="#c-研究关注-1" class="nav-item">Code2LoRA：超网络生成适配器应对代码模型软件演化</a>
+                <a href="#c-研究关注-2" class="nav-item">WLA：统一世界建模、语言推理与动作生成的具身基础模型</a>
+                <a href="#c-研究关注-3" class="nav-item">Latent Reasoning with Normalizing Fl…</a>
+                <a href="#c-研究关注-4" class="nav-item">表征学习驱动可扩展多任务深度强化学习</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">OpenRouter展示各模型提供商的缓存命中率和有效价格差异</a>
+                <a href="#c-X讨论-1" class="nav-item">NVIDIA Nemotron3 Ultra在编程任务Benchmark…</a>
+                <a href="#c-X讨论-2" class="nav-item">研究员转向直接开源而非通过营销部门：学术论文Alpha时代终结的讨论</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h"><span class="ent">NVIDIA</span>联合KRAFTON、NC与T1在韩国PC Bang推广RTX Spark：面向个人AI代理的Windows超级芯片</h3>
+            <p class="card-body">在COMPUTEX期间的GTC台北活动上，<span class="ent">NVIDIA</span>发布了RTX Spark——一款面向Windows PC个人AI代理时代的超级芯片。活动邀请了韩国游戏发行商KRAFTON、NC以及《英雄联盟》卫冕冠军T1共同参与，展示RTX Spark在韩国PC Bang（网咖）场景中的应用落地。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">NVIDIA</span>通过与韩国头部游戏公司的本地化合作，将AI芯片落地与电竞生态绑定，差异化抢占消费级AI硬件市场。</div>
+            <div class="card-src"><a href="https://blogs.nvidia.com/blog/krafton-nc-t1-korea-gaming-pc-bang-rtx-spark/" target="_blank">NVIDIA Blog</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h"><span class="ent">OpenAI</span>仍在推进「超级应用」开发，部分员工认为「Chat已死」</h3>
+            <p class="card-body"><span class="ent">OpenAI</span>正将<span class="ent">ChatGPT</span>从纯聊天工具转型为面向付费产品的入口（如编程产品<span class="ent">Codex</span>），目标是<strong>对标<span class="ent">Anthropic</span>争夺企业客户</strong>，并在IPO前逼近盈利。一位资深员工在内部直言"Chat is dead"，表明<span class="ent">OpenAI</span>认为对话式交互已不再是产品方向的核心。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Chat作为单一交互模式已触及天花板，<span class="ent">OpenAI</span>正在探索下一代产品形态以维持增长预期。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/07/openai-is-still-working-on-that-super-app/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h">Notion服务中断后恢复<span class="ent">Anthropic</span>集成</h3>
+            <p class="card-body">Notion AI因<span class="ent">Anthropic</span> Opus 4.7/4.8模型出现性能退化，短暂禁用了全部<span class="ent">Anthropic</span>模型接入。<strong>12小时后恢复服务</strong>。Notion产品负责人Max Schoening对社区<strong>1200次转发</strong>感到"astonished"，强调这只是一次临时服务中断而非模型质量问题。<span class="ent">Anthropic</span>官方确认是短暂基础设施问题导致多款<span class="ent">Claude</span>模型错误率升高。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Notion与AI模型的深度绑定使其服务中断成为高关注事件，用户对AI功能可用性高度敏感。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/07/notion-restores-access-to-anthropic-after-service-disruption/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h">Wall Street Prompt：日收费2.5万美元教华尔街用AI，花旗美银成回头客</h3>
+            <p class="card-body">创始人Felipe Sinisterra（前SoftBank拉美基金fintech负责人、过15亿美元投资经验）和Dave Wang（前SoftBank加密投资主管）于2025年7月创办Wall Street Prompt，<strong>单日收费2.5万美元</strong>（约17万人民币）为企业提供AI培训。花旗、美银请其为外部基金客户办专场，T. Rowe Price直接用来训自己的投资团队，<strong>听过课的客户几乎都成了回头客</strong>。背景是华尔街AI焦虑加剧：花旗、富国、美银2026年Q1合计裁员超5000人，同期三家业绩创历史新高；美国银行称1.8万名开发者用AI后生产力提升20%-25%，但普通员工AI能力严重滞后。竞品也在涌入：Rogo Technologies今年D轮融资1.6亿美元（估值20亿美元），Multiverse承诺两年内培训1.5万名AI学徒。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 华尔街AI焦虑的核心矛盾是"工具买了但人不会用"，金融+AI交叉背景的培训成为高溢价刚需。裁业绩新高与培训高增长并存，AI能力正成为金融从业者的生存门槛。</div>
+            <div class="card-src"><a href="https://www.bloomberg.com/news/features/2026-05-25/the-ai-trainers-charging-25-000-a-day-to-push-wall-street-s-agentic-shift" target="_blank">Bloomberg</a> / <a href="https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&mid=2247895580&idx=2&sn=cfb18e20ff2f3edd0803ba01425b6780" target="_blank">量子位</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h"><span class="ent">SpaceX</span>启动史上最大IPO：每股135美元募资750亿美元，估值1.77万亿美元</h3>
+            <p class="card-body"><span class="ent">SpaceX</span>向SEC提交更新招股文件，IPO发行价定为每股<strong>135美元</strong>，发行<strong>5.556亿股</strong>A类普通股，募资<strong>750亿美元</strong>，对应估值<strong>1.77万亿美元</strong>，将超越特斯拉成为美国市值第七大上市公司，募资规模创全球IPO历史纪录。承销商可额外认购8333万股（约112亿美元）。马斯克持股约<strong>82.4%</strong>，账面价值约8665亿美元。本次IPO打破华尔街惯例，在路演前即锁定发行价而非设定价格区间。承销团包括高盛、摩根士丹利、美银、花旗、摩根大通、巴克莱等，股票代码SPCX，计划<strong>6月12日</strong>在纳斯达克上市交易。马斯克薪酬激励直接挂钩两大目标：<span class="ent">SpaceX</span>市值达7.5万亿美元、实现火星百万移民。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">SpaceX</span>以定价权主导史上最大IPO，反映了马斯克对市场定价能力的绝对自信。750亿美元单次募资规模将重塑一级市场流动性格局，对同期推进IPO的<span class="ent">Anthropic</span>和<span class="ent">OpenAI</span>构成估值锚定效应。</div>
+            <div class="card-src"><a href="https://www.reuters.com/legal/government/spacex-sets-135-price-blockbuster-ipo-upending-wall-street-convention-2026-06-03/" target="_blank">Reuters</a> / <a href="https://www.sec.gov/Archives/edgar/data/1181412/000162828026040364/spaceexplorationtechnologib.htm" target="_blank">SEC Filing</a> / <a href="https://www.qbitai.com/2026/06/431694.html" target="_blank">量子位</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">Long-Horizon Q-Learning：利用n步不等式抑制长时域RL的自举误差累积</h3>
+            <p class="card-body">@chelseabfinn指出扩展强化学习至长时域仍是核心挑战。Stanford的Armaan Abraham、Lucy Xiaoyang Shi和Chelsea Finn提出Long-Horizon Q-Learning（LQL），解决Q-learning在长时域任务中自举误差经时序差分更新向后传播并不断累积的问题。LQL的核心思想：任意已实现动作序列都是最优策略期望值的下界，因此先执行最优动作不应比先跟随观测动作再切换到最优更差。LQL通过hinge loss惩罚违反该不等式的情况，为Q值学习提供原理性下界约束。该方法不需要额外网络或前向传播，仅利用TD error已有的网络输出计算惩罚，在多个online和offline-to-online benchmark上一致超越1-step TD和n-step TD，运行时间相当。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 长时域RL的误差控制是通往通用Agent的关键瓶颈，LQL以零额外计算开销引入下界约束，为长序列决策提供了实用且可扩展的稳定化路径。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.05812" target="_blank">arXiv</a> / <a href="https://x.com/chelseabfinn/status/2063433906985005510#m" target="_blank">@chelseabfinn</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">Code2LoRA：超网络生成适配器应对代码模型软件演化</h3>
+            <p class="card-body">Code2LoRA由Liliana Hotsko、Yuntian Deng等研究者提出，通过超网络直接从自然语言任务描述生成LoRA适配器，使代码模型在软件API持续演化下保持适应性，无需传统任务特定微调。支持预训练LoRA重构和多任务SFT两种训练模式，实验显示在零样本适配上超越多任务LoRA基线。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 轻量化适配技术降低代码模型维护成本，在快速迭代的编程场景中具有实用价值。</div>
+            <div class="card-src"><a href="https://huggingface.co/papers/2606.06492" target="_blank">HuggingFace Daily Papers</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">WLA：统一世界建模、语言推理与动作生成的具身基础模型</h3>
+            <p class="card-body">Yi Yang、Zhihong Liu等研究者提出World-Language-Action（WLA）模型，融合世界建模（从自我中心视频学习）和语言推理（解决复杂长时域任务）两条路线，以文本指令、图像和机器人状态为输入，联合预测文本子任务、子目标图像和机器人动作。核心创新在于将世界-动作模型（WAM）的世界建模界面与视觉-语言-动作（VLA）模型的语言推理能力统一到同一架构中，在多个具身智能基准上取得突破。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 将世界建模与语言推理统一到单一具身模型中，有望解决VLA模型在复杂长时域任务上的规划瓶颈。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2606.05979" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-3">
+            <h3 class="card-h">Latent Reasoning with Normalizing Flows：用归一化流替代显式CoT的潜在推理</h3>
+            <p class="card-body">Guancheng Tu、Xiangjun Fu等研究者提出用归一化流（Normalizing Flows）实现LLM的潜在推理。显式Chain-of-Thought将推理强制通过离散、串行的token流，每步必须完全表达后才能继续，即使底层更新是语义性、不确定或部分形成的。潜在推理提供了更高带宽的替代方案：在连续潜在空间中执行中间计算，允许并行、可逆的推理步骤。该方法通过归一化流的可逆性和精确似然计算，为潜在推理提供了理论清晰且可扩展的框架。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 潜在推理绕过了token级别的串行瓶颈，为LLM推理能力扩展提供了新方向，归一化流的可逆性使其训练更稳定。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2606.06447" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-4">
+            <h3 class="card-h">表征学习驱动可扩展多任务深度强化学习</h3>
+            <p class="card-body">Johan Obando-Ceron、Lu Li、Scott Fujimoto、Pierre-Luc Bacon、Aaron Courville（Mila/ McGill）提出，多任务RL可扩展性的核心驱动力是表征学习而非基于模型的控制。研究表明，将预测性、基于模型的表征学习与基于模型无关的RL算法结合，即可在多样任务上取得与复杂model-based方法相当的性能，且训练流程大幅简化。该发现质疑了此前多任务RL对复杂规划组件的依赖。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 将多任务RL的可扩展性归因于表征学习而非模型规划，简化了训练流程，对通用Agent的工程实践有直接指导意义。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2606.05555" target="_blank">arXiv</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h">OpenRouter展示各模型提供商的缓存命中率和有效价格差异</h3>
+            <p class="card-body">OpenRouter平台新增实时缓存命中率与历史流量数据可视化功能，用户可对比不同模型提供商的缓存命中率和有效价格，帮助选择最优推理方案。以<span class="ent">Kimi</span> API为例，缓存命中率通常85%-95%，90%命中率下1M token实际成本1.03元，仅为标准定价4元的约四分之一。阿里云百炼<span class="ent">Qwen</span>3.7-Max默认开启隐式缓存，命中后成本降至约20%。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 缓存效率正成为模型提供商差异化的关键维度，平台透明度提升有助于开发者优化成本。</div>
+            <div class="card-src"><a href="https://x.com/OpenRouter/status/2063504950429147376#m" target="_blank">@openrouter</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h"><span class="ent">NVIDIA</span> Nemotron3 Ultra在编程任务Benchmark中被<span class="ent">Kimi K2.6</span>与GLM5.1超越</h3>
+            <p class="card-body">在<span class="ent">TerminalBench</span>等编程任务评测中，<span class="ent">NVIDIA</span>最新发布的Nemotron3 Ultra表现不及国产模型<span class="ent">Kimi K2.6</span>与GLM5.1。<span class="ent">NVIDIA</span>正通过扩大Global Nemotron Coalition引入第三方模型以补足短板。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">NVIDIA</span>自研模型在垂直任务上仍难与头部国产模型竞争，生态扩展成为其弥补能力差距的主要策略。</div>
+            <div class="card-src"><a href="https://x.com/SemiAnalysis_/status/2063727789631480134#m" target="_blank">@semianalysis_</a></div>
+        </article>
+        <article class="card" id="c-X讨论-2">
+            <h3 class="card-h">研究员转向直接开源而非通过营销部门：学术论文Alpha时代终结的讨论</h3>
+            <p class="card-body">一个流行观点认为，学术论文的Alpha时代和传统实验室出版模式近乎消亡，核心原因是研究员意识到与其与营销部门周旋，不如直接将成果开源发布。@swyx等社区声音指出，这一转变重塑了AI研究的传播路径。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 开源优先的文化已从边缘成为主流，导致传统学术出版链条的价值被重新评估。</div>
+            <div class="card-src"><a href="https://x.com/swyx/status/2063432747432268259#m" target="_blank">@swyx</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-06-07.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-06-09.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["NVIDIA Partners with KRAFTON, NC and T1 to Promote RTX Spark in Korean PC Bangs: Windows Superchip for Personal AI Agents Era", "Industry Dynamics", "Startup & Funding", "Research Focus", "X Discussion", "OpenAI Still Pushing \"Super App\" Development, Some Employees Think \"Chat is Dead\"", "Notion Restores Anthropic Integration After Service Outage", "Wall Street Prompt: Charging $25,000/Day to Teach Wall Street AI, Citi and BofA Become Repeat Customers", "SpaceX Launches Largest IPO in History: $135 Per Share, Raising $75 Billion, Valuation $1.77 Trillion", "Long-Horizon Q-Learning: Using n-Step Inequality to Suppress Bootstrapping Error Accumulation in Long-Horizon RL", "Code2LoRA: Hypernetwork Generates Adapters to Handle Code Model Software Evolution", "WLA: Embodied Foundation Model Unifying World Modeling, Language Reasoning, and Action Generation", "Latent Reasoning with Normalizing Flows: Using Normalizing Flows for Latent Reasoning Instead of Explicit CoT", "Representation Learning Drives Scalable Multi-Task Deep Reinforcement Learning", "OpenRouter Displays Cache Hit Rate and Effective Price Differences Across Model Providers", "NVIDIA Nemotron3 Ultra Surpassed by Kimi K2.6 and GLM5.1 in Programming Task Benchmarks", "Researchers Shifting to Direct Open Source Instead of Through Marketing Departments: Discussion on End of Academic Paper Alpha Era", "At GTC Taipei during COMPUTEX, NVIDIA unveiled RTX Spark—a superchip for the personal AI agent era on Windows PCs. The event featured Korean game publishers KRAFTON and NC, along with League of Legends defending champions T1, demonstrating RTX Spark's deployment in Korean PC Bang (internet cafe) scenarios.", "OpenAI is transforming ChatGPT from a pure chat tool into an entry point for paid products (such as coding product Codex), aiming to compete with Anthropic for enterprise clients and approach profitability before IPO. A senior employee stated bluntly internally that \"Chat is dead,\" indicating OpenAI no longer considers conversational interaction as the core of its product direction.", "Notion AI briefly disabled all Anthropic model access due to performance degradation with Claude Opus 4.7/4.8 models. Service was restored after 12 hours. Notion Product Lead Max Schoening expressed being \"astonished\" by 1,200 community reposts, emphasizing this was only a temporary service interruption rather than a model quality issue. Anthropic officially confirmed it was a brief infrastructure issue causing elevated error rates across multiple Claude models.", "Founders Felipe Sinisterra (former SoftBank Latin America fintech head, $1.5B+ investment experience) and Dave Wang (former SoftBank crypto investment lead) founded Wall Street Prompt in July 2025, charging $25,000/day (~170,000 RMB) for enterprise AI training. Citi and BofA hired them for exclusive sessions for external fund clients, while T. Rowe Price directly used them to train their investment teams—nearly all clients who attended became repeat customers. The backdrop is rising AI anxiety on Wall Street: Citi, Wells Fargo, and BofA collectively cut over 5,000 jobs in Q1 2026 while the three posted record results; Bank of America reported 20%-25% productivity gains for 18,000 developers using AI, but general staff AI capabilities lag severely. Competitors are also entering: Rogo Technologies raised $160M in Series D this year (valuation $2B), Multiverse promises to train 15,000 AI apprentices within two years.", "SpaceX filed updated IPO documents with the SEC, setting the IPO price at $135 per share, issuing 555.6 million Class A common shares, raising $75 billion at a valuation of $1.77 trillion, making it the seventh-largest US public company by market cap, surpassing Tesla, with the largest IPO in global history. Underwriters have option to purchase an additional 83.33 million shares (~$11.2 billion). Musk holds approximately 82.4%, with a paper value of ~$866.5 billion. This IPO breaks Wall Street convention by locking in the offering price before the roadshow rather than setting a price range. The underwriting syndicate includes Goldman Sachs, Morgan Stanley, BofA, Citi, JPMorgan, Barclays, and others, ticker SPCX, scheduled to trade on Nasdaq on June 12. Musk's compensation incentives are directly tied to two goals: SpaceX market cap reaching $7.5 trillion and achieving one million Mars colonists.", "@chelseabfinn points out scaling RL to long horizons remains a core challenge. Stanford's Armaan Abraham, Lucy Xiaoyang Shi, and Chelsea Finn propose Long-Horizon Q-Learning (LQL), solving the problem where bootstrapping errors propagate backward through temporal difference updates and accumulate in long-horizon tasks. LQL's core idea: any realized action sequence is a lower bound for the expected value of the optimal policy, so executing the optimal action first should not be worse than following observed actions first then switching to optimal. LQL penalizes violations of this inequality via hinge loss, providing a principled lower bound constraint for Q-value learning. The method requires no additional networks or forward passes, computing penalties using only existing network outputs from TD error, consistently outperforming 1-step TD and n-step TD across multiple online and offline-to-online benchmarks with comparable runtime.", "Code2LoRA, proposed by Liliana Hotsko, Yuntian Deng, and other researchers, generates LoRA adapters directly from natural language task descriptions through hypernetworks, enabling code models to maintain adaptability under continuous software API evolution without traditional task-specific fine-tuning. Supports two training modes: pre-trained LoRA reconstruction and multi-task SFT, with experiments showing it surpasses multi-task LoRA baselines in zero-shot adaptation.", "Yi Yang, Zhihong Liu, and other researchers propose the World-Language-Action (WLA) model, merging world modeling (learning from egocentric video) and language reasoning (solving complex long-horizon tasks) approaches, taking text instructions, images, and robot states as input to jointly predict text subtasks, subgoal images, and robot actions. The core innovation unifies the world modeling interface of World-Action Models (WAM) with the language reasoning capabilities of Vision-Language-Action (VLA) models within a single architecture, achieving breakthroughs on multiple embodied intelligence benchmarks.", "Guancheng Tu, Xiangjun Fu, and other researchers propose using Normalizing Flows for LLM latent reasoning. Explicit Chain-of-Thought forces reasoning through discrete, serial token streams where each step must be fully expressed before proceeding, even when underlying updates are semantic, uncertain, or partially formed. Latent reasoning offers a higher-bandwidth alternative: performing intermediate computations in continuous latent space, allowing parallel, reversible reasoning steps. This method provides a theoretically clear and scalable framework for latent reasoning through the invertibility and exact likelihood computation of Normalizing Flows.", "Johan Obando-Ceron, Lu Li, Scott Fujimoto, Pierre-Luc Bacon, Aaron Courville (Mila/McGill) propose that the core driver of multi-task RL scalability is representation learning rather than model-based control. Research shows that combining predictive, model-based representation learning with model-free RL algorithms can achieve performance comparable to complex model-based methods across diverse tasks, with significantly simplified training pipelines. This finding challenges previous multi-task RL dependencies on complex planning components.", "OpenRouter platform adds real-time cache hit rate and historical traffic data visualization, allowing users to compare cache hit rates and effective prices across model providers to help select optimal inference solutions. Taking Kimi API as an example, cache hit rates typically range 85%-95%, with 90% hit rate reducing 1M token actual cost to ¥1.03, approximately one-quarter of the standard ¥4 price. Alibaba Cloud Bailian Qwen3.7-Max enables implicit caching by default, reducing cost to approximately 20% after cache hits.", "In programming task benchmarks like TerminalBench, NVIDIA's newly released Nemotron3 Ultra performs below domestic models Kimi K2.6 and GLM5.1. NVIDIA is addressing this gap by expanding the Global Nemotron Coalition to incorporate third-party models.", "A prevailing view holds that the alpha era of academic papers and traditional lab publishing models are nearly dead, with the core reason being that researchers realize it's better to directly open-source their work rather than deal with marketing departments. Community voices like @swyx point out that this shift has reshaped the dissemination pathways of AI research.", "NVIDIA differentiates to capture the consumer AI hardware market by binding AI chip deployment with the esports ecosystem through localized partnerships with top Korean gaming companies.", "Chat as a single interaction mode has hit a ceiling, and OpenAI is exploring next-generation product forms to maintain growth expectations.", "Notion's deep integration with AI models makes its service outages high-profile events, with users highly sensitive to AI feature availability.", "The core contradiction of Wall Street's AI anxiety is 'tools purchased but people unable to use them.' Training at the intersection of finance and AI has become a high-premium necessity. Coexisting record-high layoff performance and training growth indicate AI capability is becoming a survival threshold for financial professionals.", "SpaceX dominates the largest IPO in history with pricing power, reflecting Musk's absolute confidence in market pricing ability. The $75 billion single fundraising will reshape the primary market liquidity pattern, creating a valuation anchoring effect for Anthropic and OpenAI pursuing IPOs simultaneously.", "Error control in long-horizon RL is a key bottleneck toward general-purpose agents. LQL introduces lower bound constraints with zero additional computational overhead, providing a practical and scalable stabilization path for long-sequence decision-making.", "Lightweight adaptation techniques reduce code model maintenance costs, holding practical value in fast-iteration programming scenarios.", "Unifying world modeling and language reasoning in a single embodied model promises to solve the planning bottleneck of VLA models in complex long-horizon tasks.", "Latent reasoning bypasses token-level serial bottlenecks, providing a new direction for extending LLM reasoning capabilities. The reversibility of normalizing flow makes its training more stable.", "Attributing multi-task RL scalability to representation learning rather than model planning simplifies the training process, offering direct guidance for general-purpose agent engineering practice.", "Cache efficiency is becoming a key dimension of differentiation for model providers, and improved platform transparency helps developers optimize costs.", "NVIDIA's self-developed models still struggle to compete with top domestic models in vertical tasks, with ecosystem expansion becoming its primary strategy to bridge capability gaps.", "The open-source-first culture has shifted from the periphery to mainstream, causing a reevaluation of the value of traditional academic publishing chains.", "NVIDIA partners with KRAFTON, NC, and T1 to promote RTX in Korean PC Bangs…", "Wall Street Prompt: $25,000 daily to teach Wall Street AI…", "SpaceX launches largest IPO in history: $135 per share to raise $75 billion, valuation 1…", "Long-Horizon Q-Learning: Using n-step inequality to suppress long-horizon…", "Latent Reasoning with Normalizing Fl…", "NVIDIA Nemotron3 Ultra on programming task benchmarks…", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

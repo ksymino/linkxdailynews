@@ -1,0 +1,366 @@
+# Twitter/X 追踪账号配置
+# 统一管理公司/研究者账号，可被多个项目共享
+#
+# feed_whitelist: true → feed_v5 自动视为 AI 相关（分类白名单）
+# 没有 feed_whitelist → 只抓取，不自动通过分类检查
+
+accounts:
+  # ============ 公司账号 ============
+  - handle: "OpenAI"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "AnthropicAI"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "claudeai"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "GoogleAI"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "GoogleDeepMind"
+    category: "Company"
+    track: "Research"
+
+  - handle: "meta"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "AIatMeta"
+    category: "Company"
+    track: "Model"
+
+  - handle: "Alibaba_Qwen"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "deepseek_ai"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "xai"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "MistralAI"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "cohere"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "poolsideai"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "theworldlabs"
+    category: "Company"
+    track: "Research"
+    feed_whitelist: true
+
+  - handle: "Recursive_SI"
+    category: "Company"
+    track: "Research"
+    feed_whitelist: true
+
+  - handle: "demishassabis"
+    category: "Researcher"
+    track: "Research"
+    org: "Isomorphic Labs / Google DeepMind"
+    feed_whitelist: true
+
+  - handle: "physical_int"
+    category: "Company"
+    track: "Research"
+    feed_whitelist: true
+
+  - handle: "1x_tech"
+    category: "Company"
+    track: "App"
+
+  - handle: "Figure_robot"
+    category: "Company"
+    track: "App"
+
+  - handle: "SkildAI"
+    category: "Company"
+    track: "Research"
+
+  - handle: "GeneralistAI"
+    category: "Company"
+    track: "Research"
+
+  - handle: "agilityrobotics"
+    category: "Company"
+    track: "App"
+
+  - handle: "BostonDynamics"
+    category: "Company"
+    track: "App"
+
+  - handle: "UnitreeRobotics"
+    category: "Company"
+    track: "App"
+
+  - handle: "TheHumanoidAI"
+    category: "Company"
+    track: "App"
+
+  - handle: "Apptronik"
+    category: "Company"
+    track: "App"
+
+  - handle: "CovariantAI"
+    category: "Company"
+    track: "Research"
+
+  - handle: "vllm_project"
+    category: "Company"
+    track: "Infra"
+    feed_whitelist: true
+
+  - handle: "liquid_ai"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "EpochaiLabs"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "PrismML"
+    category: "Company"
+    track: "Research"
+
+  - handle: "MiniMax_AI"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "kimi_moonshot"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "zai_org"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "perplexity_ai"
+    category: "Company"
+    track: "App"
+    feed_whitelist: true
+
+  - handle: "essential_ai"
+    category: "Company"
+    track: "App"
+    feed_whitelist: true
+
+  - handle: "bespokelabsai"
+    category: "Company"
+    track: "App"
+    feed_whitelist: true
+
+  - handle: "cursor"
+    category: "Company"
+    track: "App"
+
+  - handle: "openrouter"
+    category: "Company"
+    track: "Infra"
+    feed_whitelist: true
+
+  - handle: "LumaLabsAI"
+    category: "Company"
+    track: "Research"
+
+  - handle: "SemiAnalysis_"
+    category: "Company"
+    track: "Infra"
+
+  - handle: "ArtificialAnlys"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "TheTuringPost"
+    category: "Company"
+    track: "Research"
+    feed_whitelist: true
+
+  - handle: "gs_ai_"
+    category: "Company"
+    track: "Model"
+    feed_whitelist: true
+
+  - handle: "Cognition"
+    category: "Company"
+    track: "App"
+    feed_whitelist: true
+
+  - handle: "LangChain"
+    category: "Company"
+    track: "Infra"
+    feed_whitelist: true
+
+  # ============ 研究者账号 ============
+  - handle: "ylecun"
+    category: "Researcher"
+    track: "Research"
+    org: "NYU"
+    feed_whitelist: true
+
+  - handle: "sama"
+    category: "Researcher"
+    track: "Model"
+    org: "OpenAI"
+    feed_whitelist: true
+
+  - handle: "karpathy"
+    category: "Researcher"
+    track: "Research"
+    org: "independent"
+    feed_whitelist: true
+
+  - handle: "denny_zhou"
+    category: "Researcher"
+    track: "Model"
+    org: "Google DeepMind"
+    feed_whitelist: true
+
+  - handle: "NeelNanda5"
+    category: "Researcher"
+    track: "Research"
+    org: "Google DeepMind"
+    feed_whitelist: true
+
+  - handle: "percyliang"
+    category: "Researcher"
+    track: "Research"
+    org: "Stanford"
+    feed_whitelist: true
+
+  - handle: "chelseabfinn"
+    category: "Researcher"
+    track: "Research"
+    org: "Stanford"
+
+  - handle: "drfeifei"
+    category: "Researcher"
+    track: "Research"
+    org: "Stanford"
+    feed_whitelist: true
+
+  - handle: "swyx"
+    category: "Researcher"
+    track: "App"
+    org: "AI社区"
+    feed_whitelist: true
+
+  - handle: "jeffdean"
+    category: "Researcher"
+    track: "Infra"
+    org: "Google"
+    feed_whitelist: true
+
+  - handle: "svlevine"
+    category: "Researcher"
+    track: "Research"
+    org: "UCB"
+    feed_whitelist: true
+
+  - handle: "jaseweston"
+    category: "Researcher"
+    track: "Research"
+    org: "Meta"
+
+  - handle: "tingchenai"
+    category: "Researcher"
+    track: "Research"
+    org: "xAI"
+
+  - handle: "AndrewYNg"
+    category: "Researcher"
+    track: "Research"
+    org: "independent"
+
+  - handle: "jerryweiai"
+    category: "Researcher"
+    track: "Model"
+    org: "OpenAI"
+    feed_whitelist: true
+
+  - handle: "bobmcgrewai"
+    category: "Researcher"
+    track: "Research"
+    org: "Anthropic"
+    feed_whitelist: true
+
+  - handle: "shunyuyao12"
+    category: "Researcher"
+    track: "Research"
+    org: "Stanford"
+    feed_whitelist: true
+
+  - handle: "soumithchintala"
+    category: "Researcher"
+    track: "Research"
+    org: "Meta"
+
+  - handle: "jietang"
+    category: "Researcher"
+    track: "Model"
+    org: "清华/智谱AI"
+    feed_whitelist: true
+
+  # ============ 额外研究者 ============
+  - handle: "steipete"
+    category: "Researcher"
+    track: "Application"
+    org: "OpenClaw"
+
+# ============ 配置项 ============
+settings:
+  max_per_account: 3
+  max_hours: 24
+  nitter_instances:
+    - "https://nitter.net"
+    - "https://nitter.poast.org"
+    - "https://nitter.privacydev.net"
+    - "https://nitter.hu"
+
+  # 分类映射
+  categories:
+    - name: "Company"
+      description: "公司官方账号"
+    - name: "Researcher"
+      description: "研究者个人账号"
+
+  # ai-research-agent 四赛道
+  tracks:
+    - name: "Model"
+      description: "大模型、架构创新"
+    - name: "Infra"
+      description: "算力、芯片、云服务"
+    - name: "Research"
+      description: "论文、学术突破"
+    - name: "App"
+      description: "应用、产品、商业化"

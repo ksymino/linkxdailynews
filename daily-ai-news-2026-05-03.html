@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>05月05日 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-05-05</div>
+            <h1>ARC-AGI-3基准测试难倒顶级模型：GPT-5.5得分0.43%、Opus 4.7得分0.18%，人类100%通过</h1>
+            <div class="header-sub">9 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">ARC-AGI-3基准测试难倒顶级模型：GPT-5.5得分0.43%、Opus 4.7得分0.18%，人类100%通过</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">OpenRouter推出免费Response Caching：缓存命中80-300ms返回，零token费用</span>
+                    <span class="sum-item">腾讯混元开源440M翻译模型，支持手机离线运行且翻译质量超越Google</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">SemiAnalysis分析：xAI数据中心仅11% GPU在线运行，数十万显卡处于闲置状态</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">中科院发布SpikingBrain2.0：将Transformer转为脉冲混合架构，4M上下文加速10倍</span>
+                    <span class="sum-item">Epoch AI播客探讨AI benchmarks未来：当前基准测试存在根本性缺陷</span>
+                    <span class="sum-item">上海交大RouteMoA论文被ACL 2026接收，实现无需预推理的动态智能体路由</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">Sam Altman承认更想要模型更便宜更快而非更聪明，但用户仍最看重能力</span>
+                    <span class="sum-item">SemiAnalysis分析：数据中心繁荣驱动ABB电气设备订单激增，低中压设备需求强劲</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">ARC-AGI-3基准测试难倒顶级模型：GPT-5.5得分0.43…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">OpenRouter推出免费Response Caching：缓存命中80…</a>
+                <a href="#c-产业动态-1" class="nav-item">腾讯混元开源440M翻译模型，支持手机离线运行且翻译质…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">SemiAnalysis分析：xAI数据中心仅11% GPU在线运行，数…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">中科院发布SpikingBrain2.0：将Transformer转为脉…</a>
+                <a href="#c-研究关注-1" class="nav-item">Epoch AI播客探讨AI benchmarks未来：当前基准测试存在…</a>
+                <a href="#c-研究关注-2" class="nav-item">上海交大RouteMoA论文被ACL 2026接收，实现无需预推理的动态…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">Sam Altman承认更想要模型更便宜更快而非更聪明，但用户仍最看重能…</a>
+                <a href="#c-X讨论-1" class="nav-item">SemiAnalysis分析：数据中心繁荣驱动ABB电气设备订单激增，低…</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h">ARC-AGI-3基准测试难倒顶级模型：<span class="ent">GPT-5</span>.5得分0.43%、Opus 4.7得分0.18%，人类100%通过</h3>
+            <p class="card-body">ARC Prize基金会发布ARC-AGI-3新一代推理基准测试，包含<strong>135个</strong>人工设计的新环境，测试者需在无指令情况下探索界面、推断规则、形成假设并跨关卡迁移。<span class="ent">GPT-5</span>.5得分<strong>0.43%</strong>，Opus 4.7得分<strong>0.18%</strong>，而人类受试者能<strong>100%</strong>完成。ARC Prize开放了160份replay和推理链分析，发现3种常见失败模式：(1) 局部观察正确但无法构建全局世界模型；(2) 训练数据中的游戏类比（Tetris、Frogger等）劫持行动选择；(3) 偶然过关但未理解规则，错误策略在后续关卡固化。两模型差异：<strong>Opus压缩为自信但错误的理论，<span class="ent">GPT-5</span>.5难以压缩</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> ARC-AGI-3的价值不只是评分——replay分析揭示了LLM失败的具体机制（压缩方式不同），这比benchmark刷分更接近『智能』本质，也为Agent在真实环境中的可靠性提供了预判信号。</div>
+            <div class="card-src"><a href="https://arcprize.org/blog/arc-agi-3-gpt-5-5-opus-4-7-analysis" target="_blank">ARC Prize</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651031297&idx=1&sn=41368039c5bd521303caf995c14d0d01&chksm=85b126ae031863e475b92d21c1819044d9869be104eaea4eea6f5235620f804b6411d3d49579&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h">OpenRouter推出免费Response Caching：缓存命中80-300ms返回，零token费用</h3>
+            <p class="card-body">OpenRouter推出Response Caching功能，开发者通过添加<code>X-OpenRouter-Cache: true</code>请求头即可启用。相同请求首次正常计费，后续缓存命中在<strong>80-300ms</strong>内返回（缓存查询平均<strong>4ms</strong>），<strong>零token费用</strong>。支持streaming/非streaming、多模态输入、tool calls。缓存默认5分钟，可通过TTL头设置1秒至24小时。缓存作用域为单API key，不跨key共享。典型场景：Agent重试（失败步骤免费回放）、测试套件（首次后免费重复运行）、重复上下文处理。文章同时披露了各模型非缓存首词延迟：<span class="ent">Gemini</span> 2.5 Flash约<strong>1.3秒</strong>，<span class="ent">Kimi</span> K2.6约<strong>4.6秒</strong>，<span class="ent">GPT-5</span>.5约<strong>9.1秒</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Response Caching与prompt caching不同——prompt caching只减少前缀部分的费用，Response Caching跳过provider直接返回完整响应，对Agent工作流的重试场景价值最大。首词延迟数据也首次从官方角度量化了各模型的TTFT差距。</div>
+            <div class="card-src"><a href="https://openrouter.ai/announcements/response-caching" target="_blank">OpenRouter</a> / <a href="https://x.com/OpenRouter/status/2050616593764245666#m" target="_blank">@openrouter</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h">腾讯混元开源440M翻译模型，支持手机离线运行且翻译质量超越<span class="ent">Google</span></h3>
+            <p class="card-body">腾讯混元团队最新开源了一款440M参数的翻译模型，该模型经过极致的量化压缩，可以在手机上离线运行。在WMT系列翻译基准测试上，该模型的翻译质量超越了<span class="ent">Google</span>的同等规模模型。这一成果展示了端侧AI的实际应用潜力，用户无需网络连接即可获得高质量翻译服务。模型目前已开源供开发者下载使用。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 腾讯的端侧翻译模型说明中国在移动端AI落地上的差异化优势，可能推动翻译应用的新形态。</div>
+            <div class="card-src"><a href="https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&mid=2247888083&idx=2&sn=00de0945461f678f57edca79146a4004" target="_blank">量子位</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h">SemiAnalysis分析：<span class="ent">xAI</span>数据中心仅11% GPU在线运行，数十万显卡处于闲置状态</h3>
+            <p class="card-body">SemiAnalysis发布分析报告，指出<span class="ent">xAI</span>（马斯克的AI公司）数据中心的实际GPU利用率极低。尽管<span class="ent">xAI</span>声称拥有数十万片H100/H200等高性能GPU，但实际在线运行的比例仅约11%。其他GPU处于闲置状态，可能原因包括：冷存储、准备用于训练下一代模型、或者等待配套基础设施到位。这一数据反映了AI公司在算力储备上的激进策略——宁可囤积也不愿错过模型训练窗口期。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">xAI</span>的高闲置率说明AI算力存在严重的结构性冗余，这可能导致供应链紧张和资本效率低下，行业应该思考如何平衡储备与实际利用。</div>
+            <div class="card-src"><a href="https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652697384&idx=2&sn=93795584090162d9c4fbbcaa76411bb0" target="_blank">新智元</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">中科院发布SpikingBrain2.0：将Transformer转为脉冲混合架构，4M上下文加速10倍</h3>
+            <p class="card-body">中科院自动化所李国齐团队发布SpikingBrain2.0（瞬悉2.0），一个5B参数的类脑基础模型。核心思路是<strong>Transformer-to-Hybrid (T2H)</strong>——将已训练好的<span class="ent">Qwen</span>3-4B转换为混合稀疏架构，训练成本不到<strong>7000 A100 GPU小时</strong>即可恢复原模型大部分能力。架构创新为Dual-Space Sparse Attention (DSSA)，在不同层混合Sparse Softmax和Sparse Linear两种注意力。实测在<strong>4M上下文下TTFT加速10.13x</strong>，8张A100支持<strong>10M+ token</strong>（标准Transformer在同等硬件下因显存不足无法运行）。同时支持INT8脉冲编码（适配类脑芯片，功耗减少46.5%）和FP8 GPU推理（250K上下文加速2.52x）。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 这不是替代Transformer的工作，而是一个低成本后转换方案——拿开源模型转成能跑超长上下文的端侧版本。5B规模限制了通用能力，更适合长文档/代码库等垂直场景。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2604.22575" target="_blank">arXiv</a> / <a href="https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652697384&idx=3&sn=59dcb83752f372f109e4cd5b0693f582" target="_blank">新智元</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">Epoch AI播客探讨AI benchmarks未来：当前基准测试存在根本性缺陷</h3>
+            <p class="card-body">Epoch AI最新播客邀请了Greg Burnham和Tom Adamczewski与主持人Anson Ho就AI benchmarks的未来进行深入讨论。节目探讨了当前基准测试的局限性，包括数据污染、过拟合、无法真正衡量通用智能等问题，并讨论了下一代基准测试的设计方向。嘉宾提出基准测试应该更注重评估模型的推理过程而非仅关注最终答案，以及需要更接近真实应用场景的评估方式。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI社区对benchmark可靠性的反思在加速，但短期内多数用户仍会依赖已有分数做决策——这对模型排名仍有参考价值。</div>
+            <div class="card-src"><a href="https://epochai.substack.com/p/are-ai-benchmarks-doomed" target="_blank">Epoch AI</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">上海交大RouteMoA论文被ACL 2026接收，实现无需预推理的动态智能体路由</h3>
+            <p class="card-body">上海交通大学自动化与感知学院IWIN中心的RouteMoA论文被ACL 2026接收。该论文提出了一种无需预推理的动态路由机制，可以实现高效的多智能体混合（Mixture of Agents）。团队负责人为关新平教授，指导老师为陈彩莲教授和乐心怡教授，合作作者还包括南洋理工大学陶大程教授。RouteMoA的核心创新在于引入了动态任务分发机制，可以根据实时状态将请求路由到最适合的智能体，而非预先规划。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> RouteMoA的动态路由代表Agent架构的新方向，可能推动多Agent系统的实际落地。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2601.18130" target="_blank">arXiv</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651031297&idx=2&sn=6249a28de4fdf4debab54dbc8eb7bc8c&chksm=856a5ff665710fd09f65f1b2f66d66b5858069b0b78d069410f5fe91bd2eadd43129b399adf1&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h">Sam Altman承认更想要模型更便宜更快而非更聪明，但用户仍最看重能力</h3>
+            <p class="card-body"><span class="ent">OpenAI</span> CEO Sam Altman在社交媒体上表达了其对模型发展的思考：他个人更希望模型更便宜、更快速，而不是更聪明。然而，他观察到用户仍然最看重模型的能力（intelligent）本身。这反映了当前AI市场的现实——尽管推理成本和速度是痛点，但模型的能力差距才是用户选择的核心决策因素。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 成本优化是厂商的追求，但用户付费的核心逻辑始终是能力领先，模型的智能差距比价格更能驱动选择。</div>
+            <div class="card-src"><a href="https://x.com/sama/status/2050671161915371998#m" target="_blank">@sama</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h">SemiAnalysis分析：数据中心繁荣驱动ABB电气设备订单激增，低中压设备需求强劲</h3>
+            <p class="card-body">SemiAnalysis分析报告指出，随着AI数据中心建设热潮，ABB的电气设备业务板块（包括低中压配电设备、变压器等）订单量显著增长。ABB的Electrification业务专门为数据中心提供电力基础设施解决方案，其订单增长直接反映了全球数据中心产能扩张的趋势。报告还分析了不同地区数据中心建设的电力需求差异，以及对电网容量压力的影响。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> ABB订单是数据中心供给侧的先行指标，其增长说明算力供给扩张仍在早期阶段。</div>
+            <div class="card-src"><a href="https://x.com/SemiAnalysis_/status/2050681826226606387#m" target="_blank">@semianalysis_</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-05-02.html" class="issue-prev">&larr; 上一期</a><a href="daily-ai-news-2026-05-04.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["ARC-AGI-3 benchmark stumps top models: GPT-5.5 scores 0.43%, Opus 4.7 scores 0.18%, humans achieve 100%", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Research Focus", "X Discussion", "OpenRouter launches free Response Caching: cache hits return in 80-300ms, zero token cost", "Tencent Hunyuan open-sources 440M translation model, supports offline mobile operation and surpasses Google in translation quality", "SemiAnalysis analysis: xAI data center has only 11% GPUs online, hundreds of thousands of GPUs idle", "CAS releases SpikingBrain2.0: converts Transformer to spiking hybrid architecture, 10x speedup for 4M context", "Epoch AI podcast explores future of AI benchmarks: current benchmarks have fundamental flaws", "Shanghai Jiao Tong University RouteMoA paper accepted by ACL 2026, achieves dynamic agent routing without pre-reasoning", "Sam Altman admits preference for cheaper and faster models over smarter ones, but users still prioritize capabilities", "SemiAnalysis analysis: data center boom drives ABB electrical equipment order surge, strong demand for low and medium voltage equipment", "ARC Prize Foundation releases ARC-AGI-3 new generation reasoning benchmark, containing 135 human-designed environments where testers must explore interfaces without instructions, infer rules, form hypotheses, and transfer across levels. GPT-5.5 scores 0.43%, Opus 4.7 scores 0.18%, while human subjects achieve 100%. ARC Prize released 160 replays and reasoning chain analyses, identifying 3 common failure modes: (1) Correct local observations but inability to construct global world model; (2) Game analogies from training data (Tetris, Frogger, etc.) hijacking action choices; (3) Passing levels by chance without understanding rules, with incorrect strategies solidifying in subsequent levels. Key difference between models: Opus compresses into confident but wrong theories, while GPT-5.5 resists compression.", "OpenRouter launches Response Caching feature, enabled by adding X-OpenRouter-Cache: true header. First identical request charges normally; subsequent cache hits return in 80-300ms (average cache query 4ms), zero token cost. Supports streaming/non-streaming, multimodal inputs, and tool calls. Cache defaults to 5 minutes, configurable from 1 second to 24 hours via TTL header. Cache scope is per API key, not shared across keys. Typical scenarios: Agent retries (free replay of failed steps), test suites (free repeated runs after first), repeated context processing. Article also discloses non-cached first-token latency: Gemini 2.5 Flash ~1.3s, Kimi K2.6 ~4.6s, GPT-5.5 ~9.1s.", "Tencent Hunyuan team open-sourced a 440M parameter translation model, extremely quantized for offline mobile operation. On WMT translation benchmarks, this model surpasses Google's comparable models in translation quality. This demonstrates practical potential of on-device AI, enabling high-quality translation without network connectivity. Model is now open source for developer download.", "SemiAnalysis releases analysis report showing xAI (Musk's AI company) data center has extremely low GPU utilization. Despite xAI claiming hundreds of thousands of H100/H200 GPUs, only ~11% are actually online. Other GPUs are idle, possibly due to cold storage, preparation for next-gen model training, or waiting for supporting infrastructure. This reflects aggressive compute reserve strategies in AI companies—preferring to stockpile rather than miss model training windows.", "CASIA Li Guoqi's team releases SpikingBrain2.0, a 5B parameter brain-inspired foundation model. Core approach is Transformer-to-Hybrid (T2H)—converting trained Qwen3-4B to hybrid sparse architecture, recovering most original capabilities for under 7000 A100 GPU-hours. Architectural innovation is Dual-Space Sparse Attention (DSSA), mixing Sparse Softmax and Sparse Linear attention across layers. Benchmarks show 10.13x TTFT speedup at 4M context, 8x A100 supports 10M+ tokens (standard Transformer fails due to memory on same hardware). Also supports INT8 spike encoding (for neuromorphic chips, 46.5% power reduction) and FP8 GPU inference (2.52x speedup at 250K context).", "Epoch AI's latest podcast features Greg Burnham and Tom Adamczewski with host Anson Ho for in-depth discussion on future AI benchmarks. Show explores current benchmark limitations including data contamination, overfitting, and inability to truly measure general intelligence, discussing next-gen benchmark design directions. Guests propose benchmarks should focus more on evaluating reasoning processes rather than just final answers, and need evaluation methods closer to real-world application scenarios.", "RouteMoA paper from IWIN Center at School of Automation and Perception, Shanghai Jiao Tong University, accepted by ACL 2026. Paper proposes dynamic routing mechanism without pre-reasoning for efficient Mixture of Agents. Team leader is Prof. Guan Xinping, mentors are Prof. Chen Cailian and Prof. Le Xinyi, with collaborators including Prof. Tao Dacheng from Nanyang Technological University. RouteMoA's core innovation is dynamic task distribution mechanism that routes requests to most suitable agent based on real-time state rather than pre-planning.", "OpenAI CEO Sam Altman expresses thoughts on model development on social media: he personally prefers cheaper and faster models over smarter ones. However, he observes users still prioritize model capabilities (intelligent) itself. This reflects current AI market reality—despite inference cost and speed being pain points, capability gap remains the core decision factor for users.", "SemiAnalysis analysis report notes that as AI data center construction boom continues, ABB's electrical equipment business segment (including low and medium voltage power distribution equipment, transformers, etc.) sees significant order growth. ABB's Electrification business provides power infrastructure solutions for data centers, with order growth directly reflecting global data center capacity expansion trend. Report also analyzes regional differences in data center power demand and grid capacity pressure impacts.", "ARC-AGI-3's value goes beyond scoring—replay analysis reveals specific LLM failure mechanisms (different compression approaches), which gets closer to the essence of 'intelligence' than benchmark chasing, also providing predictive signals for Agent reliability in real environments.", "Response Caching differs from prompt caching—prompt caching only reduces prefix costs, while Response Caching skips provider and returns complete responses directly, most valuable for Agent workflow retry scenarios. First-token latency data also quantifies TTFT gaps between models from an official perspective for the first time.", "Tencent's on-device translation model demonstrates China's differentiated advantage in mobile AI deployment, potentially driving new forms of translation applications.", "xAI's high idle rate indicates serious structural redundancy in AI compute, potentially causing supply chain tension and low capital efficiency—the industry should consider balancing reserves with actual utilization.", "This is not a Transformer replacement but a low-cost post-conversion solution—taking open-source models and converting them to edge versions capable of ultra-long context. 5B scale limits general capabilities, more suitable for vertical scenarios like long documents/codebases.", "AI community's reflection on benchmark reliability is accelerating, but most users will still rely on existing scores for decision-making in the short term—these remain valuable for model rankings.", "RouteMoA's dynamic routing represents a new direction in Agent architecture, potentially driving practical deployment of multi-Agent systems.", "Cost optimization is what vendors pursue, but the core logic driving user payments has always been capability leadership—the intelligence gap between models drives choices more than price does.", "ABB orders are a leading indicator for data center supply side; their growth indicates compute power supply expansion is still in early stages.", "ARC-AGI-3 benchmark stumps top models: GPT-5.5 scores 0.43…", "OpenRouter launches free Response Caching: cache hit rate 80…", "Tencent HunYuan open-sources 440M translation model, supporting offline phone operation and translation quality…", "SemiAnalysis analysis: xAI data center only 11% GPU online operation,數…", "CAS releases SpikingBrain2.0: Converting Transformers into spike…", "Epoch AI podcast explores future of AI benchmarks: current benchmark tests have…", "Shanghai Jiao Tong University's RouteMoA paper accepted by ACL 2026, achieving dynamic… without pre-reasoning", "Sam Altman admits wanting models cheaper and faster rather than smarter, but users still most value abil…", "SemiAnalysis analysis: Data center boom drives ABB electrical equipment orders surge, low…", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

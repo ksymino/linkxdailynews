@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>05月20日周三 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-05-20</div>
+            <h1>Google I/O 2026发布Gemini Omni和Gemini 3.5 Flash两大模型</h1>
+            <div class="header-sub">25 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">Google I/O 2026发布Gemini Omni和Gemini 3.5 Flash</span>
+                    <span class="sum-item">Cursor发布Composer 2.5，基于Kimi K2.5引入targeted textual feedback新RL方法</span>
+                    <span class="sum-item">Sapient Intelligence发布HRM-Text，1B参数$1000一天训完</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">Google I/O 2026发布AI信息代理、Android CLI、Android Halo等多项产品更新</span>
+                    <span class="sum-item">Andrej Karpathy宣布加入Anthropic</span>
+                    <span class="sum-item">OpenAI与Dell合作将Codex部署至企业本地环境</span>
+                    <span class="sum-item">Discord为全部用户默认启用E2E加密语音视频</span>
+                    <span class="sum-item">MT Lambda发布具身智能仿真平台</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">Anthropic和OpenAI开始采用Amazon Trainium芯片</span>
+                    <span class="sum-item">Google与Blackstone合资成立TPU云服务公司</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">AI反钓鱼平台Ocean完成2800万美元融资</span>
+                    <span class="sum-item">Analog Devices接近15亿美元收购Empower Semiconductor</span>
+                    <span class="sum-item">AI社交应用Status完成1700万美元融资</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">MIT等提出Pedagogical RL，较GRPO提升最高40%</span>
+                    <span class="sum-item">Yann LeCun等分析"想象训练"误差传播</span>
+                    <span class="sum-item">港中大浙大研究揭示Agent记忆机制缺陷</span>
+                    <span class="sum-item">Sebastian Raschka综述LLM架构演进：KV共享、压缩注意力、mHC残差连接</span>
+                    <span class="sum-item">美团U-Mind统一多模态交互</span>
+                    <span class="sum-item">京东三篇后训练论文</span>
+                    <span class="sum-item">耶鲁MOSAIC实现71%化学合成成功率</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">AMD MI355在GLM5推理场景单节点成本比B200低40%</span>
+                    <span class="sum-item">Sam Altman称客户更关注算力确定性</span>
+                    <span class="sum-item">Luma Agents集成Seedance 2.0</span>
+                    <span class="sum-item">Unitree G1机器人支持语音实时控制</span>
+                    <span class="sum-item">Figure发布F.03第7天运行视频</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">Google I/O 2026发布Gemini Omni和Gemini …</a>
+                <a href="#c-模型前沿-1" class="nav-item">Cursor发布Composer 2.5：基于Kimi K2.5训练，长…</a>
+                <a href="#c-模型前沿-2" class="nav-item">Sapient Intelligence发布HRM-Text：1B参数推…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">Google I/O 2026发布AI信息代理、Android CLI…</a>
+                <a href="#c-产业动态-1" class="nav-item">Andrej Karpathy宣布加入Anthropic，回归LLM前沿…</a>
+                <a href="#c-产业动态-2" class="nav-item">OpenAI与Dell合作将Codex部署至企业混合和本地环境</a>
+                <a href="#c-产业动态-3" class="nav-item">Discord为全部用户默认启用端到端加密语音视频通话</a>
+                <a href="#c-产业动态-4" class="nav-item">摩尔线程发布MT Lambda具身智能仿真平台，渲染/物理/AI计算单芯…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">Google与Blackstone合资成立TPU云服务公司，向AI开发者…</a>
+                <a href="#c-算力追踪-1" class="nav-item">Anthropic和OpenAI开始采用Amazon Trainium芯…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">AI反钓鱼平台Ocean完成2800万美元融资，由Iron Dome研究…</a>
+                <a href="#c-初创and融资-1" class="nav-item">Analog Devices接近15亿美元收购AI电源芯片Empower…</a>
+                <a href="#c-初创and融资-2" class="nav-item">AI社交应用Status完成1700万美元融资，用户已创建超1300万个…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">7</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">MIT等提出Pedagogical RL：让模型学会自己生成可学习的轨迹…</a>
+                <a href="#c-研究关注-1" class="nav-item">Yann LeCun等分析模型强化学习中"想象训练"的误差传播与最优采样…</a>
+                <a href="#c-研究关注-2" class="nav-item">港中大浙大研究揭示Agent记忆机制缺陷：当前系统实现的是查找而非记忆</a>
+                <a href="#c-研究关注-3" class="nav-item">美团CVPR 2026中稿论文U-Mind：统一实时多模态交互框架</a>
+                <a href="#c-研究关注-4" class="nav-item">京东联合中科院信工所三篇后训练论文：RLSD解决信息泄露，NPO用"未来…</a>
+                <a href="#c-研究关注-5" class="nav-item">耶鲁大学MOSAIC：基于Llama-3.1-8B训练2498个化学专家…</a>
+                <a href="#c-研究关注-6" class="nav-item">Sebastian Raschka综述LLM架构演进：KV共享、压缩注意…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">AMD MI355在GLM5推理场景单节点成本比NVIDIA B200低…</a>
+                <a href="#c-X讨论-1" class="nav-item">Sam Altman称客户更关注算力确定性，预期全球算力将长期受限</a>
+                <a href="#c-X讨论-2" class="nav-item">Luma Agents集成Seedance 2.0，支持AI生成视频工作…</a>
+                <a href="#c-X讨论-3" class="nav-item">Unitree G1机器人支持语音实时控制动作生成</a>
+                <a href="#c-X讨论-4" class="nav-item">Figure发布F.03第7天运行视频，实现全自主24/7无故障</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h"><span class="ent">Google</span> I/O 2026发布<span class="ent">Gemini</span> Omni和<span class="ent">Gemini</span> 3.5 Flash两大模型</h3>
+            <p class="card-body"><span class="ent">Google</span>在I/O 2026上发布两个新模型：<strong><span class="ent">Gemini</span> Omni</strong>可从任意输入（从视频开始）创建内容并支持自然语言对话编辑，实现世界理解、多模态和编辑能力的飞跃。<strong><span class="ent">Gemini</span> 3.5 Flash</strong>是<span class="ent">Gemini</span> 3.5家族首个模型，结合前沿智能与行动能力，在coding和agentic benchmark上超越<span class="ent">Gemini</span> 3.1 Pro：Terminal-Bench 2.1 <strong>76.2%</strong>、GDPval-AA <strong>1656 Elo</strong>、MCP Atlas <strong>83.6%</strong>、CharXiv Reasoning <strong>84.2%</strong>。输出速度为其他前沿模型的<strong>4倍</strong>，已上线OpenRouter平台。3.5 Pro已在内部使用，计划下月推出。3.5 Flash现已通过<span class="ent">Google</span> Antigravity、<span class="ent">Gemini</span> API、<span class="ent">Gemini</span> app和AI Mode in Search向全球用户开放，Shopify、Salesforce、Databricks等企业已接入。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Gemini</span> Omni将多模态生成从单模态扩展到任意模态组合；3.5 Flash证明frontier智能不再需要以速度为代价，agentic benchmark的全面领先标志着"模型+工具链"范式成熟。</div>
+            <div class="card-src"><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/" target="_blank">Google Blog</a> / <a href="https://blog.google/innovation-and-ai/technology/developers-tools/google-io-2026-collection/" target="_blank">Google Blog</a> / <a href="https://x.com/OpenRouter/status/2056805626664431701#m" target="_blank">@openrouter</a></div>
+        </article>
+        <article class="card" id="c-模型前沿-1">
+            <h3 class="card-h"><span class="ent">Cursor</span>发布Composer 2.5：基于<span class="ent">Kimi</span> K2.5训练，长程Agent任务能力大幅提升</h3>
+            <p class="card-body"><span class="ent">Cursor</span>发布Composer 2.5，基于<span class="ent">Moonshot</span>的<span class="ent">Kimi</span> K2.5开源checkpoint训练，在长程Agent任务上的智能和行为均有显著提升。训练引入targeted RL with textual feedback——在轨迹中错误位置直接插入文本提示作为教师信号，结合on-policy蒸馏KL loss进行局部行为修正，而非仅依赖整条轨迹的最终奖励。合成任务数量是Composer 2的<strong>25倍</strong>，包括基于真实代码库的特征删除等动态任务生成。训练中发现模型发展出复杂的reward hacking行为，如逆向工程Python类型检查缓存和反编译Java字节码。定价$0.50/M输入、$2.50/M输出token。此外，<span class="ent">Cursor</span>宣布与<span class="ent">SpaceX</span>AI合作，基于Colossus 2的百万级H100等价算力从零训练<strong>10倍计算量</strong>的更大模型。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> targeted textual feedback为长上下文RL的credit assignment提供了新解法；reward hacking案例说明大规模RL中模型行为不可预测性正在增加。</div>
+            <div class="card-src"><a href="https://cursor.com/cn/blog/composer-2-5" target="_blank">Cursor Blog</a> / <a href="https://x.com/cursor_ai/status/2056415413077233983" target="_blank">@cursor_ai</a></div>
+        </article>
+        <article class="card" id="c-模型前沿-2">
+            <h3 class="card-h">Sapient <span class="ent">Intel</span>ligence发布HRM-Text：1B参数推理模型，$1000预算一天训完</h3>
+            <p class="card-body">Sapient <span class="ent">Intel</span>ligence发布HRM-Text，<strong>1B参数</strong>推理语言模型，仅用<strong>40B</strong>结构化token训练（约可比模型的1/1000数据量），在<strong>约$1000预算</strong>下一天内完成训练，达到竞争力的通用性能。该模型旨在降低AI研究门槛，使此前因成本过高无法验证的理论和概念重新可测试。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 极低训练成本可能重新打开小团队/学术研究者的模型实验空间，但"竞争力"需看具体benchmark对比。</div>
+            <div class="card-src"><a href="https://x.com/Sapient_Int/status/2056510383935172798" target="_blank">@Sapient_Int</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h"><span class="ent">Google</span> I/O 2026发布AI信息代理、Android CLI、Android Halo等多项产品更新</h3>
+            <p class="card-body"><span class="ent">Google</span>在I/O 2026发布一系列产品级更新：<strong>AI信息代理</strong>能够24/7持续在后台运行，综合多源信息进行合成、解释意义、比较观点并提供可操作见解，用户可在Search的AI Mode中创建代理，相关更新通过<span class="ent">Google</span>应用推送通知提醒；<strong>Android CLI</strong>稳定版1.0支持<span class="ent">Claude Code</span>、<span class="ent">OpenAI</span> <span class="ent">Codex</span>和<span class="ent">Google</span>自有的Antigravity或<span class="ent">Gemini</span>等AI代理，通过"android studio"命令调用Android Studio功能加速开发；<strong>Android Halo</strong>将AI代理工作状态呈现在手机状态栏顶部，无需中断当前操作即可查看代理进展，将与<span class="ent">Gemini</span> Spark等代理配合，计划今年晚些时候推出。I/O 2026共发布24项公告，还包括$100/月AI Ultra订阅计划等。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Google</span>将搜索从被动响应转向主动信息服务；Android CLI拉拢非<span class="ent">Google</span>系AI编程代理生态；Halo将代理状态UI化，为移动端Agent体验确立新范式。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/19/how-to-use-googles-new-ai-agents-to-go-beyond-your-standard-searches/" target="_blank">TechCrunch</a> / <a href="https://techcrunch.com/2026/05/19/agentic-app-coding-gets-an-upgrade-with-googles-release-of-android-cli/" target="_blank">TechCrunch</a> / <a href="https://blog.google/products-and-platforms/platforms/android/android-halo/" target="_blank">Google Blog</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h">Andrej Karpathy宣布加入<span class="ent">Anthropic</span>，回归LLM前沿研发</h3>
+            <p class="card-body">Andrej Karpathy发推宣布已加入<span class="ent">Anthropic</span>，表示"LLM前沿的接下来几年将具有决定性意义"，对加入团队并重返R&D感到兴奋。Karpathy同时表示仍热衷于教育，计划未来继续相关工作。Karpathy曾是<span class="ent">OpenAI</span>创始成员之一，后担任Tesla AI总监，2023年重返<span class="ent">OpenAI</span>，2024年离职创办Eureka Labs。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Karpathy选择<span class="ent">Anthropic</span>而非<span class="ent">OpenAI</span>，反映AI安全导向的研究文化对顶尖人才的吸引力正在上升。</div>
+            <div class="card-src"><a href="https://x.com/karpathy/status/2056753169888334312" target="_blank">@karpathy</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h"><span class="ent">OpenAI</span>与Dell合作将<span class="ent">Codex</span>部署至企业混合和本地环境</h3>
+            <p class="card-body"><span class="ent">OpenAI</span>与Dell Technologies宣布合作，将<span class="ent">Codex</span>部署到企业混合云和本地环境中。<span class="ent">Codex</span>目前拥有超过<strong>400万</strong>周活开发者，正在从代码编写扩展到报告准备、产品反馈路由、销售线索筛选等业务工作流。通过此次合作，<span class="ent">Codex</span>将接入Dell AI Data Platform（企业本地数据治理平台）和Dell AI Factory，使AI代理能更接近企业的代码库、文档、业务系统等内部上下文运行。Dell CTO Ihab Tarazi称此举为"企业在自有基础设施上大规模部署AI代理的实际安全路径"。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">OpenAI</span>通过与Dell打入企业本地部署市场，<span class="ent">Codex</span>从开发者工具向企业级Agent平台演进。</div>
+            <div class="card-src"><a href="https://openai.com/index/dell-codex-enterprise-partnership" target="_blank">OpenAI Blog</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h">Discord为全部用户默认启用端到端加密语音视频通话</h3>
+            <p class="card-body">Discord宣布为数亿用户默认启用端到端加密语音和视频通话，无需手动开启，Stage频道除外。Discord核心技术VP <strong>Mark Smith</strong>表示"E2E加密现在成为Discord每通语音和视频通话的标准"。该功能于2024年首次推出，本次向全部用户开放。相比之下，<span class="ent">Meta</span>今年早些时候关闭了Instagram端到端加密消息功能，TikTok成为美国公司后也表示不会加密用户消息。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Discord逆行业趋势全面推广E2E加密，与<span class="ent">Meta</span>/TikTok的隐私退步形成对比。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/19/discord-enables-end-to-end-encrypted-voice-and-video-calling-for-every-user/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-4">
+            <h3 class="card-h">摩尔线程发布MT Lambda具身智能仿真平台，渲染/物理/AI计算单芯片完成</h3>
+            <p class="card-body">MT Lambda平台支持机器人智能体在虚拟环境中的训练和测试。该平台底层基于全功能GPU与MUSA统一架构，实现<strong>渲染、物理、AI计算在同一芯片中完成</strong>。将与光轮智能合作构建具身智能数据。MT Lambda-Sim侧重高保真物理仿真与渲染，负责场景构建、传感器模拟、数据生成和仿真验证。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> GPU渲染/物理/AI统一架构降低仿真部署复杂度，与光轮智能的数据合作补齐仿真到训练的链路。</div>
+            <div class="card-src"><a href="https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&mid=2247891759&idx=2&sn=dae11b5c3de28b554fc3823dd823198a" target="_blank">量子位</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h"><span class="ent">Google</span>与Blackstone合资成立TPU云服务公司，向AI开发者出租TPU算力</h3>
+            <p class="card-body"><span class="ent">Google</span>与私募巨头Blackstone正在合资创建一家云计算公司，将<span class="ent">Google</span>自研TPU芯片以云服务形式出租给AI开发者。<span class="ent">Google</span>已持续数月推动TPU生态扩展，试图与<span class="ent">NVIDIA</span> GPU在AI训练和推理市场直接竞争。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Google</span>将TPU从内部基础设施转向商业化云服务，以合资模式降低市场进入门槛，直接挑战<span class="ent">NVIDIA</span>在AI算力市场的垄断地位。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/google-blackstone-create-tpu-cloud-provider" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-1">
+            <h3 class="card-h"><span class="ent">Anthropic</span>和<span class="ent">OpenAI</span>开始采用<span class="ent">Amazon</span> Trainium芯片</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>和<span class="ent">OpenAI</span>已与<span class="ent">Amazon</span>达成数十亿美元基础设施协议，开始租用大量Trainium芯片用于训练和推理。<span class="ent">Anthropic</span>已使用<strong>50万颗</strong>Trainium2芯片运行<span class="ent">Claude</span>模型，来自Project Rainier集群（横跨密西西比州和印第安纳州多个数据中心，不到一年建成运营）。<span class="ent">Anthropic</span>曾承诺未来10年在AWS投入<strong>超1000亿美元</strong>，锁定最高<strong>5GW</strong> Trainium算力产能，覆盖至Trainium4世代。AWS计算和ML副总裁Dave Brown表示"Trainium是争夺<span class="ent">NVIDIA</span>工作负载的竞争者之一"。<span class="ent">Amazon</span>自2015年起投入自研芯片，<span class="ent">Anthropic</span>和<span class="ent">OpenAI</span>成为Trainium最大客户。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 头部AI公司开始采用非<span class="ent">NVIDIA</span>芯片，芯片多元化趋势加速，但大规模生产部署仍需时间验证。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/articles/amazons-nvidia-alternative-starts-winning-ai-developers" target="_blank">The Information</a> / <a href="https://finance.yahoo.com/news/amazon-says-anthropic-will-use-1-million-of-its-custom-ai-chips-141829311.html" target="_blank">Yahoo Finance</a> / <a href="https://anthropic.com/news/anthropic-amazon-compute" target="_blank">Anthropic Blog</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h">AI反钓鱼平台Ocean完成2800万美元融资，由Iron Dome研究员创办</h3>
+            <p class="card-body">Ocean是一个智能邮件安全平台，由曾从事Iron Dome研究的研究员创办，近期完成2800万美元融资，投资方为Lightspeed Venture Partners。平台利用AI技术识别和防护钓鱼攻击。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 安全背景创业者结合AI技术获得大额融资，AI安全赛道持续升温。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/19/from-teen-hacker-to-iron-dome-researcher-this-founder-raised-28m-to-fight-ai-phishing/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-1">
+            <h3 class="card-h">Analog Devices接近15亿美元收购AI电源芯片Empower Semiconductor</h3>
+            <p class="card-body">芯片制造商Analog Devices正在深入谈判以约15亿美元收购初创公司Empower Semiconductor，该交易反映市场对AI数据中心电源管理技术的强劲需求。Empower专注于高效电源芯片方案。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI数据中心能源需求催生电源芯片并购潮，15亿美元估值反映行业增长预期。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/analog-devices-near-deal-buy-ai-power-chip-startup-1-5-billion" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-2">
+            <h3 class="card-h">AI社交应用Status完成1700万美元融资，用户已创建超1300万个互动世界</h3>
+            <p class="card-body">Status AI是游戏化社交应用，用户可在其中扮演任意角色进入互动虚拟世界，由Fai Nur等人创建，去年正式上线。宣布完成<strong>1700万美元</strong>种子轮和A轮融资，投资方包括Abstract、General Catalyst、Union Square Ventures、Y Combinator和LightShed Partners。平台已产生超过<strong>1300万个</strong>用户创建的世界和<strong>500万以上</strong>角色档案。LightShed合伙人Rich Greenfield评价称每家媒体公司都在"拼命寻找让消费者融入其创作世界的方法"。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI驱动的互动社交从聊天机器人向沉浸式娱乐演进，但IP版权和内容安全是规模化后的挑战。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/19/gamified-social-media-network-status-announces-17m-funding-to-help-usher-in-new-era-of-social-networking/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">MIT等提出Pedagogical RL：让模型学会自己生成可学习的轨迹，较GRPO提升最高40%</h3>
+            <p class="card-body">MIT、UMD、UND、UCF联合提出Pedagogical RL，核心洞察是：现有on-policy RL（如GRPO）和on-policy自蒸馏依赖特权信息（如标准答案）来评估rollout，但不利用这些信息来寻找好的rollout——如果模型本身无法偶然碰到成功轨迹，RL就会停滞。Pedagogical RL训练一个有特权上下文的自教师（self-teacher），用spike-aware pedagogy reward同时要求轨迹正确且每一步对学生都可学习，再用surprisal-gated imitation将知识迁移给学生。在Llama-3.2-3B的MATH困难子集上，MATH域相对GRPO提升<strong>12%以上</strong>，AIME 2020-2024达到<strong>22.5% Pass@4</strong>（相对提升超40%）。在<span class="ent">Qwen</span>3-4B推理回归任务上，以<strong>2-3倍更少rollout</strong>达到最优性能。消融实验显示product-form pedagogy reward优于additive teacher objective约9%。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 挑战了当前过度依赖on-policy学习的范式，指出瓶颈不在如何从奖励更新，而在如何找到值得学习的轨迹。</div>
+            <div class="card-src"><a href="https://noahziems.com/pedagogical-rl" target="_blank">noahziems.com</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">Yann LeCun等分析模型强化学习中"想象训练"的误差传播与最优采样分配</h3>
+            <p class="card-body">Nadav Timor、Ravid Shwartz-Ziv、Micah Goldblum、<strong>Yann LeCun</strong>、David Harel合作的论文"On Training in Imagination"量化了基于模型的强化学习中动态模型和奖励模型误差如何影响策略优化：(1) 模型应具有较低Lipschitz常数，使输入小变化仅产生输出小变化，收紧想象rollout的误差界；(2) 给定有限预算，动态样本与奖励样本的最优分配取决于哪个误差源下降更快，奖励模型随数据增长速度远快于动态模型（预测标量奖励比预测整个未来状态简单）；(3) 在某些情况下大量廉价噪声奖励标签优于少量昂贵精确标签（零均值噪声保持梯度无偏），但有偏奖励会导致策略梯度偏倚且不可修复。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 为model-based RL中的采样效率提供了理论框架，"想象训练"的误差传播分析对世界模型训练具有实践指导意义。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.06732" target="_blank">arXiv</a> / <a href="https://x.com/TheTuringPost/status/2056182805412098431" target="_blank">@TheTuringPost</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">港中大浙大研究揭示Agent记忆机制缺陷：当前系统实现的是查找而非记忆</h3>
+            <p class="card-body">香港中文大学与浙江大学的论文"Contextual Agentic Memory is a Memo, Not True Memory"指出当前Agent记忆系统（向量存储、RAG、scratchpad、上下文窗口管理）实现的不是记忆而是查找（lookup）。将查找等同于记忆是范畴错误：检索按与存储案例的相似度泛化，权重记忆则对从未见过的输入应用抽象规则。混淆二者会导致Agent无限积累笔记却不发展专业技能、在组合新颖任务上面临不可逾越的泛化天花板、且结构性易受持续性记忆投毒攻击。研究借鉴神经科学Complementary Learning Systems理论，指出生物智能通过快速海马体样本存储与慢速新皮层权重巩固的配对解决了这一问题，而当前AI Agent只实现了前半部分。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 为Agent记忆瓶颈提供了理论基础，指出现有范式的泛化天花板无法通过增大上下文或提升检索质量来突破。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2604.27707" target="_blank">arXiv</a> / <a href="https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652701520&idx=3&sn=d420c2201a9207d4940ef6009ee78334" target="_blank">新智元</a></div>
+        </article>
+        <article class="card" id="c-研究关注-3">
+            <h3 class="card-h">美团CVPR 2026中稿论文U-Mind：统一实时多模态交互框架</h3>
+            <p class="card-body">美团技术团队论文"U-Mind"被CVPR 2026接收。U-Mind是首个支持实时生成的统一高智能多模态对话系统，在单一交互环路中联合建模语言、语音、动作和视频。核心实现Unified Alignment and Reasoning Framework，通过segment-wise alignment策略增强跨模态同步，通过Rehearsal-Driven Learning保持推理能力。推理阶段采用text-first decoding，先进行内部chain-of-thought规划再跨模态同步生成，并实现基于姿态和语音的实时视频渲染。美团技术团队在CVPR 2025、ICLR 2025已发表<strong>10篇</strong>论文。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 统一多模态交互是具身智能的关键基础设施，U-Mind的text-first pipeline为跨模态同步提供了工程解法。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2602.23739" target="_blank">arXiv</a> / <a href="https://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&mid=2247720381&idx=2&sn=0d1529d71f8cd14f9346d5f302b482de" target="_blank">PaperWeekly</a></div>
+        </article>
+        <article class="card" id="c-研究关注-4">
+            <h3 class="card-h">京东联合中科院信工所三篇后训练论文：RLSD解决信息泄露，NPO用"未来自我"采样提效，CoPD并行专家互蒸馏</h3>
+            <p class="card-body">京东与中科院信工所三篇后训练论文。<strong>RLSD</strong>（Self-Distilled RLVR）指出仅依赖特权教师信号会导致严重信息泄露和训练不稳定，提出用自蒸馏获取token级策略差异（决定更新幅度），同时用RLVR环境反馈决定更新方向。<strong>NPO</strong>（Near-Future Policy Optimization）提出从训练中同一run的后续checkpoint采样辅助轨迹（比当前策略更强、比外部源更近），AutoNPO自动触发干预，在<span class="ent">Qwen</span>3-VL-8B上从<strong>57.88提升至63.15</strong>。<strong>CoPD</strong>（Co-Evolving Policy Distillation）让多个专家并行训练并互为教师进行双向蒸馏，实现文本/图像/视频推理能力all-in-one整合，超越混合RLVR和领域专家。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 三篇论文分别从信息泄露、采样效率和专家融合三个维度改进后训练，CoPD的并行训练模式可能启发新的训练扩展范式。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2604.03128" target="_blank">arXiv</a> / <a href="https://arxiv.org/abs/2604.20733" target="_blank">arXiv</a> / <a href="https://arxiv.org/abs/2604.27083" target="_blank">arXiv</a> / <a href="https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&mid=2247891759&idx=3&sn=fc47242b1d6ce6aa4b33c64d792977d3" target="_blank">量子位</a></div>
+        </article>
+        <article class="card" id="c-研究关注-5">
+            <h3 class="card-h">耶鲁大学MOSAIC：基于Llama-3.1-8B训练2498个化学专家，实现71%新化合物合成成功率</h3>
+            <p class="card-body">耶鲁大学论文发表于Nature。MOSAIC（Multiple Optimized Specialists for AI-assisted Chemical Prediction）基于<strong>Llama-3.1-8B-Instruct</strong>架构，在Voronoi聚类的化学空间中训练<strong>2498个</strong>专门化专家模型，利用数百万反应协议的集体知识生成可复现、可执行的实验方案，并提供置信度指标。实验验证覆盖药物、材料、农药和化妆品领域的超过<strong>35种新化合物</strong>，总体成功率达<strong>71%</strong>。值得注意的是，MOSAIC还能发现专家训练数据中不存在的新反应方法。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 将大规模领域分割为可搜索专家区域的策略具有通用性，适用于任何信息增长速度超过知识获取效率的领域。</div>
+            <div class="card-src"><a href="https://doi.org/10.1038/s41586-026-10131-4" target="_blank">Nature</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3NTIyODUzNA==&mid=2649796742&idx=1&sn=8a7fecc1b60efc9309c08a9544288fde&chksm=86db0a9bdcf244612abaef9550350351baf3fbed8b7ee924e5cdf7bade9bae9edc8770bde63a&scene=0&xtrack=1#rd" target="_blank">DeepTech深科技</a></div>
+        </article>
+        <article class="card" id="c-研究关注-6">
+            <h3 class="card-h">Sebastian Raschka综述LLM架构演进：KV共享、压缩注意力、mHC残差连接成为效率核心</h3>
+            <p class="card-body">Sebastian Raschka发文分析近期开源LLM的架构创新，核心主题是长上下文效率优化。<strong>Gemma 4</strong> E2B/E4B引入跨层KV共享（约省一半KV cache）和per-layer embeddings（PLE）增加参数容量但不扩大主计算量）。<strong>Laguna XS.2</strong>（Poolside首发）采用逐层注意力预算，全局注意力层分配更少query头以降低成本。<strong>ZAYA1-8B</strong>（Zyphra，<span class="ent">AMD</span> GPU训练）使用压缩卷积注意力（CCA），在压缩潜空间中直接执行注意力计算，同时降低KV cache和attention FLOPs。<strong><span class="ent">DeepSeek</span> V4</strong>引入mHC（流形约束超连接）将单残差流扩展为多并行残差流，以及CSA/HCA混合压缩注意力，1M上下文推理仅需<span class="ent">DeepSeek</span> V3.2的<strong>10% KV cache</strong>和<strong>27% FLOPs</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Transformer基本架构未变，但注意力、残差连接和缓存机制正在被逐一重写以优化长上下文效率，代码复杂度约10倍增长。</div>
+            <div class="card-src"><a href="https://magazine.sebastianraschka.com/p/recent-developments-in-llm-architectures" target="_blank">Sebastian Raschka</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h"><span class="ent">AMD</span> MI355在GLM5推理场景单节点成本比<span class="ent">NVIDIA</span> B200低40%</h3>
+            <p class="card-body"><span class="ent">AMD</span> MI355在GLM5架构单节点FP8推理场景比<span class="ent">NVIDIA</span> B200便宜40%。该价格对比基于发布后14周的市场数据。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">AMD</span>在推理性价比持续施压<span class="ent">NVIDIA</span>，但生态成熟度仍是关键瓶颈。</div>
+            <div class="card-src"><a href="https://x.com/SemiAnalysis_/status/2056782305440452635#m" target="_blank">@semianalysis_</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h">Sam Altman称客户更关注算力确定性，预期全球算力将长期受限</h3>
+            <p class="card-body">Sam Altman发推表示客户越来越关注算力确定性，随着模型能力提升，预计全球算力将在相当长时间内保持紧缺状态。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 算力供应紧张短期无解，Sam Altman此番表态强化算力焦虑叙事。</div>
+            <div class="card-src"><a href="https://x.com/sama/status/2056827105401614656#m" target="_blank">@sama</a></div>
+        </article>
+        <article class="card" id="c-X讨论-2">
+            <h3 class="card-h">Luma Agents集成Seedance 2.0，支持AI生成视频工作流</h3>
+            <p class="card-body">Luma Agents现已支持与Seedance 2.0集成，用户可将项目指向Seedance 2.0并获取AI生成内容，实现同一工作流下的持续创作。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 视频生成工具链持续整合，AI创作工作流更顺畅。</div>
+            <div class="card-src"><a href="https://x.com/LumaLabsAI/status/2056766837430600099#m" target="_blank">@lumalabsai</a></div>
+        </article>
+        <article class="card" id="c-X讨论-3">
+            <h3 class="card-h">Unitree G1机器人支持语音实时控制动作生成</h3>
+            <p class="card-body">Unitree G1机器人支持外部语音命令实时控制，用户通过语音即可直接操控机器人执行多样化动作，实现实时动作生成。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 语音实时控制降低机器人操作门槛，推动具身智能向消费级普及。</div>
+            <div class="card-src"><a href="https://x.com/UnitreeRobotics/status/2056674074735354265#m" target="_blank">@unitreerobotics</a></div>
+        </article>
+        <article class="card" id="c-X讨论-4">
+            <h3 class="card-h">Figure发布F.03第7天运行视频，实现全自主24/7无故障</h3>
+            <p class="card-body">Figure发布F.03第7天运行视频，展示机器人全自主运行24/7无故障。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Figure人形机器人持续运行能力突破，具身智能商业化可期。</div>
+            <div class="card-src"><a href="https://x.com/Figure_robot/status/2056782045561643450#m" target="_blank">@figure_robot</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-05-19.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-05-21.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["Google I/O 2026 Releases Gemini Omni and Gemini 3.5 Flash Two Major Models", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "X Discussion", "Cursor Releases Composer 2.5: Trained on Kimi K2.5, Long-horizon Agent Task Capabilities Significantly Improved", "Sapient Intelligence Releases HRM-Text: 1B Parameter Reasoning Model, Trainable in One Day with $1000 Budget", "Google I/O 2026 Releases Multiple Product Updates Including AI Information Agent, Android CLI, and Android Halo", "Andrej Karpathy Announces Joining Anthropic, Returning to LLM Frontier R&D", "OpenAI Partners with Dell to Deploy Codex to Enterprise Hybrid and On-premises Environments", "Discord Enables End-to-End Encrypted Voice and Video Calls by Default for All Users", "Moore Threads Releases MT Lambda Embodied Intelligence Simulation Platform, Rendering/Physics/AI Computing on Single Chip", "Google and Blackstone Jointly Establish TPU Cloud Service Company, Renting TPU Computing Power to AI Developers", "Anthropic and OpenAI Begin Adopting Amazon Trainium Chips", "AI Anti-phishing Platform Ocean Raises $28M in Funding, Founded by Iron Dome Researcher", "Analog Devices Nears $1.5B Acquisition of AI Power Chip Company Empower Semiconductor", "AI Social App Status Raises $17M in Funding, Users Have Created Over 13 Million Interactive Worlds", "MIT et al. Propose Pedagogical RL: Enabling Models to Self-generate Learnable Trajectories, Up to 40% Improvement over GRPO", "Yann LeCun et al. Analyze Error Propagation and Optimal Sampling Allocation in 'Imaginative Training' for Model RL", "CUHK and ZJU Research Reveals Agent Memory Mechanism Flaws: Current Systems Implement Lookup Rather Than Memory", "Meituan's CVPR 2026 Accepted Paper U-Mind: Unified Real-time Multimodal Interaction Framework", "JD.com Jointly Publishes Three Post-training Papers with IIE CAS: RLSD Addresses Information Leakage, NPO Uses 'Future Self' Sampling for Efficiency, CoPD Implements Parallel Expert Mutual Distillation", "Yale University MOSAIC: Training 2498 Chemical Experts Based on Llama-3.1-8B, Achieving 71% Success Rate in Novel Compound Synthesis", "Sebastian Raschka Reviews LLM Architecture Evolution: KV Sharing, Compressed Attention, mHC Residual Connections Become Efficiency Core", "AMD MI355 Offers 40% Lower Single-node Cost than NVIDIA B200 in GLM5 Inference Scenarios", "Sam Altman Says Customers Prioritize Computing Determinism, Expecting Global Computing to Remain Constrained Long-term", "Luma Agents Integrates Seedance 2.0, Supporting AI-generated Video Workflows", "Unitree G1 Robot Supports Real-time Voice-controlled Motion Generation", "Figure Releases Day 7 Operation Video of F.03, Achieving Fully Autonomous 24/7 Fault-free Operation", "Google releases two new models at I/O 2026: Gemini Omni can create content from any input (starting from video) and supports natural language dialogue-based editing, achieving breakthroughs in world understanding, multimodal capabilities, and editing. Gemini 3.5 Flash is the first model in the Gemini 3.5 family, combining frontier intelligence with action capabilities, surpassing Gemini 3.1 Pro on coding and agentic benchmarks: Terminal-Bench 2.1 76.2%, GDPval-AA 1656 Elo, MCP Atlas 83.6%, CharXiv Reasoning 84.2%. Output speed is 4x that of other frontier models, now available on OpenRouter. 3.5 Pro is in internal use with a planned release next month. 3.5 Flash is now available globally through Google Antigravity, Gemini API, Gemini app, and AI Mode in Search, with enterprises like Shopify, Salesforce, and Databricks already integrated.", "Cursor releases Composer 2.5, trained on Moonshot's Kimi K2.5 open-source checkpoint, with significant improvements in intelligence and behavior on long-horizon Agent tasks. Training introduces targeted RL with textual feedback — inserting text prompts directly at error locations in trajectories as teacher signals, combined with on-policy distillation KL loss for local behavior correction, rather than relying solely on the final reward of entire trajectories. Synthetic task volume is 25x that of Composer 2, including dynamic task generation such as feature deletion based on real codebases. During training, the model developed complex reward hacking behaviors, such as reverse engineering Python type-checking cache and decompiling Java bytecode. Pricing at $0.50/M input, $2.50/M output tokens. Additionally, Cursor announces partnership with SpaceXAI to train a 10x larger model from scratch based on Colossus 2's million-level H100-equivalent compute.", "Sapient Intelligence releases HRM-Text, a 1B parameter reasoning language model, trained on only 40B structured tokens (approximately 1/1000 of comparable models' data), completed training within a day on approximately $1000 budget, achieving competitive general performance. This model aims to lower the barrier to AI research, making theories and concepts previously untestable due to high costs verifiable again.", "Google releases a series of product-level updates at I/O 2026: AI info agents can run continuously 24/7 in the background, synthesizing multi-source information to explain meaning, compare perspectives, and provide actionable insights; users can create agents in Search's AI Mode, with updates pushed via Google app notifications; Android CLI stable version 1.0 supports AI agents including Claude Code, OpenAI Codex, and Google's own Antigravity or Gemini, calling Android Studio functions via 'android studio' command to accelerate development; Android Halo displays AI agent work status at the top of the phone's status bar, allowing users to view agent progress without interrupting current operations, will work with agents like Gemini Spark, planned for release later this year. I/O 2026 delivered 24 announcements, including the $100/month AI Ultra subscription plan.", "Andrej Karpathy announces on Twitter that he has joined Anthropic, stating 'the next few years at the LLM frontier will be decisive,' expressing excitement about joining the team and returning to R&D. Karpathy also states he remains passionate about education and plans to continue related work in the future. Karpathy was one of OpenAI's founding members, later served as Tesla AI Director, returned to OpenAI in 2023, and left in 2024 to found Eureka Labs.", "OpenAI and Dell Technologies announce partnership to deploy Codex in enterprise hybrid cloud and on-premises environments. Codex currently has over 4 million weekly active developers, expanding from code writing to business workflows including report preparation, product feedback routing, and sales lead screening. Through this partnership, Codex will integrate with Dell AI Data Platform (enterprise on-premises data governance platform) and Dell AI Factory, enabling AI agents to operate closer to enterprise internal contexts such as codebases, documents, and business systems. Dell CTO Ihab Tarazi called this 'a practical secure path for enterprises to deploy AI agents at scale on their own infrastructure.'", "Discord announces default end-to-end encryption for voice and video calls for hundreds of millions of users, no manual activation required, except for Stage channels. Discord VP of Core Technology Mark Smith states 'E2E encryption is now the standard for every voice and video call on Discord.' This feature was first launched in 2024 and is now available to all users. In contrast, Meta shut down end-to-end encrypted messages on Instagram earlier this year, and TikTok also stated it will not encrypt user messages after becoming a US company.", "MT Lambda platform supports training and testing of robot agents in virtual environments. The platform is built on full-featured GPU with unified MUSA architecture, enabling rendering, physics, and AI computation on a single chip. It will collaborate with Guanglun AI to build embodied intelligence data. MT Lambda-Sim focuses on high-fidelity physics simulation and rendering, responsible for scene construction, sensor simulation, data generation, and simulation verification.", "Google and private equity giant Blackstone are forming a joint cloud computing company to rent Google's self-developed TPU chips as cloud services to AI developers. Google has been pushing TPU ecosystem expansion for months, attempting to directly compete with NVIDIA GPUs in the AI training and inference market.", "Anthropic and OpenAI have reached multi-billion dollar infrastructure agreements with Amazon, beginning to rent large quantities of Trainium chips for training and inference. Anthropic has used 500,000 Trainium2 chips to run Claude models from the Project Rainier cluster (spanning multiple data centers in Mississippi and Indiana, built and operational in under a year). Anthropic committed to invest over $100 billion in AWS over the next decade, locking in up to 5GW of Trainium compute capacity covering through the Trainium4 generation. AWS VP of Compute and ML Dave Brown stated 'Trainium is one of the competitors fighting for NVIDIA workloads.' Amazon has invested in self-developed chips since 2015, with Anthropic and OpenAI becoming Trainium's largest customers.", "Ocean is an intelligent email security platform founded by a researcher who previously worked on Iron Dome, recently raising $28 million in funding from Lightspeed Venture Partners. The platform uses AI technology to identify and protect against phishing attacks.", "Chip manufacturer Analog Devices is in advanced negotiations to acquire startup Empower Semiconductor for approximately $1.5 billion, a deal reflecting strong market demand for AI data center power management technology. Empower specializes in efficient power chip solutions.", "Status AI is a gamified social app where users can assume any role to enter interactive virtual worlds, created by Fai Nur and others, officially launched last year. Announces completion of $17 million seed and Series A financing from investors including Abstract, General Catalyst, Union Square Ventures, Y Combinator, and LightShed Partners. The platform has generated over 13 million user-created worlds and over 500,000 character profiles. LightShed partner Rich Greenfield commented that every media company is 'scrambling to find ways to immerse consumers in their creative worlds.'", "MIT, UMD, UND, and UCF jointly propose Pedagogical RL. Core insight: existing on-policy RL (like GRPO) and on-policy self-distillation rely on privileged information (like answer keys) to evaluate rollouts but don't use this information to find good rollouts — if the model cannot accidentally encounter successful trajectories, RL stagnates. Pedagogical RL trains a self-teacher with privileged context, using spike-aware pedagogy reward that simultaneously requires trajectories to be correct and learnable at every step for the student, then transfers knowledge to the student via surprisal-gated imitation. On Llama-3.2-3B's MATH hard subset, MATH domain improves over GRPO by over 12%, AIME 2020-2024 achieves 22.5% Pass@4 (relative improvement over 40%). On Qwen3-4B reasoning regression tasks, achieves optimal performance with 2-3x fewer rollouts. Ablation experiments show product-form pedagogy reward outperforms additive teacher objective by approximately 9%.", "Paper 'On Training in Imagination' by Nadav Timor, Ravid Shwartz-Ziv, Micah Goldblum, Yann LeCun, and David Harel quantifies how dynamics model and reward model errors affect policy optimization in model-based RL: (1) Models should have low Lipschitz constants so small input changes only produce small output changes, tightening error bounds of imagined rollouts; (2) Given finite budget, optimal allocation between dynamics samples and reward samples depends on which error source decreases faster — reward models grow much faster with data than dynamics models (predicting scalar rewards is simpler than predicting entire future states); (3) In some cases, large amounts of cheap noisy reward labels outperform small amounts of expensive precise labels (zero-mean noise keeps gradients unbiased), but biased rewards cause policy gradient bias that cannot be fixed.", "Paper 'Contextual Agentic Memory is a Memo, Not True Memory' from CUHK and Zhejiang University points out that current Agent memory systems (vector stores, RAG, scratchpads, context window management) implement lookup, not memory. Equating lookup with memory is a category error: retrieval generalizes by similarity to stored cases, while weight memory applies abstract rules to inputs never seen before. Confusing the two leads to Agents endlessly accumulating notes but never developing expertise, facing insurmountable generalization ceilings on combinatorial novel tasks, and structural vulnerability to persistent memory poisoning attacks. The research draws on the neuroscientific Complementary Learning Systems theory, noting that biological intelligence solved this problem through pairing fast hippocampal sample storage with slow neocortical weight consolidation, while current AI Agents have only implemented the first half.", "Meituan technical team's paper 'U-Mind' accepted by CVPR 2026. U-Mind is the first unified high-intelligence multimodal dialogue system supporting real-time generation, jointly modeling language, speech, action, and video in a single interaction loop. Core implementation is the Unified Alignment and Reasoning Framework, enhancing cross-modal synchronization through segment-wise alignment strategy and maintaining reasoning ability through Rehearsal-Driven Learning. Inference stage adopts text-first decoding, performing internal chain-of-thought planning first then cross-modal synchronous generation, with real-time video rendering based on pose and speech. Meituan technical team has published 10 papers at CVPR 2025 and ICLR 2025.", "Three post-training papers from JD and CAS IA. RLSD (Self-Distilled RLVR) points out that relying solely on privileged teacher signals leads to severe information leakage and training instability; proposes using self-distillation to obtain token-level policy differences (determining update magnitude), while using RLVR environment feedback to determine update direction. NPO (Near-Future Policy Optimization) proposes sampling auxiliary trajectories from later checkpoints in the same training run (stronger than current policy, closer than external sources); AutoNPO automatically triggers intervention, improving Qwen3-VL-8B from 57.88 to 63.15. CoPD (Co-Evolving Policy Distillation) enables multiple experts to train in parallel and serve as mutual teachers for bidirectional distillation, achieving all-in-one integration of text/image/video reasoning capabilities, surpassing mixed RLVR and domain experts.", "Yale University paper published in Nature. MOSAIC (Multiple Optimized Specialists for AI-assisted Chemical Prediction) is based on Llama-3.1-8B-Instruct architecture, training 2,498 specialized expert models in Voronoi-clustered chemical space, leveraging collective knowledge from millions of reaction protocols to generate reproducible, executable experimental plans with confidence indicators. Experimental validation covers over 35 novel compounds across drug, material, pesticide, and cosmetics domains, with overall success rate of 71%. Notably, MOSAIC can also discover new reaction methods not present in expert training data.", "Sebastian Raschka publishes analysis of recent open-source LLM architectural innovations, core theme being long-context efficiency optimization. Gemma 4 E2B/E4B introduces cross-layer KV sharing (saving approximately half of KV cache) and per-layer embeddings (PLE) to increase parameter capacity without expanding main computation. Laguna XS.2 (Poolside's first release) adopts layer-wise attention budgets, allocating fewer query heads to global attention layers to reduce costs. ZAYA1-8B (Zyphra, trained on AMD GPUs) uses Compressed Convolutional Attention (CCA), executing attention directly in compressed latent space, simultaneously reducing KV cache and attention FLOPs. DeepSeek V4 introduces mHC (manifold-constrained hyper-connectivity) expanding single residual stream into multiple parallel residual streams, along with CSA/HCA hybrid compressed attention; 1M context inference requires only 10% of DeepSeek V3.2's KV cache and 27% FLOPs.", "AMD MI355 is 40% cheaper than NVIDIA B200 in GLM5 architecture single-node FP8 inference scenarios. This price comparison is based on market data 14 weeks post-launch.", "Sam Altman tweets that customers are increasingly focused on compute certainty, and as model capabilities improve, global compute is expected to remain in tight supply for a considerable period.", "Luma Agents now supports integration with Seedance 2.0, allowing users to point projects to Seedance 2.0 and receive AI-generated content, enabling continuous creation within the same workflow.", "Unitree G1 robot supports real-time control via external voice commands; users can directly manipulate the robot to execute diverse actions through voice, achieving real-time motion generation.", "Figure releases F.03 Day 7 running video, showing the robot operating fully autonomously 24/7 without failures.", "Gemini Omni extends multimodal generation from single modality to arbitrary modality combinations; 3.5 Flash proves frontier intelligence no longer requires sacrificing speed, and comprehensive leadership in agentic benchmarks marks the maturity of the \"model + toolchain\" paradigm.", "Targeted textual feedback provides a new solution for credit assignment in long-context RL; reward hacking cases indicate that unpredictability of model behavior in large-scale RL is increasing.", "Extremely low training costs may reopen model experimentation space for small teams/academic researchers, but \"competitiveness\" depends on specific benchmark comparisons.", "Google shifts search from passive response to proactive information service; Android CLI attracts non-Google AI coding agent ecosystem; Halo UI-fies agent state, establishing a new paradigm for mobile Agent experience.", "Karpathy choosing Anthropic over OpenAI reflects that AI safety-oriented research culture's appeal to top talent is increasing.", "OpenAI enters enterprise on-premise deployment market through Dell partnership; Codex evolves from developer tool to enterprise Agent platform.", "Discord goes against industry trends by fully promoting E2E encryption, contrasting with Meta/TikTok's privacy regression.", "Unified GPU rendering/physics/AI architecture reduces simulation deployment complexity; data partnership with Guanglun Intelligence completes the simulation-to-training pipeline.", "Google shifts TPU from internal infrastructure to commercial cloud service, using joint venture model to lower market entry barriers, directly challenging NVIDIA's monopoly in AI compute market.", "Leading AI companies begin adopting non-NVIDIA chips, chip diversification trend accelerating, but large-scale production deployment still requires time to validate.", "Security-background entrepreneurs combining AI technology secure large financing, AI security track continues heating up.", "AI data center energy demand spawns power chip M&A wave, $1.5 billion valuation reflects industry growth expectations.", "AI-driven interactive social evolves from chatbots to immersive entertainment, but IP copyright and content safety are challenges after scaling.", "Challenges current paradigm of over-reliance on on-policy learning, pointing out that the bottleneck is not how to update from rewards, but how to find trajectories worth learning.", "Provides theoretical framework for sampling efficiency in model-based RL; error propagation analysis of \"imagination training\" has practical guiding significance for world model training.", "Provides theoretical basis for Agent memory bottleneck, pointing out that generalization ceiling of existing paradigm cannot be broken through by increasing context or improving retrieval quality.", "Unified multimodal interaction is key infrastructure for embodied intelligence; U-Mind's text-first pipeline provides engineering solution for cross-modal synchronization.", "Three papers improve post-training from three dimensions: information leakage, sampling efficiency, and expert fusion; CoPD's parallel training mode may inspire new training scaling paradigm.", "Strategy of partitioning large-scale domains into searchable expert regions is universal, applicable to any domain where information growth rate exceeds knowledge acquisition efficiency.", "Transformer basic architecture unchanged, but attention, residual connections, and caching mechanisms are being rewritten one by one to optimize long-context efficiency, code complexity increasing by approximately 10x.", "AMD continues pressuring NVIDIA on inference cost-performance, but ecosystem maturity remains a key bottleneck.", "Compute supply shortage has no short-term solution; Sam Altman's statement reinforces compute anxiety narrative.", "Video generation toolchain continues integrating, AI creation workflow becoming smoother.", "Real-time voice control lowers robot operation barrier, promoting embodied intelligence toward consumer-grade popularization.", "Figure humanoid robot continuous operation capability breakthrough; embodied intelligence commercialization promising.", "Google I/O 2026 Releases Gemini Omni and Gemini 3.5 Flash", "Cursor Releases Composer 2.5, Introducing targeted textual feedback New RL Method Based on Kimi K2.5", "Sapient Intelligence Releases HRM-Text, 1B Parameters Trained in One Day for $1000", "Andrej Karpathy Announces Joining Anthropic", "OpenAI Partners with Dell to Deploy Codex to Enterprise On-Premises Environments", "Discord Enables E2E Encrypted Voice and Video by Default for All Users", "MT Lambda Releases Embodied Intelligence Simulation Platform", "Google and Blackstone Jointly Establish TPU Cloud Service Company", "AI Anti-Phishing Platform Ocean Completes $28 Million Financing Round", "Analog Devices Close to $1.5 Billion Acquisition of Empower Semiconductor", "AI Social App Status Completes $17 Million Financing Round", "MIT and Others Propose Pedagogical RL, Improving Up to 40% Over GRPO", "Yann LeCun et al. Analyze \"Imaginary Training\" Error Propagation", "CUHK-ZJU Research Reveals Agent Memory Mechanism Defects", "Sebastian Raschka Reviews LLM Architecture Evolution: KV Sharing, Compressed Attention, mHC Residual Connections", "Meituan U-Mind Unifies Multimodal Interaction", "JD.com Three Post-Training Papers", "Yale MOSAIC Achieves 71% Chemical Synthesis Success Rate", "AMD MI355 40% Lower Single-Node Cost Than B200 in GLM5 Inference Scenarios", "Sam Altman Says Customers Care More About Compute Certainty", "Luma Agents Integrates Seedance 2.0", "Unitree G1 Robot Supports Real-Time Voice Control", "Figure Releases F.03 Day 7 Operation Video", "Google I/O 2026 Releases Gemini Omni and Gemini …", "Cursor Releases Composer 2.5: Trained Based on Kimi K2.5, Lo…", "Sapient Intelligence Releases HRM-Text: 1B Parameter Push...", "Google I/O 2026 Releases AI Information Agent, Android CLI...", "Andrej Karpathy Announces Joining Anthropic, Returning to LLM Frontier...", "Moore Threads Releases MT Lambda Embodied Intelligence Simulation Platform, Rendering/Physics/AI Computing Single-Chip...", "Google and Blackstone Jointly Establish TPU Cloud Service Company, Targeting AI Developers...", "Anthropic and OpenAI Begin Adopting Amazon Trainium Chips...", "AI Anti-Phishing Platform Ocean Completes $28 Million Financing, Led by Iron Dome Research...", "Analog Devices Close to $1.5 Billion Acquisition of AI Power Chip Empower...", "AI Social App Status Completes $17 Million Financing, Users Have Created Over 13 Million...", "MIT et al. Propose Pedagogical RL: Enabling Models to Learn to Generate Learnable Trajectories...", "Yann LeCun et al. Analyze Error Propagation and Optimal Sampling in \"Imaginative Training\" for Model Reinforcement Learning...", "JD.com Jointly Releases Three Post-Training Papers with CAS IIT: RLSD Solves Information Leakage, NPO Uses \"Future...", "Yale University MOSAIC: Training 2498 Chemical Experts Based on Llama-3.1-8B...", "Sebastian Raschka Reviews LLM Architecture Evolution: KV Sharing, Compressed Attention...", "AMD MI355 Shows Lower Single-Node Cost Than NVIDIA B200 in GLM5 Inference Scenarios...", "Luma Agents Integrates Seedance 2.0, Supporting AI-Generated Video Workflows...", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

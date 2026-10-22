@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>05月26日周二 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-05-26</div>
+            <h1>GPT-5.6在Codex后台被曝光：1.5M上下文窗口，内部代号iris-alpha，预计6月发布</h1>
+            <div class="header-sub">16 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">GPT-5.6在Codex后台被曝光：1.5M上下文窗口，内部代号iris-alpha，预计6月发布</span>
+                    <span class="sum-item">通义千问3.7-Max上线隐式缓存：自动复用KV缓存，推理速度提升成本降低</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">Anthropic准备推出Claude Memory Files：双模式记忆系统支持结构化持久存储</span>
+                    <span class="sum-item">Google DeepMind发布AlphaProof Nexus：Agent自主解决9个Erdős开放问题，含两个56年未解难题</span>
+                    <span class="sum-item">xAI推出Grok Build Beta版：SuperGrok和X Premium+用户可使用Plan Mode和多媒体生成</span>
+                    <span class="sum-item">Salesforce与Snowflake本周发布财报，市场聚焦AI对企业软件的冲击程度</span>
+                    <span class="sum-item">ClickUp大规模裁员用数千AI Agent替代员工，显示白领工作被AI快速取代</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">华为正式发表"韬定律"：以"时间缩微"替代"几何缩微"，目标2031年达1.4nm同等水平</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">SaaS-Bench测试暴露Computer-Use Agent短板：最强Claude Opus 4.7端到端通过率仅3.8%</span>
+                    <span class="sum-item">中科大团队ICML 2026论文揭示：大模型终身编辑中"越改越稳"的归一化机制</span>
+                    <span class="sum-item">中科大等联合提出Flow-OPD：在线策略蒸馏解决Flow Matching模型多任务对齐冲突</span>
+                    <span class="sum-item">Aholo.js实现10亿高斯点3D场景实时浏览器渲染，开源MIT协议</span>
+                    <span class="sum-item">港中文团队CUHK-X数据集：7模态58K样本人体动作数据集填补多模态模型短板</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">软件工程三个时代演进：1.0基础设施、2.0云服务、3.0 AI Agent</span>
+                    <span class="sum-item">Cerebras晶圆级芯片实现单晶圆承载完整NVL72机架性能，绕过网络功耗瓶颈</span>
+                    <span class="sum-item">宇树科技展示WVLA 2.0模型：会议室清洁多任务全自主操作演示</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">GPT-5.6在Codex后台被曝光：1.5M上下文窗口，内部代号iri…</a>
+                <a href="#c-模型前沿-1" class="nav-item">通义千问3.7-Max上线隐式缓存：自动复用KV缓存，推理速度提升成本降…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">Anthropic准备推出Claude Memory Files：双模式…</a>
+                <a href="#c-产业动态-1" class="nav-item">Google DeepMind发布AlphaProof Nexus：Ag…</a>
+                <a href="#c-产业动态-2" class="nav-item">xAI推出Grok Build Beta版：SuperGrok和X Pr…</a>
+                <a href="#c-产业动态-3" class="nav-item">Salesforce与Snowflake本周发布财报，市场聚焦AI对企业…</a>
+                <a href="#c-产业动态-4" class="nav-item">ClickUp大规模裁员用数千AI Agent替代员工，显示白领工作被A…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">华为正式发表"韬定律"：以"时间缩微"替代"几何缩微"，目标2031年达…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">SaaS-Bench测试暴露Computer-Use Agent短板：最…</a>
+                <a href="#c-研究关注-1" class="nav-item">中科大团队ICML 2026论文揭示：大模型终身编辑中"越改越稳"的归一…</a>
+                <a href="#c-研究关注-2" class="nav-item">中科大等联合提出Flow-OPD：在线策略蒸馏解决Flow Matchi…</a>
+                <a href="#c-研究关注-3" class="nav-item">Aholo.js实现10亿高斯点3D场景实时浏览器渲染，开源MIT协议</a>
+                <a href="#c-研究关注-4" class="nav-item">港中文团队CUHK-X数据集：7模态58K样本人体动作数据集，填补多模态…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">软件工程三个时代演进：1.0基础设施、2.0云服务、3.0 AI Age…</a>
+                <a href="#c-X讨论-1" class="nav-item">Cerebras晶圆级芯片实现单晶圆承载完整NVL72机架性能，绕过网络…</a>
+                <a href="#c-X讨论-2" class="nav-item">宇树科技展示WVLA 2.0模型：会议室清洁多任务全自主操作演示</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h"><span class="ent">GPT-5</span>.6在<span class="ent">Codex</span>后台被曝光：1.5M上下文窗口，内部代号iris-alpha，预计6月发布</h3>
+            <p class="card-body">多名开发者在<span class="ent">OpenAI</span> <span class="ent">Codex</span>后台日志中发现尚未公布的<strong>gpt-5.6模型</strong>，内部开发代号为<strong>iris-alpha</strong>，另有ember-alpha和beacon-alpha两个测试标签。通过<span class="ent">ChatGPT</span> Pro的OAuth认证在<span class="ent">Codex</span>环境中成功调用后，探针测试显示上下文窗口达到<strong>150万tokens</strong>，较<span class="ent">GPT-5</span>.5的API上限（1.05M）提升约43%。开发者在OpenCode中实测90万tokens输入时模型仍正常运行。泄露信息显示<span class="ent">GPT-5</span>.6将采取双版本策略：标准版主攻多步推理，Pro版强化Agent工作流。<span class="ent">OpenAI</span>研究人员透露，支撑近期重大数学突破的底层模型已在内部广泛用作日常调试和技术工作的主力。Polymarket预测<span class="ent">GPT-5</span>.6在6月30日前发布概率超过85%。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">OpenAI</span>将主力模型迭代周期压缩至30-45天，6月将迎来<span class="ent">GPT-5</span>.6、<span class="ent">Anthropic</span> Sonnet 4.8（代号Conway）和<span class="ent">Google</span> <span class="ent">Gemini</span> 3.5 Pro的集中发布，大模型竞争进入高频迭代阶段。</div>
+            <div class="card-src"><a href="https://mp.weixin.qq.com/s/T8x357cWij8VKsTlm868Qg" target="_blank">新智元</a> / <a href="https://x.com/pankajkumar_dev/status/2058194939264307638" target="_blank">@pankajkumar_dev</a> / <a href="https://x.com/0xLogicrw/status/2054785297452314671" target="_blank">@0xLogicrw</a></div>
+        </article>
+        <article class="card" id="c-模型前沿-1">
+            <h3 class="card-h">通义千问3.7-Max上线隐式缓存：自动复用KV缓存，推理速度提升成本降低</h3>
+            <p class="card-body">阿里巴巴通义千问3.7-Max正式上线隐式缓存功能，系统自动在推理过程中复用已计算的键值对，用户无需任何配置即可获得更快的响应速度和更低的推理成本。该功能对于长序列和重复调用场景效果尤为显著。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 隐式缓存正在成为大模型推理优化的标配，通义千问的跟进显示各厂商在该领域的竞争日趋激烈。</div>
+            <div class="card-src"><a href="https://x.com/Alibaba_Qwen/status/2058932656797368619#m" target="_blank">@alibaba_qwen</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>准备推出<span class="ent">Claude</span> Memory Files：双模式记忆系统支持结构化持久存储</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>正在测试<span class="ent">Claude</span>的双模式记忆系统：现有的"Classic"模式将用户信息压缩为单条摘要，新方案"Memory Files"将记忆分散为多个按主题、项目或场景组织的结构化文档，用户可随时浏览和编辑。该架构可在不占用上下文窗口的情况下为<span class="ent">Claude</span>提供更大量、更持久的用户记录。同步推进的还有"Dreams"功能——一种异步记忆整理机制，可合并重复、更新过期条目、解决矛盾，<span class="ent">Anthropic</span>将其类比为REM睡眠记忆巩固，目前已在Opus 4.7和Sonnet 4.6上有限测试。此外，代号"Conway"的<span class="ent">Claude</span>后台持久化Agent也预计即将上线。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 从单条摘要到结构化文件记忆的升级，标志着AI助手从"对话记忆"向"个人知识库"演进，是Agent长程自主工作的基础设施前提。</div>
+            <div class="card-src"><a href="https://www.testingcatalog.com/anthropic-plans-claude-memory-update-with-new-memory-files/" target="_blank">TestingCatalog</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h"><span class="ent">Google</span> DeepMind发布AlphaProof Nexus：Agent自主解决9个Erdős开放问题，含两个56年未解难题</h3>
+            <p class="card-body"><span class="ent">Google</span> DeepMind发布AlphaProof Nexus，一个基于<span class="ent">Gemini</span>的形式化证明搜索Agent框架。该框架在353个开放Erdős问题中自主解决了<strong>9个</strong>（包括两个悬而未决56年的问题），在492个OEIS猜想中证明了<strong>44个</strong>，还解决了一个代数几何领域开放15年的问题和一个最小最大优化领域开放7年的问题。研究表明，即使最基本的Agent——交替使用LLM生成和Lean形式化验证——也能复现Erdős问题的成功，但在最困难的问题上成本更高，每个问题约花费几百美元。该Agent已部署至组合数学、优化、图论、代数几何和量子光学等方向的实际数学研究合作中。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI驱动的形式化证明正从辅助工具演进为数学研究的生产力工具，<span class="ent">Gemini</span>+Lean的Agent架构展示了LLM在严格推理场景的实用性，单题几百美元的成本已具备研究级实用价值。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.22763v1" target="_blank">arXiv</a> / <a href="https://x.com/pushmeet/status/2058936037754224998" target="_blank">@pushmeet</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h"><span class="ent">xAI</span>推出Grok Build Beta版：SuperGrok和X Premium+用户可使用Plan Mode和多媒体生成</h3>
+            <p class="card-body"><span class="ent">xAI</span>向所有SuperGrok和X Premium+用户推出Grok Build Beta版。用户可以使用Plan Mode功能、Imagine工具创建图像和视频，以及构建自动化工作流。该功能集成在X平台内，为创作者和企业用户提供端到端的AI Agent开发能力。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Grok Build的发布标志着<span class="ent">xAI</span>在AI Agent平台领域的正式入局，与<span class="ent">OpenAI</span>、<span class="ent">Anthropic</span>等展开直接竞争。</div>
+            <div class="card-src"><a href="https://x.com/xai/status/2058973760708091907#m" target="_blank">@xai</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h">Salesforce与Snowflake本周发布财报，市场聚焦AI对企业软件的冲击程度</h3>
+            <p class="card-body">过去半年，华尔街用「SaaS 末日」形容一场惨烈杀跌，Salesforce、ServiceNow、Snowflake股价均从高点<strong>腰斩</strong>。有分析指出，市场过度悲观导致这些龙头股被错杀，但AI并未消灭软件行业，而是带来了结构性分化。与此同时，AI复杂度与合规风险上升反而催生了对相关软件的新需求。本周财报季，两家公司的AI功能商业化进展及传统软件许可证收入变化将成为市场焦点。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 企业软件公司的AI转型速度将决定其未来估值，Salesforce和Snowflake的财报是观察AI软件商业化进程的重要窗口。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/articles/salesforce-snowflake-earnings-focus-attention-ais-software-impact" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-产业动态-4">
+            <h3 class="card-h">ClickUp大规模裁员用数千AI Agent替代员工，显示白领工作被AI快速取代</h3>
+            <p class="card-body">成立九年的创业公司ClickUp宣布大规模裁员，用数千个AI Agent替代数百名员工。该公司CEO表示AI正在重塑知识工作的本质，裁员是转型的一部分。此举引发业界对AI取代白领工作的广泛讨论。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> ClickUp案例是AI替代白领工作的典型案例，显示软件行业的结构性变革正在加速，劳动力市场面临深刻调整。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/25/what-clickups-mass-layoff-tells-us-about-the-future-of-work/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h">华为正式发表"韬定律"：以"时间缩微"替代"几何缩微"，目标2031年达1.4nm同等水平</h3>
+            <p class="card-body">华为公司董事、半导体业务部总裁何庭波在2026国际电路与系统研讨会上正式发表<strong>"韬（τ）定律"</strong>，提出以<strong>"时间缩微"</strong>替代摩尔定律的"几何缩微"路线。该定律以系统性降低时间常数（韬τ）为目标，通过逻辑折叠等创新技术压缩信号传播时延、提升晶体管密度。华为过去六年已成功设计并量产<strong>381款芯片</strong>，<strong>预计到2031年基于该定律的高端芯片晶体管密度将达到1.4纳米制程的同等水平</strong>。何庭波宣布，<strong>今年秋季华为将发布新的麒麟手机芯片，完整采用逻辑折叠技术</strong>。值得注意的是，该路线本质上是在美国制裁限制先进制程设备获取的背景下，试图通过架构创新绕开制造端约束。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> "韬定律"是中国首次在全球半导体领域提出指导产业发展的新原则，逻辑折叠路线试图绕开EUV光刻机限制来缩小与台积电的差距，但实际芯片性能、量产能力和供应链稳定性仍需今年秋季新麒麟芯片的产品验证。</div>
+            <div class="card-src"><a href="https://mp.weixin.qq.com/s/3dEiVhs8gs7vY7H3gorDVw" target="_blank">智东西</a> / <a href="https://www.theinformation.com/briefings/huawei-moves-narrow-chip-gap-tsmc-despite-u-s-sanctions" target="_blank">The Information</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">SaaS-Bench测试暴露Computer-Use Agent短板：最强<span class="ent">Claude Opus</span> 4.7端到端通过率仅3.8%</h3>
+            <p class="card-body">UniPat AI发布SaaS-Bench，在23个真实SaaS系统、106个跨应用长程任务上测试Computer-Use Agent能力。最强模型<strong><span class="ent">Claude Opus</span> 4.7检查点得分43.9%，端到端完全通过率仅3.8%</strong>（106个任务仅完整通过4个），<strong><span class="ent">Kimi</span> K2.5和<span class="ent">Gemini</span> 3.1 Pro完全通过率为零</strong>。93.4%的任务跨至少两个应用，97.3%的文本任务操作超过100步。SaaS-Bench揭示了Agent的四种结构性失败：任务越长通过率越低、一步错误导致链式失败、执行后不验证结果、同一任务多次运行分数差异巨大（<span class="ent">Claude Sonnet</span> 4.6同一任务三次运行分数从0.00到0.68）。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 当前Agent在长程真实工作流中的能力远低于Benchmark成绩，核心瓶颈不是单步操作能力，而是对持久状态的有效推理和闭环验证机制的缺失。面向人类的SaaS界面可能需要为Agent重新设计。</div>
+            <div class="card-src"><a href="https://mp.weixin.qq.com/s/DZIzuzR7W0jZH0QFoBKQAA" target="_blank">机器之心</a> / <a href="https://unipat.ai" target="_blank">UniPat AI</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">中科大团队ICML 2026论文揭示：大模型终身编辑中"越改越稳"的归一化机制</h3>
+            <p class="card-body">中科大马鑫等人在ICML 2026发表论文"More Edits, More Stable"，揭示终身模型编辑（Lifelong Model Editing）中「越改越稳」的反直觉现象。研究聚焦于终身归一化（Lifelong Normalization, LN），发现移除LN会导致性能立即崩溃，而早期的编辑反而能促进后续编辑的成功。论文首次给出了LN的理论解释，证明其结合岭回归时参数更新具有渐近正交性和有界范数，直接缓解灾难性遗忘和模型崩溃。基于此提出StableEdit方法，通过显式预热阶段和全白化强化稳定性循环。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 终身归一化研究为理解LLM持续更新中的稳定性提供了理论框架，StableEdit的实际训练效率提升仍需在大规模模型上进一步验证。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.11836" target="_blank">arXiv</a> / <a href="https://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&mid=2247720489&idx=2&sn=74ab49af6c3fa2c39c528c98ca4d3a84" target="_blank">PaperWeekly</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">中科大等联合提出Flow-OPD：在线策略蒸馏解决Flow Matching模型多任务对齐冲突</h3>
+            <p class="card-body">方振等人联合提出Flow-OPD，将LLM后训练中的在线策略蒸馏（OPD）引入Flow Matching文本生成图像模型。该方法采用两阶段策略：先通过单奖励GRPO微调培养领域专精教师模型，再通过在线采样、任务路由标注和轨迹级密集监督将多个教师的专业知识蒸馏到单一学生模型中。还引入流形锚定正则化（MAR），利用任务无关教师提供全数据监督，缓解纯RL对齐常见的审美退化问题。基于<strong>Stable Diffusion 3.5 Medium</strong>，Flow-OPD将<strong>GenEval得分从63提升至92，OCR准确率从59提升至94</strong>，较vanilla GRPO整体提升约10个点，且出现了"学生超越教师"的涌现效应。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Flow-OPD将LLM后训练的OPD范式成功迁移到图像生成领域，解决了多奖励信号"跷跷板效应"和奖励作弊问题，为构建通用文本生成图像模型提供了可扩展的对齐方案。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.08063" target="_blank">arXiv</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651034802&idx=2&sn=8073f8f1de5678cc24a4b43a269766f2&chksm=852fd1f268d756956986565e47c70a58ea19b9064c0aa697e4e1d89bea4a9f87ab7c54381a62&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        <article class="card" id="c-研究关注-3">
+            <h3 class="card-h">Aholo.js实现10亿高斯点3D场景实时浏览器渲染，开源MIT协议</h3>
+            <p class="card-body">开源3D Gaussian Splatting渲染引擎<strong>Aholo.js</strong>实现了将10亿高斯点3D世界实时渲染到浏览器的突破，性能指标超越李飞飞团队此前的方法。该引擎通过chunk-level LoD与流式调度，支持10亿级高斯点场景秒级加载，首屏10秒内进入；提供效果优先、性能优先和极限性能多档渲染配置；支持物理碰撞体生成和云端混合渲染。项目采用<strong>MIT开源协议</strong>，支持ply/spz/sog/splat等主流格式，适合SDK接入和二次开发。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 3DGS浏览器渲染引擎的开源化将降低空间计算和数字孪生的技术门槛，Aholo.js的LoD+流式方案在工程上具有实用价值。</div>
+            <div class="card-src"><a href="https://aholojs.dev/zh-CN/" target="_blank">Aholo.js</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651034802&idx=1&sn=aca7d8c47e9a0e86138d845b09d9e70a&chksm=85efa726dff6d75b1a26f0afde495559630d2e045dd2ecf1e18ed0f3262bb4240187b32f3296&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        <article class="card" id="c-研究关注-4">
+            <h3 class="card-h">港中文团队CUHK-X数据集：7模态58K样本人体动作数据集，填补多模态模型短板</h3>
+            <p class="card-body">香港中文大学邢国良教授团队发布CUHK-X大型多模态人体动作数据集。该数据集包含<strong>58,445个样本</strong>，覆盖<strong>40种动作</strong>、<strong>30名参与者</strong>、两个室内环境，涵盖7种模态（视觉、深度、姿态、音频、IMU、mmWave等）。团队提出了三个基准任务：动作识别（HAR，平均准确率76.52%）、动作理解（HAU，40.76%）和动作推理（HARn，70.25%），包含6个评估子任务。研究指出当前大视觉语言模型在非RGB模态上表现薄弱，主要原因是缺乏大规模数据-描述配对资源。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> CUHK-X的数据-描述配对方式解决了传统动作数据集标注粗糙的问题，为具身智能和多模态推理研究提供了标准化评测基准。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2512.07136" target="_blank">arXiv</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3NTIyODUzNA==&mid=2649797156&idx=2&sn=11ccc50b5924ba280b0e08f8720ab867&chksm=861a5a63398458e6019f16aa16a46afb9760530771b9a1e133c314aa63176db73dfcf1a32741&scene=0&xtrack=1#rd" target="_blank">DeepTech深科技</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h">软件工程三个时代演进：1.0基础设施、2.0云服务、3.0 AI Agent</h3>
+            <p class="card-body">资深工程师指出，同时精通软件工程三个时代的工程师极为稀缺：1.0时代专注构建基础设施，2.0时代聚焦云服务和分布式系统，3.0时代以AI Agent为核心。每个时代需要不同的技术思维和工作模式，从底层系统设计到云原生架构，再到AI Agent的自主决策逻辑，要求工程师具备跨越多个技术栈的能力。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI Agent时代对工程师提出了更高要求，但「全能工程师」的稀缺性也意味着团队协作和专精化仍是现实路径。</div>
+            <div class="card-src"><a href="https://x.com/denny_zhou/status/2058994840327881010#m" target="_blank">@denny_zhou</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h">Cerebras晶圆级芯片实现单晶圆承载完整NVL72机架性能，绕过网络功耗瓶颈</h3>
+            <p class="card-body">Cerebras的晶圆级芯片在单个晶圆上实现了完整计算集群的性能。通过绕过缺陷并保持片内路由，Cerebras实现了机架级算力而无需传统AI服务器之间的网络互联功耗瓶颈。该技术将整个NVL72机架的计算资源集成在单一晶圆上，大幅降低了系统功耗和通信延迟。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Cerebras晶圆级方案在特定AI负载下具有能效优势，但软件生态和通用性仍是其进入主流市场的关键障碍。</div>
+            <div class="card-src"><a href="https://x.com/SemiAnalysis_/status/2058714944313450805#m" target="_blank">@semianalysis_</a></div>
+        </article>
+        <article class="card" id="c-X讨论-2">
+            <h3 class="card-h">宇树科技展示WVLA 2.0模型：会议室清洁多任务全自主操作演示</h3>
+            <p class="card-body">宇树科技展示WVLA 2.0模型，展示了会议室清洁测试的多任务全自主操作能力。该视频为单次连续拍摄，机器人完成了多个清洁任务，展现了强泛化能力。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 宇树机器人展示了具身智能的实际进展，但实验室演示与真实复杂场景的差距仍是挑战。</div>
+            <div class="card-src"><a href="https://x.com/UnitreeRobotics/status/2058809948650484130#m" target="_blank">@unitreerobotics</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-05-25.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-05-27.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["GPT-5.6 exposed in Codex backend: 1.5M context window, internal codename iris-alpha, expected June release", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Research Focus", "X Discussion", "Qwen3.7-Max launches implicit caching: auto-reuses KV cache, faster inference with lower costs", "Anthropic preparing Claude Memory Files: dual-mode memory system supporting structured persistent storage", "Google DeepMind releases AlphaProof Nexus: Agent autonomously solves 9 Erdős open problems, including two 56-year unresolved problems", "xAI launches Grok Build Beta: SuperGrok and X Premium+ users can use Plan Mode and multimedia generation", "Salesforce and Snowflake report earnings this week, market focuses on AI's impact on enterprise software", "ClickUp mass layoffs replace hundreds of employees with thousands of AI Agents, showing white-collar work rapidly replaced by AI", "Huawei officially presents \"Tao's Law\": replacing \"geometric shrinking\" with \"time shrinking\", targeting 1.4nm equivalent density by 2031", "SaaS-Bench reveals Computer-Use Agent weaknesses: strongest Claude Opus 4.7 achieves only 3.8% end-to-end pass rate", "USTC team ICML 2026 paper reveals: normalization mechanism making \"edits more stable over time\" in LLM lifelong editing", "USTC et al. jointly propose Flow-OPD: online policy distillation solving multi-task alignment conflicts in Flow Matching models", "Aholo.js achieves 1 billion Gaussian point real-time browser 3D scene rendering, open source under MIT license", "CUHK team releases CUHK-X dataset: 7-modal 58K human motion samples, filling multimodal model gaps", "Software engineering's three eras: 1.0 infrastructure, 2.0 cloud services, 3.0 AI Agents", "Cerebras wafer-scale chip achieves full NVL72 rack performance on single wafer, bypassing networking power bottlenecks", "Unitree showcases WVLA 2.0 model: conference room cleaning multi-task fully autonomous operation demo", "Multiple developers discovered unpublished gpt-5.6 in OpenAI Codex backend logs, internal dev codename iris-alpha, with ember-alpha and beacon-alpha as test tags. Successfully called via ChatGPT Pro OAuth in Codex environment, probe tests show context window reaching 1.5M tokens, approximately 43% increase over GPT-5.5's API limit (1.05M). Developers实测90万tokens输入时模型仍正常运行。Leaked info shows GPT-5.6 will adopt dual-version strategy: standard for multi-step reasoning, Pro for enhanced Agent workflows. OpenAI researchers reveal underlying model supporting recent major math breakthroughs widely used internally for daily debugging and technical work. Polymarket predicts >85% probability of GPT-5.6 release before June 30.", "Alibaba's Qwen3.7-Max officially launches implicit caching: system auto-reuses computed key-value pairs during inference, users get faster responses and lower inference costs without any configuration. This feature is particularly effective for long sequences and repeated call scenarios.", "Anthropic testing Claude's dual-mode memory system: current \"Classic\" mode compresses user info into single summary, new \"Memory Files\" approach scatters memories across multiple structured documents organized by topic, project, or scenario, users can browse and edit anytime. This architecture can provide Claude with larger, more persistent user records without occupying context window. Also in development: \"Dreams\" function—an async memory consolidation mechanism that merges duplicates, updates expired entries, resolves contradictions, Anthropic likens it to REM sleep memory consolidation, currently in limited testing on Opus 4.7 and Sonnet 4.6. Additionally, codename \"Conway\" Claude backend persistent Agent also expected soon.", "Google DeepMind releases AlphaProof Nexus, a Gemini-based formal proof search Agent framework. This framework autonomously solved 9 out of 353 open Erdős problems (including two 56-year unresolved problems), proved 44 out of 492 OEIS conjectures, also solved one 15-year open problem in algebraic geometry and one 7-year open problem in minimax optimization. Research shows even the most basic Agent—alternating LLM generation with Lean formal verification—can reproduce Erdős problem success, but costs more on hardest problems, roughly hundreds of dollars per problem. This Agent has been deployed in actual mathematical research collaborations in combinatorics, optimization, graph theory, algebraic geometry, and quantum optics.", "xAI launches Grok Build Beta for all SuperGrok and X Premium+ users. Users can use Plan Mode, Imagine tool for creating images and videos, and build automated workflows. This feature is integrated into X platform, providing end-to-end AI Agent development capabilities for creators and enterprise users.", "Over the past six months, Wall Street has dubbed the brutal selloff the \"SaaS apocalypse,\" with Salesforce, ServiceNow, and Snowflake stocks all cut in half from their highs. Some analysts point out that market over-pessimism led to these leading stocks being wrongly sold off, but AI has not eliminated the software industry—instead bringing structural differentiation. Meanwhile, rising AI complexity and compliance risks are反而催生 new demand for related software. This week's earnings season, two companies' AI feature commercialization progress and changes in traditional software license revenue will become market focus.", "Nine-year-old startup ClickUp announces mass layoffs, replacing hundreds of employees with thousands of AI Agents. CEO says AI is reshaping the nature of knowledge work, layoffs are part of transformation. This triggers broad industry discussion about AI replacing white-collar workers.", "Huawei Director and Semiconductor Business President He Tingbo officially presents \"Tao's (τ) Law\" at 2026 International Circuit and System Symposium, proposing to replace Moore's Law's \"geometric shrinking\" with \"time shrinking\". This law targets systematically reducing time constants (Tao τ), compressing signal propagation delay and improving transistor density through innovative technologies like logic folding. Huawei has successfully designed and mass produced 381 chips over the past six years, expecting to achieve 1.4nm equivalent transistor density for high-end chips by 2031 based on this law. He Tingbo announced Huawei will release new Kirin mobile chip this fall, fully utilizing logic folding technology. Notably, this approach essentially attempts to bypass manufacturing constraints through architectural innovation under US sanctions restricting advanced process equipment access.", "UniPat AI releases SaaS-Bench, testing Computer-Use Agent capabilities on 23 real SaaS systems across 106 cross-application long-horizon tasks. Strongest model Claude Opus 4.7 checkpoint score 43.9%, end-to-end complete pass rate only 3.8% (only 4 of 106 tasks fully passed), Kimi K2.5 and Gemini 3.1 Pro complete pass rate zero. 93.4% of tasks span at least two applications, 97.3% of text tasks require over 100 operations. SaaS-Bench reveals four structural failures of Agents: pass rate decreases as task length increases, one step error causes chain failures, no post-execution result verification, massive score variance across multiple runs of same task (Claude Sonnet 4.6 same task three runs scored from 0.00 to 0.68).", "USTC's Ma Xin et al. publish \"More Edits, More Stable\" at ICML 2026, revealing the counter-intuitive \"more editing, more stability\" phenomenon in Lifelong Model Editing. Research focuses on Lifelong Normalization (LN), finding LN removal causes immediate performance collapse while early edits actually facilitate subsequent edit success. The paper provides LN's first theoretical explanation, proving its combination with ridge regression yields asymptotically orthogonal and bounded-norm parameter updates, directly mitigating catastrophic forgetting and model collapse. Based on this, StableEdit is proposed, reinforcing stability cycles through explicit warmup and full whitening.", "Fang Zhen et al. jointly propose Flow-OPD, bringing online policy distillation (OPD) from LLM post-training to Flow Matching text-to-image models. The method uses a two-stage strategy: first fine-tuning domain-specialized teacher models with single-reward GRPO, then distilling multiple teachers' expertise into a single student model through online sampling, task-routing annotation, and trajectory-level dense supervision. Manifold Anchoring Regularization (MAR) is introduced, using task-agnostic teachers for full-data supervision to mitigate aesthetic degradation common in pure RL alignment. Based on Stable Diffusion 3.5 Medium, Flow-OPD boosts GenEval from 63 to 92, OCR accuracy from 59 to 94, ~10 points overall improvement over vanilla GRPO, with an emergent \"student surpasses teacher\" effect.", "Open-source 3D Gaussian Splatting rendering engine Aholo.js achieves breakthrough in real-time browser rendering of 1 billion Gaussian-point 3D worlds, outperforming Li Fei-fei's team's previous method. The engine uses chunk-level LoD with streaming scheduling, enabling second-level loading for billion-point scenes with initial screen entry within 10 seconds; offers effect-priority, performance-priority, and extreme performance rendering modes; supports physics collision body generation and cloud hybrid rendering. MIT licensed, supporting ply/spz/sog/splat formats, suitable for SDK integration and secondary development.", "Professor Xing Guoliang's team at CUHK releases CUHK-X, a large-scale multimodal human motion dataset. The dataset contains 58,445 samples covering 40 action types, 30 participants, two indoor environments, encompassing 7 modalities (vision, depth, pose, audio, IMU, mmWave, etc.). The team proposes three benchmark tasks: Human Action Recognition (HAR, 76.52% avg accuracy), Human Action Understanding (HAU, 40.76%), and Human Action Reasoning (HARn, 70.25%), with 6 evaluation subtasks. Research indicates current large vision-language models perform poorly on non-RGB modalities, primarily due to lack of large-scale data-description pairing resources.", "Senior engineers note that engineers proficient across all three software engineering eras are extremely rare: Era 1.0 focused on infrastructure building, Era 2.0 on cloud services and distributed systems, Era 3.0 with AI Agents at the core. Each era demands different technical thinking and work patterns, from low-level system design to cloud-native architecture to AI Agent autonomous decision logic, requiring engineers to span multiple tech stacks.", "Cerebras's wafer-scale chip achieves full compute cluster performance on a single wafer. By bypassing defects and maintaining on-chip routing, Cerebras delivers rack-level computing without traditional inter-server network interconnection power bottlenecks. This technology integrates an entire NVL72 rack's compute resources onto one wafer, dramatically reducing system power consumption and communication latency.", "Unitree demonstrates WVLA 2.0 model, showcasing multi-task fully autonomous operation capability in conference room cleaning tests. The video is a single continuous take where the robot completes multiple cleaning tasks, demonstrating strong generalization.", "OpenAI compresses main model iteration cycles to 30-45 days, with June seeing concentrated releases of GPT-5.6, Anthropic Sonnet 4.8 (codename Conway), and Google Gemini 3.5 Pro, marking the large model competition entering a high-frequency iteration phase.", "Implicit caching is becoming a standard feature in LLM inference optimization, with Tongyi Qianwen's adoption signaling intensifying competition among providers in this area.", "The upgrade from single summaries to structured file memory marks AI assistants' evolution from \"conversational memory\" to \"personal knowledge base\", constituting the infrastructure prerequisite for Agents' long-horizon autonomous work.", "AI-driven formal proving is evolving from an auxiliary tool to a productive mathematics research instrument. The Gemini+Lean Agent architecture demonstrates LLM practicality in rigorous reasoning scenarios, with per-problem costs in the hundreds of dollars already reaching research-level practical value.", "Grok Build's release marks xAI's formal entry into the AI Agent platform space, competing directly with OpenAI, Anthropic, and others.", "Enterprise software companies' AI transformation speed will determine their future valuations, with Salesforce and Snowflake earnings serving as important windows into AI software commercialization progress.", "The ClickUp case is a typical example of AI replacing white-collar work, showing structural transformation in the software industry accelerating with the labor market facing profound adjustment.", "The \"Taotao Law\" is China's first attempt to propose a new principle guiding industrial development in the global semiconductor field. The logic folding approach attempts to circumvent EUV lithography constraints to narrow the gap with TSMC, but actual chip performance, mass production capability, and supply chain stability still require validation from new Kirin chips launching this fall.", "Current Agents' capabilities in long-horizon real workflows fall far below benchmark scores. The core bottleneck is not single-step operation capability but the lack of effective reasoning over persistent state and closed-loop verification mechanisms. Human-oriented SaaS interfaces may need redesign for Agents.", "Lifelong normalization research provides a theoretical framework for understanding LLM continuous update stability, but StableEdit's practical training efficiency improvements still require further validation on large-scale models.", "Flow-OPD successfully migrates LLM post-training OPD paradigm to image generation, solving multi-reward signal \"seesaw effect\" and reward hacking issues, providing a scalable alignment scheme for building general text-to-image models.", "Open-sourcing of 3DGS browser rendering engines will lower barriers to spatial computing and digital twins, with Aholo.js's LoD+ streaming solution having practical engineering value.", "CUHK-X's data-description pairing method solves the coarse labeling problem in traditional motion datasets, providing standardized evaluation benchmarks for embodied intelligence and multimodal reasoning research.", "The AI Agent era raises higher requirements for engineers, but the scarcity of \"full-stack engineers\" also means team collaboration and specialization remain practical paths.", "Cerebras's wafer-scale solution has energy efficiency advantages for specific AI workloads, but software ecosystem and generality remain key barriers to mainstream market entry.", "Unitree robots demonstrate real progress in embodied intelligence, but the gap between lab demonstrations and complex real-world scenarios remains a challenge.", "CUHK team's CUHK-X dataset: 7-modality 58K sample human motion dataset fills multimodal model gaps", "GPT-5.6 exposed on Codex backend: 1.5M context window, internal codename iri…", "Tongyi Qianwen 3.7-Max Launches Implicit Cache: Auto-reuse KV Cache, Faster Inference Lower Costs…", "Anthropic Prepares to Launch Claude Memory Files: Dual Mode…", "Google DeepMind Releases AlphaProof Nexus: Ag…", "xAI Launches Grok Build Beta: SuperGrok and X Pr…", "Salesforce and Snowflake Release Earnings This Week, Markets Focus on AI's Impact on Enterprise…", "ClickUp Mass Layoffs Replace Thousands of Employees with AI Agents, Showing White-collar Work Being A…", "Huawei Officially Unveils \"Tao's Law\": Replacing \"Geometric Miniaturization\" with \"Time Compression,\" Target to Achieve by 2031…", "SaaS-Bench Exposes Computer-Use Agent Weaknesses: Mos…", "USTC Team ICML 2026 Paper Reveals: \"More Editing More Stable\" Normalization in Lifelong Editing of LLMs…", "USTC et al. Jointly Propose Flow-OPD: Online Policy Distillation for Solving Flow Matchi…", "CUHK Team CUHK-X Dataset: 7-Modal 58K Sample Human Motion Dataset, Filling Multi-modal Gap…", "Three Eras of Software Engineering Evolution: 1.0 Infrastructure, 2.0 Cloud Services, 3.0 AI Age…", "Cerebras Wafer-Level Chip Achieves Full NVL72 Rack Performance on Single Wafer, Bypassing Network…", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

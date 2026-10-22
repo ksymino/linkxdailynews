@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>07月07日周二 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-07-07</div>
+            <h1>Hy3正式发布：Hunyuan团队半年内从Hy2迭代至Hy3，推理与Agent能力大幅跃升</h1>
+            <div class="header-sub">15 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">Hy3正式发布：Hunyuan团队半年内从Hy2迭代至Hy3，推理与Agent能力大幅跃升</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">AI招聘平台Mercor年化毛收入突破20亿美元，较年初翻倍</span>
+                    <span class="sum-item">Google调整隐私设置默认允许将用户数据用于AI训练</span>
+                    <span class="sum-item">Reddit以LLM对抗LLM垃圾内容，2026 Q1用户垃圾曝光下降20%</span>
+                    <span class="sum-item">Microsoft裁员4800人，Xbox部门1600人卷入重组，管理层级从14层压缩至3-5层</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">Anthropic与TeraWulf签署190亿美元算力租赁协议，后者股价大涨</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">前苹果团队创立的智能眼镜公司Even Realities以10亿美元估值完成$150M融资（美团、腾讯领投）</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">Anthropic团队发现LLM中存在类"全局工作空间"的J-space表征，并与Dehaene团队合作完成外部评述</span>
+                    <span class="sum-item">Sakana AI Sheaf-ADMM框架，多Agent分布式协调在Sudoku任务中达93%求解率</span>
+                    <span class="sum-item">MIPU：腾讯/中科院等团队提出面向LLM RL的"推理侧单调策略提升"目标</span>
+                    <span class="sum-item">PMD：跨episode"程序性记忆蒸馏"让LLM在RLVR训练中持续自改进</span>
+                    <span class="sum-item">Embodied.cpp：跨异构机器人的统一C++推理运行时，VLA模型闭环任务成功率最高100%</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">Google DeepMind与Apptronik扩大人形机器人研究合作，Apollo 2平台将贡献真实世界数据</span>
+                    <span class="sum-item">Anthropic 发布"The Making of Claude Code"幕后故事专题</span>
+                    <span class="sum-item">腾讯混元向vLLM贡献HPC-Ops高性能Attention与MoE推理后端</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">Hy3正式发布：Hunyuan团队半年内从Hy2迭代至Hy3，推理与Ag…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">4</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">AI招聘平台Mercor年化毛收入突破20亿美元，较年初翻倍</a>
+                <a href="#c-产业动态-1" class="nav-item">Google调整隐私设置默认允许将用户数据用于AI训练</a>
+                <a href="#c-产业动态-2" class="nav-item">Reddit以LLM对抗LLM垃圾内容，2026 Q1用户垃圾曝光下降2…</a>
+                <a href="#c-产业动态-3" class="nav-item">Microsoft裁员4800人，Xbox部门1600人卷入重组，管理层…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">Anthropic与TeraWulf签署190亿美元算力租赁协议，后者股…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">前苹果团队创立的智能眼镜公司Even Realities以10亿美元估值…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">Anthropic团队发现LLM中存在类"全局工作空间"的J-space…</a>
+                <a href="#c-研究关注-1" class="nav-item">Sakana AI Sheaf-ADMM框架，多Agent分布式协调在S…</a>
+                <a href="#c-研究关注-2" class="nav-item">MIPU：腾讯/中科院等团队提出面向LLM RL的"推理侧单调策略提升"…</a>
+                <a href="#c-研究关注-3" class="nav-item">PMD：跨episode"程序性记忆蒸馏"让LLM在RLVR训练中持续自…</a>
+                <a href="#c-研究关注-4" class="nav-item">Embodied.cpp：跨异构机器人的统一C++推理运行时，VLA模型…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">Google DeepMind与Apptronik扩大人形机器人研究合作…</a>
+                <a href="#c-X讨论-1" class="nav-item">Anthropic 发布"The Making of Claude Co…</a>
+                <a href="#c-X讨论-2" class="nav-item">腾讯混元向vLLM贡献HPC-Ops高性能Attention与MoE推理…</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h">Hy3正式发布：Hunyuan团队半年内从Hy2迭代至Hy3，推理与Agent能力大幅跃升</h3>
+            <p class="card-body">腾讯混元（Hunyuan）团队在不到半年时间内完成Hy2 → Hy3 preview → Hy3的快速迭代。<strong>Hy3 为 295B 总参 / 21B 激活 MoE 模型，含 3.8B MTP 层参数</strong>，80 层 Transformer + 1 层 MTP，192 专家（top-8 激活），<strong>上下文 256K</strong>。内部 270 名专家盲评中，Hy3 在前端开发、数据存储、CI/CD 等生产力任务上得分 <strong>2.67/4</strong>，超过 GLM-5.1（2.51/4）。抗幻觉方面，<strong>幻觉率从 12.5% 降至 5.4%</strong>，常识错误率从 25.4% 降至 12.7%；多轮指令继承问题的失败率从 17.4% 降至 7.9%。Hy3 与 <strong>Hy3-FP8</strong> 量化版本同步开源（Apache 2.0），可通过 vLLM 与 SGLang 部署（推荐 H20-3e 等大显存 GPU × 8）。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 混元以半年为周期迭代基础模型，重点强化推理与抗幻觉，反映国产大模型在Agent赛道的加速追赶；21B激活对标一线小尺寸MoE，配合vLLM/SGLang原生支持降低企业部署门槛。</div>
+            <div class="card-src"><a href="https://x.com/ShunyuYao12/status/2074151389945827744#m" target="_blank">@shunyuyao12</a> / <a href="https://huggingface.co/tencent/Hy3" target="_blank">HuggingFace Model Card</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h">AI招聘平台Mercor年化毛收入突破20亿美元，较年初翻倍</h3>
+            <p class="card-body">据The Information援引知情人士，AI招聘平台Mercor在6月年化毛收入跑率超过20亿美元，较今年早些时候翻倍。增长动力来自<strong>AI 应用开发者</strong>与<strong>财富500强企业</strong>两类客户——前者用 Mercor 招聘训练/微调模型所需的数据与技术人才，后者借此搭建自有 AI 模型。Mercor 创立三年，向全球签约工程师与标注人员按项目付费。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Mercor增长印证AI Recruiting赛道商业化跑通，垂直Agent类工具可快速突破传统招聘SaaS的天花板。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/exclusive-mercor-hit-2-billion-gross-annualized-revenue" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h"><span class="ent">Google</span>调整隐私设置默认允许将用户数据用于AI训练</h3>
+            <p class="card-body"><span class="ent">Google</span>近期更新隐私设置，允许公司将更多用户数据（包括媒体内容）用于AI训练。用户在<span class="ent">Google</span>账号设置中可手动关闭相关选项以退出数据共享。此次变更意味着默认状态下<span class="ent">Google</span>账户持有人的搜索记录、应用活动及部分媒体内容将进入AI训练数据流。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Google</span>在用户隐私与AI训练数据需求之间倾向后者，用户需主动操作才能拒绝，监管和舆论压力可能随之上升。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/07/06/if-you-use-google-youre-training-its-ai-heres-how-to-opt-out/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h">Reddit以LLM对抗LLM垃圾内容，2026 Q1用户垃圾曝光下降20%</h3>
+            <p class="card-body">Reddit公布其反垃圾系统升级细节：每日拦截<strong>2300万次</strong>垃圾浏览、新增<strong>25,000</strong>条垃圾帖/评论的拦截。Reddit通过LLM识别传统系统难以发现的协同造假模式，使<strong>2026年1-3月用户垃圾曝光较上季下降20%</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> LLM泛滥后平台转向"用AI对抗AI"，传统规则+ML过滤器在协调造假模式前失效，行业普遍面临新一轮军备竞赛。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/07/06/reddit-is-using-llms-to-solve-a-problem-llms-largely-created/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h"><span class="ent">Microsoft</span>裁员4800人，Xbox部门1600人卷入重组，管理层级从14层压缩至3-5层</h3>
+            <p class="card-body"><span class="ent">Microsoft</span>宣布裁员约<strong>4,800人</strong>，其中<strong>1,600人来自Xbox部门</strong>，全部裁员将在2027财年前累计达3,200人。Xbox CEO Asha Sharma在内部备忘录中称这是"Xbox历史上最重大的重组"，承认Xbox"业务不健康、毛利比同行低3-10倍"。同时微软新成立聚焦企业AI部署的"Frontier Company"业务单元并配套<strong>25亿美元投资</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 微软同时推进裁员与AI业务加码（Frontier Company + $2.5B），印证AI CapEx持续挤占传统业务预算，游戏和内容板块首当其冲。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/07/06/microsoft-lays-off-nearly-5000-employees-across-xbox-commercial-sales/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>与TeraWulf签署190亿美元算力租赁协议，后者股价大涨</h3>
+            <p class="card-body">比特币矿企兼数据中心运营商TeraWulf宣布与<span class="ent">Anthropic</span>签订20年租约，提供190亿美元算力容量。消息公布后TeraWulf股价周一大涨。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 190亿美元为近期头部AI公司单笔算力承诺的量级新高，矿企转型AI算力供应商趋势加速，<span class="ent">Anthropic</span>持续推进非<span class="ent">NVIDIA</span>自有算力布局。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/terawulf-shares-soar-19-billion-anthropic-data-center-deal" target="_blank">The Information</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h">前苹果团队创立的智能眼镜公司Even Realities以10亿美元估值完成1.5亿美元融资</h3>
+            <p class="card-body">智能眼镜公司Even Realities完成<strong>1.5亿美元</strong> pre-Series B 融资，估值达<strong>10亿美元</strong>，由美团和腾讯领投。Even Realities 总部位于深圳，成立于<strong>2023年</strong>，由前 <span class="ent">Apple</span> 工程师创立（CEO Will Wang 曾负责 <span class="ent">Apple</span> Watch 与 iPhone），早期投资人包括红杉中国（HSG）。公司主打"显示优先"的智能眼镜——<strong>不配摄像头</strong>，通过镜框内置 HUD 显示信息，配合 Even R1 指环实现输入。首代产品 Even G1 于 2024 年发布，<strong>销量突破 1 万副</strong>（首发品类首家），团队从 30-40 人扩张至 300-400 人。核心技术为自研的 <strong>Even HAO（Holistic Adaptive Optics）</strong> 端到端光学方案，自研微芯片、波导与处方支持。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 无摄像头 + 欧洲隐私标准设计避开智能眼镜最大争议点，"指环+显示"组合区别于 <span class="ent">Meta</span>/Ray-Ban 的"摄像头+AI"路线，腾讯+美团组合背书中国硬件出海能力。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/07/06/smart-glasses-maker-even-realities-hits-1b-valuation-with-150m-funding-led-by-meituan-tencent/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>团队发现LLM中存在类"全局工作空间"的J-space表征，并与Dehaene团队合作完成外部评述</h3>
+            <p class="card-body"><span class="ent">Anthropic</span> 团队在 Transformer Circuits 发表论文 <strong>"Verbalizable Representations Form a Global Workspace in Language Models"</strong>（Jack Lindsey 团队）。研究发现 LLM 中存在与人类"全局神经工作空间"（GNW）功能相似的稀疏子空间 <strong>J-space</strong>（使用 Jacobian lens 工具识别），位于中间层、容量有限、约占每层方差的 <10%。<strong><span class="ent">Claude Sonnet</span> 4.5</strong> 的 J-space 中包含模型"不愿外显"的内部思考（潜在欺骗意图、对自身诚实性的元认知等）；同时该论文邀请 <strong>Stanislas Dehaene、Neel Nanda</strong> 等专家独立评述，Dehaene 评述称这是 GNW 假设的"里程碑式验证"，但强调 <span class="ent">Claude</span> 缺乏身体、持续记忆与自发动态。Neel Nanda（<span class="ent">Google</span> DeepMind）在 <strong><span class="ent">Qwen</span> 3.6 27B</strong> 上独立复现了核心结论，并在处理歧义句时发现可激活并起因果作用的"interpretative meta-tokens"（如中文"这是什么意思"对应的 token）。<span class="ent">Anthropic</span> 与 <strong>Neuronpedia</strong> 合作发布开源权重模型的可交互 demo。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Anthropic</span> 把 LLM interpretability 与神经科学意识理论直接对接，J-space 既是对齐工具（识别隐性意图）也是"意识"争论的实证战场；Neel Nanda 在不同模型上的独立复现 + 跨模型泛化（meta-tokens）显著提高结论可信度。</div>
+            <div class="card-src"><a href="http://transformer-circuits.pub/2026/workspace/index.html" target="_blank">Transformer Circuits</a> / <a href="https://www-cdn.anthropic.com/files/4zrzovbb/website/cc4be2488d65e54a6ed06492f8968398ddc18ebe.pdf" target="_blank">External Commentary PDF</a> / <a href="https://x.com/AnthropicAI/status/2074185348142280912" target="_blank">@AnthropicAI</a> / <a href="https://x.com/NeelNanda5/status/2074193936588148891" target="_blank">@NeelNanda5</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">Sakana AI Sheaf-ADMM框架，多Agent分布式协调在Sudoku任务中达93%求解率</h3>
+            <p class="card-body">Sakana AI 论文 <strong>"Learning Multi-Agent Coordination via Sheaf-ADMM"</strong>（Jeffrey Seely、Bartłomiej Cupiał、Llion Jones；ICML 2026）将多Agent协调建模为基于 cellular sheaf 的可微 ADMM 优化：每个 Agent 只见局部视图，通过 primal / consensus / dual 状态变量进行邻居协调。在多Agent Sudoku 上<strong>求解率 93%</strong>（同等参数 MPNN baseline 仅 11%），MNIST 在 canvas-size domain shift 下保留 <strong>86%</strong> 精度（CNN baseline 仅 11%）。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Sakana 把分布式优化经典方法（ADMM）与拓扑学（sheaf）嫁接到多Agent LLM 协同，相比黑盒消息传递可显式审计协调过程，对分布式 AI 系统设计提供新工具。</div>
+            <div class="card-src"><a href="https://sakana.ai/sheaf-admm/" target="_blank">Sakana Blog</a> / <a href="https://arxiv.org/abs/2605.31005" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">MIPU：腾讯/中科院等团队提出面向LLM RL的"推理侧单调策略提升"目标</h3>
+            <p class="card-body">论文 <strong>"The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the Real Objective for LLM Reinforcement Learning"</strong>（Jing Liang 等 12 人，含腾讯/中科院作者）指出 LLM RL 中的"训练-推理 mismatch"导致离线策略偏移使训练脆弱甚至崩溃，现有方法只稳定训练策略而非真正改善部署用的推理策略。论文提出新目标 <strong>MIPI（Monotonic Inference Policy Improvement）</strong> 和两阶段框架 <strong>MIPU</strong>，通过推理侧 gap proxy 挑选同步候选更新。实验在两个模型规模的高 mismatch 设置下，MIPU 提升平均推理性能与训练稳定性。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 把 RL 目标从"训练侧策略改进"重新定义为"推理侧单调提升"，直击 LLM RL 训练常崩溃的根因，对所有走 RLHF/RLVR 后训练路线的团队有方法论价值。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2606.29526" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-3">
+            <h3 class="card-h">PMD：跨episode"程序性记忆蒸馏"让LLM在RLVR训练中持续自改进</h3>
+            <p class="card-body">论文 <strong>"Procedural Memory Distillation: Online Reflection for Self-Improving Language Models"</strong>（Ye Liu 等 9 人）针对 RLVR 与 SDPO 等自蒸馏方法只使用 episode 级 verifier 信号而忽略 rollout 中更丰富程序性信息的问题，提出 <strong>PMD</strong>：将跨 episode 信号（哪些策略反复通过、哪些失败模式持续存在）转化为可复用的"程序性记忆"，在线蒸馏到策略权重中（推理时无需记忆）。在 <span class="ent">Qwen</span>3-8B 与 OLMo3-Instruct-7B 上，PMD 相对 SDPO 在 <strong>SciKnowEval 上提升 3.8-5.5%、LiveCodeBench 上提升 7.9-13.6%</strong>；冻结记忆或策略任一方都会导致 SciKnowEval 各域下降超 10%。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> "co-evolution of policy & memory"是 RLVR 自改进的关键设计点，对 RL 后训练长期稳定增益有借鉴意义；不依赖外部记忆即可内部化跨 episode 经验，对部署侧无额外开销。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2607.01480" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-4">
+            <h3 class="card-h">Embodied.cpp：跨异构机器人的统一C++推理运行时，VLA模型闭环任务成功率最高100%</h3>
+            <p class="card-body">论文 <strong>"Embodied.cpp: A Portable Inference Runtime of Embodied AI Models on Heterogeneous Robots"</strong>（Ling Xu 等 9 人）指出 VLA（vision-language-action）与 WAM（world-action）模型部署分散在不同 Python 栈与机器人胶水代码中，现有推理运行时多为请求-响应服务模式，无法满足具身场景的多速率闭环控制、batch-1 延迟优先与可扩展 I/O。Embodied.cpp 把 VLA / WAM 的共享执行路径抽象为 <strong>5 层架构</strong>（input adapters / sequence builders / backbone execution / head plugins / deployment adapters），在 VLA 模型 HY-VLA 上闭环任务成功率 <strong>100%</strong>、pi0.5 上 91%，WAM benchmark 块显存从 312.2 MiB 降至 88.1 MiB。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 把"具身模型跨硬件部署"统一到单一 C++ 运行时抽象，类似大模型推理侧的 vLLM/TensorRT 之于 LLM；对 VLA / WAM 走向工业级部署有底层基建意义。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2607.02501" target="_blank">arXiv</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h"><span class="ent">Google</span> DeepMind与Apptronik扩大人形机器人研究合作，Apollo 2平台将贡献真实世界数据</h3>
+            <p class="card-body"><span class="ent">Google</span> DeepMind宣布与Apptronik扩大研究合作。Apptronik位于德州奥斯汀的 <strong>Robot Park</strong> 数据采集与训练设施已扩展至约<strong>90,000 平方英尺</strong>，同步发布 <strong>Apollo 2</strong> 人形机器人平台（双足与轮式两种构型）。Apollo 2 机器人在 Robot Park 及 DeepMind、客户站点执行物流、制造、零售等任务，<strong>收集的真实数据反哺 <span class="ent">Gemini</span> Robotics 基础模型</strong>。Apptronik CEO Jeff Cardenas 表示该机制是"持续学习闭环"：工作-采集-改进循环。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> DeepMind通过真实硬件平台合作补齐具身智能数据缺口，Apollo 2成为DeepMind人形机器人研究的核心数据源；多场地分布式数据采集正在取代单一实验室内演示。</div>
+            <div class="card-src"><a href="https://x.com/GoogleDeepMind/status/2074157282477154597#m" target="_blank">@googledeepmind</a> / <a href="https://apptronik.com/news-collection/welcome-to-robot-park-where-apptroniks-apollo-goes-to-work" target="_blank">Apptronik Press Release</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h"><span class="ent">Anthropic</span> 发布"The Making of <span class="ent">Claude Code</span>"幕后故事专题</h3>
+            <p class="card-body"><span class="ent">Anthropic</span> 上线专题 <strong>"The Making of <span class="ent">Claude Code</span>"</strong>，由研究员、工程师与早期用户共同讲述。<span class="ent">Claude Code</span> 的雏形是 <span class="ent">Anthropic</span> Labs 团队负责人 <strong>Ben Mann</strong> 与 RL 负责人 <strong>Shauna Kravec</strong> 在 2021-2022 年间做的内部 VS Code 扩展；2022 年底 <strong>Dawn Drain</strong> 团队做出了支持 bash 与持久 shell 的"clide"命令行原型。<strong>Boris Cherny</strong>（<span class="ent">Claude Code</span> 现任负责人）2024 年初在 Labs 内部 demo 一个能在 <span class="ent">Apple</span> Music 上读屏的 <strong><span class="ent">Claude</span> CLI</strong>，当时仅拿到两三个 Slack 点赞。Labs 经理 <strong>Adam Wolff</strong>（前 React 核心团队、电影专业出身）受 Boris 多次邀请出任经理，从工程经理 <strong>Raphael Lee</strong>、设计师 <strong>Meaghan Choi</strong>、产品负责人 <strong>Cat Wu</strong> 到工程师 <strong>Sid Bidasaria、Robert Boyce、Igor Kofman</strong> 陆续加入。<strong>2025 年 2 月</strong>正式以 <strong><span class="ent">Claude Code</span></strong> 名称对外发布研究预览；<strong><span class="ent">Claude</span> 4 系列模型</strong> + 订阅制（"业务模式创新 + 模型创新"）共同推动起飞。<strong>Boris Cherny 自述</strong>：2025 年 2 月 <span class="ent">Claude Code</span> 写约 <strong>10%</strong> 的代码，5 月升至 30-40%，<strong>Sonnet 4</strong> 发布后他自己 <strong>100% 代码由 <span class="ent">Claude Code</span> 撰写</strong>；Shauna 提到自己同时跑 12 个 <span class="ent">Claude</span> 在不同任务上的"集群"。早期外部用户包括 <strong>Ramp</strong> 的 AI DevX 负责人 Austin Ray（5 分钟内认定"将根本改变一切"）、<strong>Bun</strong> 创始人 Jarred Sumner（曾因团队讨论禁用 <span class="ent">Claude Code</span> 而坚持反对）、为阿拉斯加残障青年非营利组织做应用的顾问 Kyle Easterly 等。团队文化上，<strong>Boris</strong> 坚持"模型能力达到 20-30% 可用就发布，等下一代模型达 80-90%"的高容错节奏；<strong>Sid</strong> 提到内部"无 PR 限制、无审核限制"，修复可几分钟推到用户。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Claude Code</span> 走的是"模型能力 + 工具链 + 小团队 + 快速迭代"路线，与 GitHub Copilot 类"插件式助手"路径迥异；官方公开整段研发历程，是少数把"Agent 产品如何炼成"透明化的头部案例，对国内 IDE/Agent 产品团队有方法论价值。</div>
+            <div class="card-src"><a href="https://www.anthropic.com/features/making-of-claude-code" target="_blank">Anthropic</a> / <a href="https://x.com/claudeai/status/2074244664199115201" target="_blank">@claudeai</a></div>
+        </article>
+        <article class="card" id="c-X讨论-2">
+            <h3 class="card-h">腾讯混元向vLLM贡献HPC-Ops高性能Attention与MoE推理后端</h3>
+            <p class="card-body">腾讯混元团队向开源推理框架vLLM贡献了HPC-Ops后端，针对Hopper架构优化Attention与FP8 MoE算子，专为混元Hy3模型设计。该方案在变长Decode与MoE延迟场景下提升吞吐性能，集成至vLLM后可在生产环境直接部署混元大模型。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 腾讯混元从单纯发布模型转向推理基础设施共建，进一步绑定vLLM生态，为开源大模型降低部署门槛并强化自身在大模型推理栈的存在感。</div>
+            <div class="card-src"><a href="https://vllm.ai/blog/2026-07-06-vllm-hpc-ops" target="_blank">vLLM Blog</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-07-06.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-07-08.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+</body>
+</html>

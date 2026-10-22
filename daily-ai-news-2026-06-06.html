@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>06月06日周六 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-06-06</div>
+            <h1>Sakana AI成立递归自我提升实验室RSI Lab，整合6项核心成果推进AI自主进化</h1>
+            <div class="header-sub">20 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">Sakana AI成立递归自我提升实验室RSI Lab，整合6项核心成果推进AI自主进化</span>
+                    <span class="sum-item">Airbnb CEO Brian Chesky计划成立AI实验室</span>
+                    <span class="sum-item">Apple批准Poke为Messages for Business平台首个AI智能体</span>
+                    <span class="sum-item">Google发布Gemma 4 QAT量化检查点，E2B模型内存降至1GB</span>
+                    <span class="sum-item">Anthropic总裁Daniela Amodei回应AI回报质疑：年化收入突破470亿美元</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">NVIDIA CEO黄仁勋二次访韩，与SK集团共建AI工厂部署超5万台GPU</span>
+                    <span class="sum-item">Google与SpaceX签署云服务协议：月付9.2亿美元租用约11万块GPU</span>
+                    <span class="sum-item">AirTrunk投资300亿美元在印度建设5GW AI数据中心</span>
+                    <span class="sum-item">Meta借鉴Tesla策略，用帐篷快速部署数据中心缩短建设周期</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">Flourish Labs获5亿美元融资，Bezos押注类脑AI寻找大脑核心算法</span>
+                    <span class="sum-item">金融时序大模型开发商Grace Investment Machine完成过亿元天使轮系列融资</span>
+                    <span class="sum-item">Airwallex空中云汇收购AI财务数据平台Leapfin</span>
+                    <span class="sum-item">Supabase完成5亿美元F轮融资，估值8个月翻倍至105亿美元</span>
+                    <span class="sum-item">Helion完成4.65亿美元G轮融资，估值增至155亿美元推进聚变发电</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">SkillOpt：微软提出agent skill文本空间优化器，52个评测全面领先</span>
+                    <span class="sum-item">ScientistOne：可验证的自主研究系统，零幻觉引用率</span>
+                    <span class="sum-item">CMU提出Sleep-Wake Memory Consolidation机制改进LLM长上下文学习</span>
+                    <span class="sum-item">State Commitment Learning：训练LLM区分计算token与记忆token</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">Anthropic科学博客：让Claude成为化学家</span>
+                    <span class="sum-item">Meta SAM 3D团队获CVPR 2026最佳论文荣誉提名</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">Sakana AI成立递归自我提升实验室RSI Lab，整合6项核心成果…</a>
+                <a href="#c-产业动态-1" class="nav-item">Airbnb CEO Brian Chesky计划成立AI实验室，聚焦用…</a>
+                <a href="#c-产业动态-2" class="nav-item">Apple批准Poke为Messages for Business平台首…</a>
+                <a href="#c-产业动态-3" class="nav-item">Google发布Gemma 4 QAT量化检查点，E2B模型内存降至1G…</a>
+                <a href="#c-产业动态-4" class="nav-item">Anthropic总裁Daniela Amodei回应AI回报质疑：年化…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">4</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">NVIDIA CEO黄仁勋二次访韩，与SK集团共建AI工厂部署超5万台G…</a>
+                <a href="#c-算力追踪-1" class="nav-item">Google与SpaceX签署云服务协议：月付9.2亿美元租用约11万块…</a>
+                <a href="#c-算力追踪-2" class="nav-item">AirTrunk投资300亿美元在印度建设5GW AI数据中心</a>
+                <a href="#c-算力追踪-3" class="nav-item">Meta借鉴Tesla策略，用帐篷快速部署数据中心缩短建设周期</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">Flourish Labs获5亿美元融资，Bezos押注类脑AI寻找大脑…</a>
+                <a href="#c-初创and融资-1" class="nav-item">金融时序大模型开发商Grace Investment Machine完成…</a>
+                <a href="#c-初创and融资-2" class="nav-item">Supabase完成5亿美元F轮融资，投后估值105亿美元，8个月翻倍</a>
+                <a href="#c-初创and融资-3" class="nav-item">Helion完成4.65亿美元G轮融资，估值增至155亿美元推进聚变发电</a>
+                <a href="#c-初创and融资-4" class="nav-item">Airwallex空中云汇收购AI财务数据平台Leapfin</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">4</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">SkillOpt：微软提出agent skill文本空间优化器，52个评…</a>
+                <a href="#c-研究关注-1" class="nav-item">ScientistOne：可验证的自主研究系统，零幻觉引用率</a>
+                <a href="#c-研究关注-2" class="nav-item">CMU提出Sleep-Wake Memory Consolidation…</a>
+                <a href="#c-研究关注-3" class="nav-item">State Commitment Learning：训练LLM区分计算t…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">Anthropic科学博客：让Claude成为化学家</a>
+                <a href="#c-X讨论-1" class="nav-item">Meta SAM 3D团队获CVPR 2026最佳论文荣誉提名</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h">Sakana AI成立递归自我提升实验室RSI Lab，整合6项核心成果推进AI自主进化</h3>
+            <p class="card-body">Sakana AI在东京正式成立递归自我提升实验室（RSI Lab），致力于推动AI开发从人工研发转向自主进化的智能引擎。实验室整合了过去两年的六项核心成果：与牛津/剑桥合作的LLM-Squared（让LLM发明更优训练方法）、与UBC合作的Darwin Gödel Machine（在<span class="ent">SWE-bench</span>上自动将软件工程基线性能翻倍）、仅需150样本解决复杂优化问题的ShinkaEvolve、击败804名人类选手获AtCoder竞赛第一的ALE-Agent、与MIT合作的Digital Red Queen对抗性协同进化系统，以及已发表于<strong>Nature</strong>的AI Scientist全自动科学发现系统。RSI Lab定位为追求样本效率而非算力堆叠的自改进引擎，强调在国家级算力预算上实现可复利的能力增长。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Sakana AI将RSI从理论概念推向工程实践，其"样本效率优先于算力规模"的路线与美中巨头的暴力扩展形成差异化竞争，Nature论文背书增强了学术可信度。</div>
+            <div class="card-src"><a href="https://sakana.ai/rsi-lab/" target="_blank">Sakana AI</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h">Airbnb CEO Brian Chesky计划成立AI实验室，聚焦用户交互与设计</h3>
+            <p class="card-body">Airbnb CEO Brian Chesky正在筹建一家新的AI实验室，这是他首次正式涉足AI竞赛。Chesky计划创办AI公司开发模型，重点放在用户交互和设计上，目前处于融资早期阶段。Chesky与<span class="ent">OpenAI</span>创始人Sam Altman保持长期密切联系，去年曾表示现有LLM产品尚未达到Airbnb所需水平。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Airbnb切入AI不是从模型层而是从交互/设计层切入，这是消费互联网公司AI化的一条差异化路径，但能否吸引顶尖AI人才是关键挑战。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/04/airbnbs-brian-chesky-plans-to-launch-a-new-ai-lab/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h"><span class="ent">Apple</span>批准Poke为Messages for Business平台首个AI智能体</h3>
+            <p class="card-body"><span class="ent">Apple</span>批准AI智能体Poke成为Messages for Business平台接入的<strong>首款第三方AI智能体</strong>。Poke允许用户通过简单文本消息使用AI代理功能，包括回复邮件和设置提醒。此前Messages for Business主要服务于企业客服沟通，此次调整使iMessages从通信工具向任务入口扩展。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Apple</span>在自家消息平台开放AI智能体入口是平台级基础设施的重要信号，但目前的定位仍限于商务消息场景，消费级扩展尚待观察。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/04/apple-approves-poke-as-the-first-ai-agent-on-its-messages-for-business-platform/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h"><span class="ent">Google</span>发布Gemma 4 QAT量化检查点，E2B模型内存降至1GB</h3>
+            <p class="card-body"><span class="ent">Google</span>发布Gemma 4量化感知训练（QAT）检查点，通过在训练中模拟量化来最小化压缩后的质量损失。发布包括面向主流硬件的<strong>Q4_0格式</strong>和专为移动端设计的自定义量化方案——后者采用静态激活、通道级量化和<strong>靶向2-bit压缩</strong>（仅压缩token生成部分，推理层保持高精度），将Gemma 4 E2B文本模型的内存占用降至<strong>1GB以下</strong>。<span class="ent">Google</span>同时推出MTP（多token预测）QAT检查点，在量化后保留MTP的推理加速效果。权重已在HuggingFace发布，支持llama.cpp、vLLM、SGLang、MLX、Ollama、LM Studio等主流推理框架。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 1GB跑2B模型是端侧部署的关键阈值突破，自定义移动量化方案（靶向2-bit+静态激活）比通用PTQ更激进，可能成为开源模型端侧优化的新范式。</div>
+            <div class="card-src"><a href="https://blog.google/innovation-and-ai/technology/developers-tools/quantization-aware-training-gemma-4/" target="_blank">Google Blog</a></div>
+        </article>
+        <article class="card" id="c-产业动态-4">
+            <h3 class="card-h"><span class="ent">Anthropic</span>总裁Daniela Amodei回应AI回报质疑：年化收入突破470亿美元</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>联合创始人Daniela Amodei在彭博科技大会上表示，公司年化收入在5月已突破<strong>470亿美元</strong>，较2025年底约90亿美元大幅增长。她回应外界对AI投资回报的质疑，称训练模型和提供推理服务的前期成本高昂，前沿AI企业需要持续从公开市场获取大量资本，这推动了公司的IPO计划。此前<span class="ent">Anthropic</span>刚完成650亿美元H轮融资，投后估值965亿美元，认购需求远超计划规模。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Anthropic</span>从90亿到470亿美元的年化收入增长反映了AI基础设施支出的指数级曲线，但收入增速是否可持续是IPO定价的关键变量。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/04/ahead-of-its-ipo-anthropics-daniela-amodei-shrugs-off-doubts-about-ais-returns/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h"><span class="ent">NVIDIA</span> CEO黄仁勋二次访韩，与SK集团共建AI工厂部署超5万台GPU</h3>
+            <p class="card-body"><span class="ent">NVIDIA</span> CEO黄仁勋时隔约7个月再次访问韩国，与SK集团会长崔泰源会面讨论AI基础设施合作。<span class="ent">NVIDIA</span>与SK集团共建AI工厂，聚焦半导体研发、数字孪生云基础设施及AI智能体开发，预计<strong>2027年末竣工，将部署超5万台<span class="ent">NVIDIA</span> GPU</strong>。SK电信计划基于<span class="ent">NVIDIA</span> GPU构建工业级AI云平台，SK海力士正在开发HBM4内存配套Blackwell GPU系列并利用CUDA-X技术提升芯片设计效率。<span class="ent">NVIDIA</span>还与韩国初创公司Upstage合作开发韩国主权AI模型。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">NVIDIA</span> CEO高频访韩反映韩国在全球AI算力供应链（GPU+HBM）中的战略地位持续上升，从芯片供应到共建AI工厂，供应链深度与合作广度同步推进。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/nvidia-ceo-returns-south-korea-ai-memory-runs-short" target="_blank">The Information</a> / <a href="https://blogs.nvidia.com/blog/korea-ecosystem-2026/" target="_blank">NVIDIA Blog</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-1">
+            <h3 class="card-h"><span class="ent">Google</span>与<span class="ent">SpaceX</span>签署云服务协议：月付9.2亿美元租用约11万块GPU</h3>
+            <p class="card-body">根据<span class="ent">SpaceX</span>向SEC提交的文件，<span class="ent">Google</span>已同意从<strong>2026年10月至2029年6月每月向<span class="ent">SpaceX</span>支付9.2亿美元</strong>，获取约<strong>11万块<span class="ent">NVIDIA</span> GPU</strong>及配套CPU、内存等算力资源。<span class="ent">Google</span>称该协议源于近期AI产品需求的意外增长。协议规定<span class="ent">SpaceX</span>需在2026年9月30日前交付约定GPU数量，否则<span class="ent">Google</span>有权终止协议或按比例减少月费。2027年起任何一方可提前90天通知终止合作。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">SpaceX</span>从航天公司转型为AI算力供应商，月付9.2亿美元的交易规模刷新了单笔云服务协议纪录，反映了AI算力供需的结构性紧张。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/05/google-will-pay-spacex-920m-per-month-for-compute/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-2">
+            <h3 class="card-h">AirTrunk投资300亿美元在印度建设5GW AI数据中心</h3>
+            <p class="card-body">澳大利亚数据中心运营商AirTrunk宣布计划在印度投资<strong>3万亿卢比（约300亿美元）</strong>建设<strong>5GW</strong>数据中心容量。AirTrunk由黑石集团和加拿大养老金计划投资委员会支持，是全球领先的超大规模数据中心运营商。印度总理莫迪对该项目表示欢迎。追踪28家印度数据中心生态企业的指数今年已累计增加约470亿美元市值。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 300亿美元单笔投资是印度AI基础设施领域最大规模之一，AirTrunk的进入将显著改变印度数据中心市场格局。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/05/airtrunk-commits-30b-to-build-5gw-of-ai-data-centers-in-india/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-3">
+            <h3 class="card-h"><span class="ent">Meta</span>借鉴Tesla策略，用帐篷快速部署数据中心缩短建设周期</h3>
+            <p class="card-body"><span class="ent">Meta</span>在俄亥俄州新奥尔巴尼郊外搭建<strong>6个快速部署结构（帐篷式数据中心）</strong>，借鉴Tesla和<span class="ent">xAI</span>的做法以将施工时间缩短约一半。同时使用模块化燃气轮机解决供电问题。据数据中心部署追踪机构Cleanview创始人Michael Thomas透露，此举是<span class="ent">Meta</span>为加速AI算力基础设施部署而采取的非常规手段。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 从传统砖混建筑到帐篷式快速部署，反映了AI算力需求增长速度已超过传统数据中心建设周期的承受能力，基础设施的敏捷化成为新竞争维度。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/04/meta-steals-a-tactic-from-tesla-and-builds-data-centers-in-tents/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h">Flourish Labs获5亿美元融资，Bezos押注类脑AI寻找大脑核心算法</h3>
+            <p class="card-body">Jeff Bezos领投的类脑AI公司Flourish Labs完成<strong>5亿美元融资</strong>，估值约<strong>25亿美元</strong>。公司由神经科学家Thomas Reardon（前<span class="ent">Meta</span>）和前<span class="ent">Amazon</span> S-team高管Rob Williams联合创立，团队约24名顶级神经科学家和AI研究员。Flourish的目标是通过湿实验室研究大脑皮层柱（cortical columns），寻找大脑的"核心算法"，构建<strong>50瓦以下</strong>的合成AI大脑，实现持续学习。联创Joshua Vogelstein近期发表果蝇神经网络论文，发现其效率是Transformer的<strong>10倍</strong>。目前已开发受海马体启发的记忆处理方法和可持续学习模型，正与主要芯片制造商谈判上硅。目标5年内突破。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Bezos从投通用AI（<span class="ent">Amazon</span>自研）转向投类脑AI，反映顶级资本开始对LLM暴力扩展路线的对冲布局。但顾问Ben Recht坦言"不确定能否成功"，类脑路线5年内能否产出可用系统是核心风险。</div>
+            <div class="card-src"><a href="https://flourishlabs.ai/flourish_wired_article.pdf" target="_blank">WIRED</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-1">
+            <h3 class="card-h">金融时序大模型开发商Grace Investment Machine完成过亿元天使轮系列融资</h3>
+            <p class="card-body">GIM（Grace Investment Machine）成立于2025年7月，由投资人徐嘉浩和港大计算机系助理教授刘琦（牛津博士，前DeepMind/<span class="ent">Meta</span> FAIR研究员）联合创立，定位为金融垂域推理大模型。天使+轮由赛富投资基金领投，某千亿市值互联网公司CEO家办跟投；天使轮由Monolith砺思资本和五源资本共同投资。团队已完成从<strong>30M到1.5B再到8B参数的Scaling Law验证</strong>，模型引入针对金融数据的时序编码机制和非线性门控结构。近期以CogAlpha为名发表的研究成果已被<strong>ACL 2026主会接收</strong>。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 从底层自研金融垂域推理大模型而非基于通用模型微调，是AI在金融领域从辅助工具走向自主投资决策的一条路径，但金融监管合规和模型可解释性是核心挑战。</div>
+            <div class="card-src"><a href="https://news.pedaily.cn/202606/564923.shtml" target="_blank">投资界</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-2">
+            <h3 class="card-h">Supabase完成5亿美元F轮融资，投后估值105亿美元，8个月翻倍</h3>
+            <p class="card-body">开源Postgres开发平台Supabase宣布完成<strong>5亿美元F轮融资</strong>，由新加坡主权基金GIC领投，Stripe、Accel、Y Combinator、Craft、Felicis、Coatue等参投，投后估值达<strong>105亿美元</strong>，较8个月前的上一轮估值翻倍。CEO Paul Copplestone表示资金将用于加速Multigres等开源Postgres工具开发。Supabase表示超六成新数据库由AI Agent创建，公司显著受益于<span class="ent">Claude</span>、<span class="ent">Codex</span>等AI编码平台的增长。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Supabase乘AI编码浪潮估值翻倍，开源BaaS+AI Agent的飞轮效应正在验证，但估值增速与收入增速的匹配度值得关注。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/05/supabase-doubles-valuation-to-10b-in-8-months/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-3">
+            <h3 class="card-h">Helion完成4.65亿美元G轮融资，估值增至155亿美元推进聚变发电</h3>
+            <p class="card-body">Sam Altman支持的核聚变能源公司Helion完成<strong>4.65亿美元G轮融资</strong>，由Thrive Capital领投，投后估值达<strong>155亿美元</strong>，较2025年1月上一轮54.3亿美元估值增至近三倍。Helion此前已将等离子体加热至1.5亿摄氏度（达到商业聚变温度门槛约四分之三），正加速推进2028年向<span class="ent">Microsoft</span>供应50MW聚变电力的目标。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 聚变能源公司的估值在两年内从50亿飙升至155亿美元，反映资本市场对AI算力电力需求的紧迫预期正传导至能源基础设施层。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/04/helion-the-sam-altman-backed-fusion-startup-raises-465m-to-build-a-power-plant-for-microsoft/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-4">
+            <h3 class="card-h">Airwallex空中云汇收购AI财务数据平台Leapfin</h3>
+            <p class="card-body">Airwallex空中云汇宣布收购美国加州的财务数据自动化平台Leapfin，后者专注于利用AI技术自动化收入确认和对账流程，帮助全球财务团队加速关账。Leapfin核心产品、管理层及研发团队将保持原有运营节奏，保障存量客户业务平稳衔接。此次收购将Leapfin的AI财务自动化能力整合到Airwallex的全球金融基础设施中，拓展了其在企业财务全生命周期管理的服务边界。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Airwallex通过收购将AI财务自动化纳入自身金融基础设施，从跨境支付向企业财务全链路管理扩展。</div>
+            <div class="card-src"><a href="https://www.airwallex.com/global/newsroom/airwallex-acquires-leapfin-expanding-financial-lifecycle-capabilities" target="_blank">Airwallex Newsroom</a> / <a href="https://www.itjuzi.com/merger/14135" target="_blank">IT桔子</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">SkillOpt：微软提出agent skill文本空间优化器，52个评测cell全面领先</h3>
+            <p class="card-body">微软提出SkillOpt，首个系统化的文本空间skill优化器：独立优化器模型将评分rollout转化为有界增/删/改编辑，仅当严格提升验证分数时才接受修改。文本学习率预算、拒绝编辑缓冲、epoch级慢/元更新确保稳定性，且部署时零额外推理调用。在<strong>6个benchmark、7个模型、3个执行框架</strong>共52个评测cell上，SkillOpt全部取得最佳或并列最佳，击败人类、one-shot LLM、TextGrad、GEPA等所有竞品。在<strong><span class="ent">GPT-5</span>.5</strong>上将无skill基线准确率提升<strong>+23.5分</strong>（直接对话）、<strong>+24.8分</strong>（<span class="ent">Codex</span> agent循环）、<strong>+19.1分</strong>（<span class="ent">Claude Code</span>）。跨模型规模和执行环境的迁移实验显示优化后的skill artifact保持价值。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 把agent skill当"外部状态"用深度学习的纪律来优化，是prompt engineering走向系统化训练的关键一步。零推理开销的设计使其可直接部署，跨模型迁移能力是实用化的核心。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.23904" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">ScientistOne：可验证的自主研究系统，零幻觉引用率</h3>
+            <p class="card-body">当前自主研究agent的输出存在表面评估无法检测的可靠性问题：幻觉引用、不可复现的分数、方法描述与实现不一致。该研究提出Chain-of-Evidence（CoE）可验证框架，要求每个声明可追溯到证据源，并基于此构建ScientistOne端到端自主研究系统。对<strong>5个系统、5个前沿研究任务共75篇论文</strong>审计发现：所有基线至少存在一种系统性缺陷——幻觉引用率达<strong>21%</strong>，分数验证通过率低至<strong>42%</strong>，方法-代码对齐率20%-80%。ScientistOne实现<strong>零幻觉引用（0/337）</strong>、<strong>完美分数验证（12/12）</strong>、最高方法-代码对齐（14/15），同时在所有5个任务上匹配或超越人类专家表现，并在MLE-Bench上获金牌。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 自主研究agent的可靠性问题是其进入正式科研流程的最大障碍，CoE框架给出了可操作的审计标准，ScientistOne的零幻觉结果说明结构化证据链比事后检测更有效。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.26340" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">CMU提出Sleep-Wake Memory Consolidation机制改进LLM长上下文学习</h3>
+            <p class="card-body">CMU提出类睡眠记忆巩固机制，让模型周期性地将近期上下文转化为持久化快权重（persistent fast weights），然后清空key-value缓存。睡眠阶段模型对累积上下文执行N次离线循环更新SSM模块权重，推理时将额外计算转移到睡眠阶段，保持唤醒阶段预测延迟不变。实验在细胞自动机、多跳图检索和数学推理等任务上验证，增大睡眠轮数N可显著提升性能，尤其在需要深层推理的样本上增益最大，而常规Transformer和SSM-Attention混合模型均无法完成这些任务。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 将神经科学中的睡眠巩固机制引入LLM的上下文管理是一个优雅的方向，通过将计算负担从推理时转移到离线阶段来解决长上下文问题，实用价值取决于sleep阶段的开销控制。</div>
+            <div class="card-src"><a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651037190&idx=2&sn=b5976fc929c8c0c135d11c99e0ea1ace&chksm=859e618de6044862168f1de8be7e7a17557aeb08fa76e15cbeff69c97c83dbd3f5ce7d38e334&scene=0&xtrack=1#rd" target="_blank">机器之心</a> / <a href="https://arxiv.org/abs/2605.26099" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-3">
+            <h3 class="card-h">State Commitment Learning：训练LLM区分计算token与记忆token</h3>
+            <p class="card-body">推理语言模型不区分用于计算的token与构成持久状态的token，导致失败的推理尝试和草稿工作影响后续预测。该研究提出State Commitment Learning训练目标，定义persistent-state sufficiency标准，设计Counterfactual Erasure RL (CERL)方法：在相同前缀下同时评估保留与擦除隐藏想法的两条路径，仅当擦除路径仍正确时给予奖励。实验在数学推理、长链逻辑、科学问答和多轮工具使用四个评估场景中，CERL<strong>显著降低答案对隐藏想法的依赖且不牺牲准确率</strong>，持续优于correctness-only RL和long-answer SFT两个baseline。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 区分计算与记忆是提升推理模型效率的有潜力的方向，CERL通过反事实擦除奖励机制让模型学会"自我清理"无效中间步骤。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2606.05201" target="_blank">arXiv</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>科学博客：让<span class="ent">Claude</span>成为化学家</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>科学博客发布新文章，讲述如何让<span class="ent">Claude</span>理解和操作分子结构。核心挑战是核磁共振（NMR）光谱分析——化学家确定分子结构的主要工具。<span class="ent">Claude</span>通过分析NMR谱图来推断分子结构，展示了LLM在科学实验数据解读场景中的推理能力，是<span class="ent">Claude</span>进入正式科学工作流的具体验证。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Anthropic</span>持续通过科学博客展示<span class="ent">Claude</span>的科学推理能力，NMR谱图分析是LLM从文本理解走向实验数据解读的关键一步。</div>
+            <div class="card-src"><a href="https://www.anthropic.com/research/making-claude-a-chemist" target="_blank">Anthropic Research</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h"><span class="ent">Meta</span> SAM 3D团队获CVPR 2026最佳论文荣誉提名</h3>
+            <p class="card-body"><span class="ent">Meta</span> SAM 3D团队因在Segment Anything 3D领域的研究获得CVPR 2026最佳论文荣誉提名（Best Paper Honorable Mention）。SAM 3D能从单张2D图像重建完整三维结构，精确捕捉手部和脚部细致动作，基于超过<strong>700万张</strong>标注图像训练，将SAM的分割能力扩展至三维点云/场景。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> SAM 3D获奖表明基础视觉-语言模型向3D世界的迁移仍是学界关注焦点，<span class="ent">Meta</span>在该领域保持领先。</div>
+            <div class="card-src"><a href="https://x.com/AIatMeta/status/2062920724944507095#m" target="_blank">@aiatmeta</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-06-05.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-06-07.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["Sakana AI Establishes Recursive Self-Improvement Lab RSI Lab, Integrating 6 Core Achievements to Advance AI Autonomous Evolution", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "X Discussion", "Airbnb CEO Brian Chesky Plans to Establish AI Lab, Focusing on User Interaction and Design", "Apple Approves Poke as First AI Agent for Messages for Business Platform", "Google Releases Gemma 4 QAT Quantized Checkpoints, E2B Model Memory Reduced to 1GB", "Anthropic President Daniela Amodei Responds to AI ROI Doubts: Annualized Revenue Exceeds $47 Billion", "NVIDIA CEO Jensen Huang's Second Visit to Korea, Building AI Factory with SK Group Deploying Over 50,000 GPUs", "Google Signs Cloud Services Agreement with SpaceX: Paying $920 Million Monthly to Rent Approximately 110,000 GPUs", "AirTrunk Invests $30 Billion to Build 5GW AI Data Center in India", "Meta Adopts Tesla Strategy, Using Tents to Rapidly Deploy Data Centers and Shorten Construction Cycle", "Flourish Labs Raises $500 Million, Bezos Bets on Brain-Inspired AI to Find Brain's Core Algorithms", "Financial Time-Series LLM Developer Grace Investment Machine Completes Over 100M Yuan Series Angel Funding", "Supabase Completes $500M Series F Funding at $10.5B Post-Money Valuation, Doubling in 8 Months", "Helion Completes $465M Series G Funding, Valuation Increases to $15.5 Billion to Advance Fusion Power", "Airwallex Acquires AI Financial Data Platform Leapfin", "SkillOpt: Microsoft Proposes Agent Skill Text Space Optimizer, Leading Across All 52 Evaluation Cells", "ScientistOne: Verifiable Autonomous Research System with Zero Hallucination Citation Rate", "CMU Proposes Sleep-Wake Memory Consolidation Mechanism to Improve LLM Long-Context Learning", "State Commitment Learning: Training LLM to Distinguish Computational Tokens from Memory Tokens", "Anthropic Science Blog: Making Claude a Chemist", "Meta SAM 3D Team Receives CVPR 2026 Best Paper Honorable Mention", "Sakana AI Formally Establishes Recursive Self-Improvement Lab (RSI Lab) in Tokyo, Dedicated to Shifting AI Development from Manual Research to Self-Evolving Intelligent Engines. The lab integrates six core achievements from the past two years: LLM-Squared with Oxford/Cambridge (enabling LLM to invent better training methods), Darwin Gödel Machine with UBC (automatically doubling software engineering baseline performance on SWE-bench), ShinkaEvolve solving complex optimization problems with only 150 samples, ALE-Agent defeating 804 human competitors to win first place in AtCoder competition, Digital Red Queen adversarial coevolution system with MIT, and AI Scientist fully automated scientific discovery system published in Nature. RSI Lab positions itself as a self-improving engine pursuing sample efficiency over compute scaling, emphasizing compoundable capability growth at national-level compute budgets.", "Airbnb CEO Brian Chesky is establishing a new AI lab, his first formal entry into the AI competition. Chesky plans to found an AI company developing models, focusing on user interaction and design, currently in early fundraising stage. Chesky maintains long-term close contact with OpenAI founder Sam Altman, and stated last year that existing LLM products have not yet reached the level Airbnb needs.", "Apple approves AI agent Poke as the first third-party AI agent on Messages for Business platform. Poke allows users to access AI agent functions through simple text messages, including replying to emails and setting reminders. Previously Messages for Business primarily served enterprise customer service, and this adjustment expands iMessage from a communication tool to a task gateway.", "Google releases Gemma 4 Quantization-Aware Training (QAT) checkpoints, minimizing quality loss after compression by simulating quantization during training. Releases include Q4_0 format for mainstream hardware and a custom quantization scheme designed for mobile—featuring static activation, channel-wise quantization, and targeted 2-bit compression (compressing only the token generation portion while keeping inference layers at high precision), reducing Gemma 4 E2B text model memory footprint to under 1GB. Google also introduces MTP (Multi-Token Prediction) QAT checkpoints, preserving MTP's inference acceleration effect after quantization. Weights are available on HuggingFace, supporting mainstream inference frameworks including llama.cpp, vLLM, SGLang, MLX, Ollama, and LM Studio.", "Anthropic co-founder Daniela Amodei stated at Bloomberg Tech conference that the company's annualized revenue exceeded $47 billion in May, a significant increase from approximately $9 billion at end of 2025. She responded to external doubts about AI ROI, stating that upfront costs for training models and providing inference services are substantial, and frontier AI companies need to continuously raise significant capital from public markets, driving the company's IPO plans. Previously Anthropic just completed $65 billion Series H funding at a $96.5 billion post-money valuation, with subscription demand far exceeding the planned size.", "NVIDIA CEO Jensen Huang visited South Korea for the first time in about 7 months, meeting with SK Group Chairman Choi Tae-yong to discuss AI infrastructure cooperation. NVIDIA and SK Group are building an AI factory focused on semiconductor R&D, digital twin cloud infrastructure, and AI agent development, expected to be completed by end of 2027, deploying over 50,000 NVIDIA GPUs. SK Telecom plans to build an industrial-grade AI cloud platform based on NVIDIA GPUs, and SK Hynix is developing HBM4 memory for the Blackwell GPU series while using CUDA-X technology to improve chip design efficiency. NVIDIA is also collaborating with Korean startup Upstage to develop Korean sovereign AI models.", "According to SpaceX's filing with the SEC, Google has agreed to pay SpaceX $920 million monthly from October 2026 to June 2029, obtaining approximately 110,000 NVIDIA GPUs along with supporting CPUs, memory, and other computing resources. Google stated the agreement stems from unexpected growth in recent AI product demand. The agreement requires SpaceX to deliver the committed GPU count by September 30, 2026, otherwise Google has the right to terminate the agreement or proportionally reduce monthly payments. Starting 2027, either party may terminate the cooperation with 90 days' notice.", "Australian data center operator AirTrunk announced plans to invest approximately $30 billion (3 trillion rupees) in India to build 5GW data center capacity. AirTrunk, backed by Blackstone and the Canada Pension Plan Investment Board, is a global leading hyperscale data center operator. Indian Prime Minister Modi welcomed the project. An index tracking 28 Indian data center ecosystem companies has accumulated approximately $47 billion in market cap gain this year.", "Meta is building 6 rapid-deployment structures (tent-style data centers) in the outskirts of New Albany, Ohio,借鉴Tesla and xAI's approach to halve construction time. Modular gas turbines are also being used to address power supply. According to Michael Thomas, founder of data center deployment tracker Cleanview, this represents Meta's unconventional move to accelerate AI computing infrastructure deployment.", "Flourish Labs, a brain-inspired AI company led by Jeff Bezos, completed a $500 million funding round with a valuation of approximately $2.5 billion. The company was co-founded by neuroscientist Thomas Reardon (former Meta) and former Amazon S-team executive Rob Williams, with a team of approximately 24 top neuroscientists and AI researchers. Flourish aims to discover the brain's \"core algorithm\" through wet lab research on cortical columns, building synthetic AI brains under 50 watts that enable continuous learning. Co-founder Joshua Vogelstein recently published a paper on fruit fly neural networks, discovering its efficiency is 10x that of Transformers. The company has developed hippocampus-inspired memory processing methods and sustainable learning models, and is negotiating with major chip manufacturers for silicon tape-out. Target is breakthrough within 5 years.", "GIM (Grace Investment Machine) was founded in July 2025 by investor Xu Jiahao and Assistant Professor Liu Qi from HKU's Computer Science Department (Oxford PhD, former DeepMind/Meta FAIR researcher), positioning itself as a financial domain reasoning large model. The angel+ round was led by SAIF Investments with participation from a family office of a CEO of an internet company with market cap in the hundreds of billions; the angel round was co-invested by Monolith and 5Y Capital. The team has completed Scaling Law verification from 30M to 1.5B to 8B parameters, with the model introducing temporal encoding mechanisms and nonlinear gating structures for financial data. Recent research published under the name CogAlpha has been accepted by ACL 2026 main conference.", "Open-source Postgres development platform Supabase announced completion of a $500 million Series F round led by Singapore sovereign fund GIC, with participation from Stripe, Accel, Y Combinator, Craft, Felicis, Coatue, reaching a post-money valuation of $10.5 billion, doubling from the previous round 8 months ago. CEO Paul Copplestone said funds will accelerate development of open-source Postgres tools like Multigres. Supabase stated that over 60% of new databases are created by AI agents, and the company significantly benefits from growth of AI coding platforms like Claude and Codex.", "Helion, a fusion energy company backed by Sam Altman, completed a $465 million Series G round led by Thrive Capital, reaching a post-money valuation of $15.5 billion, nearly tripling from the $5.43 billion valuation in January 2025. Helion previously heated plasma to 150 million degrees Celsius (reaching about three-quarters of the commercial fusion temperature threshold) and is accelerating toward the goal of supplying 50MW of fusion electricity to Microsoft in 2028.", "Airwallex announces acquisition of US-based California financial data automation platform Leapfin, which focuses on using AI technology to automate revenue recognition and reconciliation processes, helping global finance teams accelerate month-end close. Leapfin's core products, management, and R&D team will maintain original operational rhythm to ensure smooth business transition for existing customers. This acquisition integrates Leapfin's AI financial automation capabilities into Airwallex's global financial infrastructure, expanding its service scope across the entire enterprise finance lifecycle.", "Microsoft proposes SkillOpt, the first systematic text-space skill optimizer: an independent optimizer model transforms scoring rollouts into bounded add/delete/replace edits, accepting modifications only when strictly improving validation scores. Text learning rate budgets, rejection edit buffers, and epoch-level slow/meta updates ensure stability, with zero additional inference calls at deployment. Across 6 benchmarks, 7 models, and 3 execution frameworks totaling 52 evaluation cells, SkillOpt achieves best or tied-best on all, outperforming humans, one-shot LLMs, TextGrad, GEPA, and all other competitors. On GPT-5.5, it improves no-skill baseline accuracy by +23.5 points (direct conversation), +24.8 points (Codex agent loop), +19.1 points (Claude Code). Cross-model scale and execution environment transfer experiments show optimized skill artifacts retain value.", "Current autonomous research agent outputs have reliability issues undetectable by surface evaluation: hallucinated citations, non-reproducible scores, inconsistencies between method descriptions and implementations. This research proposes Chain-of-Evidence (CoE) verifiability framework requiring each claim to be traceable to evidence source, and builds ScientistOne, an end-to-end autonomous research system based on it. Auditing 75 papers across 5 systems and 5 frontier research tasks reveals: all baselines have at least one systemic defect—21% hallucinated citation rate, score validation pass rate as low as 42%, method-code alignment 20%-80%. ScientistOne achieves zero hallucinated citations (0/337), perfect score validation (12/12), highest method-code alignment (14/15), while matching or exceeding human expert performance on all 5 tasks and winning gold medal on MLE-Bench.", "CMU proposes a sleep-like memory consolidation mechanism where models periodically transform recent context into persistent fast weights, then clear key-value cache. During sleep phase, the model performs N offline recurrent updates on SSM module weights for accumulated context; during inference, additional computation shifts to sleep phase, maintaining wake phase prediction latency unchanged. Experiments on cellular automata, multi-hop graph retrieval, and mathematical reasoning tasks verify that increasing sleep rounds N significantly improves performance, especially on samples requiring deep reasoning with largest gains; regular Transformers and SSM-Attention hybrid models cannot complete these tasks.", "Reasoning language models do not distinguish tokens used for computation from tokens constituting persistent state, causing failed reasoning attempts and draft work to affect subsequent predictions. This research proposes State Commitment Learning training objective, defining persistent-state sufficiency standard, and designs Counterfactual Erasure RL (CERL) method: simultaneously evaluating two paths (retaining vs. erasing hidden thoughts) on same prefix, only rewarding when erased path remains correct. Experiments across four evaluation scenarios—mathematical reasoning, long-chain logic, science QA, and multi-round tool use—show CERL significantly reduces answer dependence on hidden thoughts without sacrificing accuracy, consistently outperforming correctness-only RL and long-answer SFT baselines.", "Anthropic's science blog publishes a new article on enabling Claude to understand and manipulate molecular structures. The core challenge is NMR spectroscopy analysis—the primary tool chemists use to determine molecular structures. Claude infers molecular structures by analyzing NMR spectra, demonstrating LLM reasoning capabilities in scientific experimental data interpretation, a concrete validation of Claude entering formal scientific workflows.", "Meta SAM 3D team received Best Paper Honorable Mention at CVPR 2026 for research in Segment Anything 3D. SAM 3D can reconstruct complete 3D structure from a single 2D image, precisely capturing fine hand and foot movements, trained on over 7 million annotated images, extending SAM's segmentation capabilities to 3D point clouds and scenes.", "Sakana AI is pushing RSI from theoretical concept to engineering practice, with its \"sample efficiency over compute scale\" approach forming differentiated competition against US and Chinese giants' brute-force scaling. Nature paper endorsement enhances academic credibility.", "Airbnb enters AI from interaction/design layer rather than model layer—this is a differentiated path for consumer internet companies' AI transformation, but whether it can attract top AI talent is the key challenge.", "Apple opening AI agent entry points on its own messaging platform is an important signal for platform-level infrastructure, but current positioning is limited to business messaging scenarios; consumer-grade expansion remains to be seen.", "1GB running 2B models is a key threshold breakthrough for edge deployment; custom mobile quantization scheme (targeting 2-bit + static activation) is more aggressive than general PTQ and could become a new paradigm for open-source model edge optimization.", "Anthropic's growth from $9B to $47B in annualized revenue reflects the exponential curve of AI infrastructure spending, but whether revenue growth rate is sustainable is a key variable for IPO pricing.", "NVIDIA CEO's high-frequency visits to South Korea reflect Korea's rising strategic position in global AI computing supply chain (GPU + HBM); from chip supply to joint AI factory construction, supply chain depth and cooperation breadth are advancing simultaneously.", "SpaceX's transformation from aerospace company to AI computing supplier, with $920 million monthly payment transaction, sets a new record for single cloud service agreement, reflecting structural tension in AI computing supply and demand.", "$30 billion single investment is one of the largest in India's AI infrastructure sector; AirTrunk's entry will significantly change India's data center market landscape.", "From traditional brick-and-mortar buildings to tent-style rapid deployment, this reflects that AI computing demand growth rate has exceeded the capacity of traditional data center construction cycles; agile infrastructure has become a new competitive dimension.", "Bezos shifting from investing in general AI (Amazon self-developed) to brain-inspired AI reflects top-tier capital beginning to hedge against LLM brute-force scaling approach. But advisor Ben Recht frankly stated \"not sure if it can succeed\"—whether brain-inspired approach can produce usable systems within 5 years is the core risk.", "Building financial domain-specific reasoning LLMs from scratch rather than fine-tuning general models is a path for AI to move from auxiliary tool to autonomous investment decision-making in finance, but regulatory compliance and model interpretability are core challenges.", "Supabase's valuation doubled riding the AI coding wave, the flywheel effect of open-source BaaS+AI Agent is being validated, but the alignment between valuation growth and revenue growth deserves attention.", "Fusion energy company valuations surged from $5 billion to $15.5 billion in two years, reflecting that market expectations for urgent AI computing power electricity demand are transmitting to the energy infrastructure layer.", "Airwallex incorporates AI financial automation into its financial infrastructure through acquisitions, expanding from cross-border payments to enterprise financial full-chain management.", "Treating agent skills as \"external states\" and optimizing with deep learning discipline is a key step for prompt engineering to move toward systematic training. The zero inference overhead design enables direct deployment, and cross-model migration capability is the core of practical application.", "The reliability problem of autonomous research agents is the biggest obstacle to their entry into formal scientific processes. The CoE framework provides actionable audit standards, and ScientistOne's zero-hallucination results show that structured evidence chains are more effective than post-hoc detection.", "Introducing sleep consolidation mechanisms from neuroscience into LLM context management is an elegant direction, solving long-context problems by shifting computational burden from inference to offline stages, with practical value depending on sleep phase overhead control.", "Distinguishing computation from memory is a promising direction for improving reasoning model efficiency. CERL enables models to learn \"self-cleaning\" of invalid intermediate steps through counterfactual erasure reward mechanism.", "Anthropic continuously demonstrates Claude's scientific reasoning capabilities through science blog posts. NMR spectrum analysis is a key step for LLMs to move from text understanding to experimental data interpretation.", "SAM 3D award indicates that migration of foundational vision-language models to 3D world remains a focus of the academic community, with Meta maintaining leadership in this field.", "Airbnb CEO Brian Chesky Plans to Establish AI Lab", "Supabase Completes $500M Series F Funding, Valuation Doubles to $10.5B in 8 Months", "SkillOpt: Microsoft Proposes Agent Skill Text Space Optimizer, Leading All 52 Benchmarks", "Sakana AI Establishes Recursive Self-Improvement Lab RSI Lab, Integrating 6 Core Achievements…", "Airbnb CEO Brian Chesky Plans to Establish AI Lab, Focused on Using…", "Apple Approves Poke as First for Messages for Business Platform…", "Google Releases Gemma 4 QAT Quantized Checkpoints, E2B Model Memory Drops to 1GB…", "Anthropic President Daniela Amodei Responds to AI Returns Question: Annualized…", "NVIDIA CEO Jensen Huang's Second Visit to Korea, Building AI Factory with SK Group Deploying Over 50K G…", "Google Signs Cloud Service Agreement with SpaceX: Paying $920M Monthly to Rent Approximately 110K…", "Flourish Labs Raises $500M, Bezos Bets on Brain-Inspired AI Seeking Brain…", "Financial Time-Series LLM Developer Grace Investment Machine Completes…", "SkillOpt: Microsoft Proposes Agent Skill Text Space Optimizer, 52 Eva…", "CMU Proposes Sleep-Wake Memory Consolidation…", "State Commitment Learning: Training LLM to Distinguish Computatio…", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

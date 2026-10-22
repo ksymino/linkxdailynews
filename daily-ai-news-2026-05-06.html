@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>05月06日 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+/* Floating variant for pages without topbar */
+.lang-toggle-float {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a><a href="#s-X讨论">X讨论</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-05-06</div>
+            <h1>OpenAI发布GPT-5.5 Instant，替代GPT-5.3 Instant成为ChatGPT默认模型</h1>
+            <div class="header-sub">16 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">OpenAI发布GPT-5.5 Instant，高风险领域幻觉减少52.5%，替代GPT-5.3 Instant成为ChatGPT默认模型</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">Apple计划在iOS 27中允许用户选择第三方AI模型驱动设备端功能</span>
+                    <span class="sum-item">Microsoft Copilot Cowork扩展至移动端，新增Skills和插件支持</span>
+                    <span class="sum-item">斯坦福合并HAI与数据科学计划，李飞飞升任校长顾问</span>
+                    <span class="sum-item">Anthropic发布金融服务业Claude代理模板</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">OpenRouter实测GPT-5.5成本增加49-92%，但输出token增19-34%</span>
+                    <span class="sum-item">SemiAnalysis分析：InP材料成AI数据中心光通信关键瓶颈</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">CopilotKit完成2700万美元A轮融资，帮助开发者部署应用原生AI代理</span>
+                    <span class="sum-item">ElevenLabs获得BlackRock等新投资，年度经常性收入达5亿美元</span>
+                    <span class="sum-item">Altara完成700万美元种子轮，构建面向物理世界的科学智能平台</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">Anthropic发布Model Spec Midtraining研究，探索AI对齐新方法</span>
+                    <span class="sum-item">Epoch AI探讨经典推理基准衰退与下一代评估方向</span>
+                    <span class="sum-item">Agent-World：ByteDance提出智能体自进化训练框架</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">X讨论</span>
+                    <span class="sum-item">Anthropic联创Jack Clark预测2028年AI实现递归自我改进</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">1</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">OpenAI发布GPT-5.5 Instant，替代GPT-5.3 In…</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">4</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">Apple计划在iOS 27中允许用户选择第三方AI模型驱动设备端功能</a>
+                <a href="#c-产业动态-1" class="nav-item">Microsoft Copilot Cowork扩展至移动端，新增Ski…</a>
+                <a href="#c-产业动态-2" class="nav-item">斯坦福合并HAI与数据科学计划，李飞飞升任校长顾问</a>
+                <a href="#c-产业动态-3" class="nav-item">Anthropic发布金融服务业Claude代理模板</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">OpenRouter实测GPT-5.5成本增加49-92%，但输出tok…</a>
+                <a href="#c-算力追踪-1" class="nav-item">SemiAnalysis分析：InP材料成AI数据中心光通信关键瓶颈</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">CopilotKit完成2700万美元A轮融资，帮助开发者部署应用原生A…</a>
+                <a href="#c-初创and融资-1" class="nav-item">ElevenLabs获得BlackRock等新投资，年度经常性收入达5亿…</a>
+                <a href="#c-初创and融资-2" class="nav-item">Altara完成700万美元种子轮，构建面向物理世界的科学智能平台</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">Anthropic发布Model Spec Midtraining研究…</a>
+                <a href="#c-研究关注-1" class="nav-item">Epoch AI探讨经典推理基准衰退与下一代评估方向</a>
+                <a href="#c-研究关注-2" class="nav-item">Agent-World：ByteDance提出智能体自进化训练框架</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>X讨论</span>
+                <span class="nav-count">3</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-X讨论-0" class="nav-item">Anthropic联创Jack Clark预测2028年AI实现递归自我…</a>
+                <a href="#c-X讨论-1" class="nav-item">Andrew Ng分析：编程代理不同程度加速各类软件开发工作</a>
+                <a href="#c-X讨论-2" class="nav-item">Luma AI发布UNI-1.1 API，支持多种视觉创作工具</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h"><span class="ent">OpenAI</span>发布<span class="ent">GPT-5</span>.5 Instant，替代<span class="ent">GPT-5</span>.3 Instant成为<span class="ent">ChatGPT</span>默认模型</h3>
+            <p class="card-body"><span class="ent">OpenAI</span>发布<span class="ent">GPT-5.5</span> Instant，即日起向所有<span class="ent">ChatGPT</span>用户推出，替代<span class="ent">GPT-5.3</span> Instant成为默认模型。API端点为<code>chat-latest</code>，付费用户可在3个月内继续使用<span class="ent">GPT-5.3</span> Instant，之后正式退役。内部评估显示，高风险领域（医学、法律、金融）幻觉减少<strong>52.5%</strong>，用户标记的事实错误对话中不准确声明减少<strong>37.3%</strong>。输出比前代减少<strong>30.2%词数</strong>，去除多余emoji和过度格式化。这是首个被<span class="ent">OpenAI</span>评定为网络安全和生物化学领域<strong>"High Capability"（高能力）</strong>级别的Instant模型，安全评估标准比前代更严格。新增Memory Sources功能，用户可查看哪些上下文（历史对话/文件/Gmail）被用于个性化回复，并可删除或修正。增强个性化先向Plus和Pro用户推出，后续扩展至Free/Go/Business/Enterprise。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Instant模型从"更快"转向"更准+更个性化"，幻觉减半是面向数亿用户的实质性安全改进；High Capability评级意味着即使是轻量级即时模型，能力也已达到需要更严格监管的阈值</div>
+            <div class="card-src"><a href="https://openai.com/index/gpt-5-5-instant/" target="_blank">OpenAI</a> / <a href="https://openai.com/index/gpt-5-5-instant-system-card/" target="_blank">System Card</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h"><span class="ent">Apple</span>计划在iOS 27中允许用户选择第三方AI模型驱动设备端功能</h3>
+            <p class="card-body">据彭博社Mark Gurman报道，<span class="ent">Apple</span>计划在iOS 27中允许用户选择第三方AI模型来驱动设备端AI功能，包括文本生成与编辑、图像生成等任务。用户将通过App Store选择兼容的AI模型提供商，如<span class="ent">OpenAI</span>、<span class="ent">Google</span>、<span class="ent">Anthropic</span>等，而非仅限于目前<span class="ent">Apple</span> <span class="ent">Intel</span>ligence中<span class="ent">ChatGPT</span>作为唯一第三方选项。内部将该功能称为<strong>"Choose Your Own AI Model"</strong>。iOS 27预计在6月WWDC 2026上公布，秋季正式发布。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Apple</span>从封闭AI生态转向开放模型选择，移动端AI分发格局将从单一入口变为多模型竞争</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/05/apple-plans-to-make-ios-27-a-choose-your-own-adventure-of-ai-models/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h"><span class="ent">Microsoft</span> Copilot Cowork扩展至移动端，新增Skills和插件支持</h3>
+            <p class="card-body"><span class="ent">Microsoft</span>宣布Copilot Cowork扩展至iOS和Android移动端，新增可复用Skills、第三方插件支持，以及跨<span class="ent">Microsoft</span> 365和商业工具的深度集成。Copilot Cowork基于与<span class="ent">Anthropic</span>的<span class="ent">Claude</span>合作开发，能够处理<strong>长期运行的多步骤任务</strong>，从对话延伸到自动执行工作流。该功能目前通过Frontier预览计划提供。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 微软将AI代理从桌面端延伸到移动端，企业工作流自动化进入全平台阶段</div>
+            <div class="card-src"><a href="https://www.microsoft.com/en-us/microsoft-365/blog/2026/05/05/copilot-cowork-from-conversation-to-action-across-skills-integrations-and-devices/" target="_blank">Microsoft Blog</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h">斯坦福合并HAI与数据科学计划，李飞飞升任校长顾问</h3>
+            <p class="card-body">斯坦福大学宣布将合并校内两大核心机构——以人为本人工智能研究院（Stanford HAI）与斯坦福数据科学计划（Stanford Data Science）。李飞飞现已升任校长顾问并共同领导合并后的新机构。此次重组旨在统筹全校AI与数据科学研究资源，应对AI技术在学术界的快速发展。新HAI将围绕三大方向展开工作：跨学科发现、教育变革、社会影响研究。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 顶尖学术机构的组织调整反映AI研究已从分散探索进入系统化整合阶段</div>
+            <div class="card-src"><a href="http://mp.weixin.qq.com/s?__biz=MzA3NTIyODUzNA==&mid=2649796022&idx=1&sn=e4934c537e46d52def69d5000a581d3c&chksm=8699c668d3903b3f605d8f51226ec6b7fe6fff1489fbf04003e52999132d96485418d831a48b&scene=0&xtrack=1#rd" target="_blank">DeepTech深科技</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h"><span class="ent">Anthropic</span>发布金融服务业<span class="ent">Claude</span>代理模板</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>宣布推出面向金融服务业的ready-to-run <span class="ent">Claude</span>代理模板，共<strong>10个模板</strong>，支持制作pitch、进行估值审查、月末结账等金融工作流程。模板可接入<span class="ent">Claude Code</span>、Cowork或通过托管代理运行，金融机构无需从零搭建即可部署AI代理。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 垂直领域AI代理竞争加剧， template模式降低落地门槛</div>
+            <div class="card-src"><a href="https://x.com/claudeai/status/2051679629488865498#m" target="_blank">@claudeai</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h">OpenRouter实测<span class="ent">GPT-5</span>.5成本增加49-92%，但输出token增19-34%</h3>
+            <p class="card-body">OpenRouter分析<span class="ent">GPT-5</span>.5与<span class="ent">GPT-5.4</span>的成本差异，发现定价上涨<strong>49-92%</strong>，但<span class="ent">GPT-5</span>.5的输出token增加<strong>19-34%</strong>。即同样的prompt，<span class="ent">GPT-5</span>.5会生成更长的回复，实际单token价格涨幅与标价涨幅之间存在差异。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 大模型定价策略正从纯能力转向性价比，输出长度成关键考量</div>
+            <div class="card-src"><a href="https://x.com/OpenRouter/status/2051500175554654467#m" target="_blank">@openrouter</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-1">
+            <h3 class="card-h">SemiAnalysis分析：InP材料成AI数据中心光通信关键瓶颈</h3>
+            <p class="card-body">SemiAnalysis发布系列分析指出，InP衬底市场数十年来一直基于电信需求规模，硅片早已进入12英寸时代，而InP晶圆仍停留在3-4英寸，材料和工艺存在代际差距。InP是唯一晶格常数允许生长能在1310nm和1550nm波长（光纤通信核心窗口）发光合金的III-V材料，在AI数据中心光互连中不可替代。SemiAnalysis指出随着AI集群规模扩大，光通信带宽需求激增正暴露InP产能和工艺的结构性瓶颈。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 光通信材料迭代远落后于算力扩张速度，InP供应链值得投资关注</div>
+            <div class="card-src"><a href="https://x.com/SemiAnalysis_/status/2051768965446160824#m" target="_blank">@semianalysis_</a> / <a href="https://x.com/SemiAnalysis_/status/2051768960828207290#m" target="_blank">@semianalysis_</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h">CopilotKit完成2700万美元A轮融资，帮助开发者部署应用原生AI代理</h3>
+            <p class="card-body">西雅图初创公司CopilotKit完成2700万美元A轮融资，由Glilot Capital、NFX和SignalFire领投。该公司致力于帮助开发者在其应用中原生嵌入AI代理功能，使应用能够自动执行复杂的多步骤任务。本轮融资将用于扩大团队和加速产品开发。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 应用原生AI代理赛道获资本认可，开发者工具层竞争加剧</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/05/copilotkit-raises-27m-to-help-devs-deploy-app-native-ai-agents/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-1">
+            <h3 class="card-h">ElevenLabs获得BlackRock等新投资，年度经常性收入达5亿美元</h3>
+            <p class="card-body">语音AI公司ElevenLabs披露新投资者名单，包括资管巨头BlackRock、演员Jamie Foxx和Eva Longoria等知名人物。公司同时宣布年度经常性收入（ARR）已达5亿美元，企业客户群持续扩大。ElevenLabs目前提供语音克隆、文本转语音、配音等产品线。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 语音AI商业化加速，顶级投资方入场显示赛道成熟度提升</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/05/elevenlabs-lists-blackrock-jamie-foxx-and-eva-longoria-as-new-investors/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-2">
+            <h3 class="card-h">Altara完成700万美元种子轮，构建面向物理世界的科学智能平台</h3>
+            <p class="card-body">旧金山初创公司Altara宣布完成<strong>700万美元种子轮融资</strong>，由Catherine Yeo和Eva Tuecke联合创立。Altara定位为面向物理世界的科学智能平台，解决半导体、电池、先进材料等领域的数据碎片化问题。平台利用agentic AI将分散的技术数据统一到单一平台，使研究人员能够加速科学和工业突破。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI for Science从生命科学扩展到物理科学，数据基础设施层的创业机会正在显现</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/05/05/altara-secures-7m-to-bridge-the-data-gap-thats-slowing-down-physical-sciences/" target="_blank">TechCrunch</a> / <a href="https://www.altara.co/blog/introducing-altara" target="_blank">Altara Blog</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>发布Model Spec Midtraining研究，探索AI对齐新方法</h3>
+            <p class="card-body"><span class="ent">Anthropic</span> Fellows团队发布Model Spec Midtraining（MSM）研究，提出在预训练之后、对齐训练之前插入一个新阶段：让模型学习理解其model spec（行为规范文档）的内容。传统对齐方法通过示例训练AI展现期望行为，但泛化能力有限。MSM使研究者能实证测试何种原则能从对齐训练中获得最佳泛化效果，论文显示该方法在多个设置下改善了对齐泛化。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Anthropic</span>在对齐研究上开辟"中间训练"新路径，从被动模仿转向主动理解规范</div>
+            <div class="card-src"><a href="https://alignment.anthropic.com/2026/msm" target="_blank">Anthropic Alignment Blog</a> / <a href="https://arxiv.org/abs/2605.02087" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">Epoch AI探讨经典推理基准衰退与下一代评估方向</h3>
+            <p class="card-body">Epoch AI发布研究报告，分析传统推理基准的局限性，指出当前基准测试至少需放弃以下之一：纯文本形式、时间跨度短、易于评估、人类专家优势。随着前沿模型在经典benchmark上接近饱和，评估有效性正在快速衰退。报告探讨了下一代评估框架的可能方向，包括更长时间跨度、多模态交互和开放式任务设计。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI基准测试正面临有效性危机，评估范式亟需根本性变革</div>
+            <div class="card-src"><a href="https://epochai.substack.com/p/rip-classic-reasoning-benchmarks" target="_blank">Epoch AI</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">Agent-World：<span class="ent">ByteDance</span>提出智能体自进化训练框架</h3>
+            <p class="card-body"><span class="ent">ByteDance</span>发布Agent-World论文，提出一种自进化训练框架（self-evolving training arena），通过可扩展的真实世界环境合成来推进通用智能体能力。当前大模型能调用成百上千种外部工具，但在多工具协同、复杂状态管理、长程交互任务上仍有短板。Agent-World尝试让智能体与环境协同进化，而非仅在固定环境中训练。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 智能体研究正从工具调用转向环境交互，自进化范式或成下一代Agent训练标准</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2604.18292" target="_blank">arXiv</a> / <a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651031346&idx=3&sn=40ac6c7a7ac8a91fdcee5da9a07f31af&chksm=85035a8fa35c70c548bac98afdf95b71e186fad8b8abd4cf5440c2cc7f803d52c2372c8344a4&scene=0&xtrack=1#rd" target="_blank">机器之心</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-X讨论">
+            <h2 class="sec-h">X讨论</h2>
+        <article class="card" id="c-X讨论-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>联创Jack Clark预测2028年AI实现递归自我改进</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>联合创始人Jack Clark在Import AI中表示，他现在认为递归自我改进（recursive self-improvement）有<strong>60%概率在2028年底前实现</strong>，即AI系统能够自动改进自身能力。Clark指出当前AI参与自身训练基础设施优化的趋势正在加速，这是递归改进的早期信号。这一预测引发AI社区对安全时间线和对齐紧迫性的广泛讨论。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI能力时间线正成为行业焦点，60%概率判断比此前业界共识更激进</div>
+            <div class="card-src"><a href="https://importai.substack.com/p/import-ai-455-automating-ai-research" target="_blank">Import AI</a> / <a href="https://x.com/jackclarkSF/status/2051312759594471886" target="_blank">@jackclarkSF</a></div>
+        </article>
+        <article class="card" id="c-X讨论-1">
+            <h3 class="card-h">Andrew Ng分析：编程代理不同程度加速各类软件开发工作</h3>
+            <p class="card-body">Andrew Ng 分析编程代理对不同类型软件工作的加速程度差异，引用Citadel Research报告指出AI在所有职业中对软件工程加速最为显著。但加速并非均匀分布——代码生成、调试、测试等任务的自动化程度各不相同。他强调团队架构设计需理解这些区别，根据具体工作类型匹配不同的AI辅助策略，而非一刀切地全面采用。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI编程工具落地需精准匹配工作类型，通用方案并非最优</div>
+            <div class="card-src"><a href="https://www.deeplearning.ai/the-batch/issue-350/" target="_blank">The Batch</a> / <a href="https://x.com/AndrewYNg/status/2051691741150081122#m" target="_blank">@andrewyng</a></div>
+        </article>
+        <article class="card" id="c-X讨论-2">
+            <h3 class="card-h">Luma AI发布UNI-1.1 API，支持多种视觉创作工具</h3>
+            <p class="card-body">Luma AI发布UNI-1.1 API，该模型能够推理简报内容并理解不同视觉传统的审美背景。目前已支持室内设计工作室、时尚工具、珠宝配置器、故事板生成器等多种视觉创作应用。UNI-1.1定位为通用视觉生成模型，面向专业创作者提供API级别的集成能力。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 视觉AI向专业创作工具渗透，多模态能力持续扩展</div>
+            <div class="card-src"><a href="https://x.com/LumaLabsAI/status/2051775586910273667#m" target="_blank">@lumalabsai</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-05-05.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-05-07.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["OpenAI Releases GPT-5.5 Instant, Replacing GPT-5.3 Instant as ChatGPT's Default Model", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "X Discussion", "Apple Plans to Allow Users to Select Third-Party AI Models for On-Device Functions in iOS 27", "Microsoft Copilot Cowork Expands to Mobile, Adding Skills and Plugin Support", "Stanford Merges HAI and Data Science Initiative, Fei-Fei Li Elevated to Provost Advisor", "Anthropic Releases Claude Agent Templates for Financial Services Industry", "OpenRouter Benchmarks GPT-5.5: Cost Increases 49-92%, But Output Tokens Up 19-34%", "SemiAnalysis: InP Materials Become Key Bottleneck for AI Data Center Optical Communications", "CopilotKit Raises $27M Series A to Help Developers Deploy Native AI Agents in Apps", "ElevenLabs Attracts New Investment from BlackRock, ARR Hits $500M", "Altara Raises $7M Seed to Build Scientific Intelligence Platform for Physical World", "Anthropic Releases Model Spec Midtraining Research, Exploring New AI Alignment Methods", "Epoch AI Explores Classic Reasoning Benchmark Saturation and Next-Gen Evaluation", "Agent-World: ByteDance Proposes Self-Evolving Agent Training Framework", "Anthropic Co-founder Jack Clark Predicts AI Will Achieve Recursive Self-Improvement by 2028", "Andrew Ng Analysis: Coding Agents Accelerate Different Types of Software Development Work", "Luma AI Releases UNI-1.1 API, Supporting Multiple Visual Creation Tools", "OpenAI Releases GPT-5.5 Instant, Available to All ChatGPT Users Today, Replacing GPT-5.3 Instant as Default Model. API endpoint is chat-latest; paid users have 3 months to continue using GPT-5.3 Instant before official retirement. Internal evaluations show hallucination reduction of 52.5% in high-risk domains (medical, legal, finance), with 37.3% fewer inaccurate statements in user-flagged fact-error conversations. Output is 30.2% more concise than predecessor, removing excessive emojis and over-formatting. This is the first Instant model rated \"High Capability\" by OpenAI in cybersecurity and biochemistry, with stricter safety evaluation standards than its predecessor. New Memory Sources feature allows users to view which contexts (history/files/Gmail) were used for personalized responses, with ability to delete or correct. Enhanced personalization rolling out to Plus and Pro users first, then expanding to Free/Go/Business/Enterprise.", "According to Bloomberg's Mark Gurman, Apple plans to allow users to select third-party AI models for on-device AI functions in iOS 27, including text generation/editing and image generation. Users will choose compatible AI model providers through the App Store, such as OpenAI, Google, Anthropic, instead of being limited to ChatGPT as the only third-party option currently in Apple Intelligence. Internally the feature is called \"Choose Your Own AI Model\". iOS 27 is expected to be announced at WWDC 2026 in June and officially released in fall.", "Microsoft announces Copilot Cowork expanding to iOS and Android mobile, adding reusable Skills, third-party plugin support, and deep integration across Microsoft 365 and business tools. Copilot Cowork, developed in partnership with Anthropic's Claude, can handle long-running multi-step tasks, extending from conversation to automated workflow execution. Currently available through the Frontier preview program.", "Stanford University announces merger of two core institutions - Stanford Human-Centered AI Institute (Stanford HAI) and Stanford Data Science. Fei-Fei Li has been elevated to Provost Advisor and will co-lead the merged institution. The restructuring aims to unify the university's AI and data science research resources to address rapid AI technology developments in academia. The new HAI will work around three directions: interdisciplinary discovery, educational transformation, and social impact research.", "Anthropic announces ready-to-run Claude agent templates for financial services industry, with 10 templates supporting workflows like pitch creation, valuation review, and month-end reconciliation. Templates can be integrated with Claude Code, Cowork, or run via managed agents, allowing financial institutions to deploy AI agents without building from scratch.", "OpenRouter analyzes cost differences between GPT-5.5 and GPT-5.4, finding pricing increases 49-92%, but GPT-5.5's output tokens increase 19-34%. This means for the same prompt, GPT-5.5 generates longer responses, creating a gap between actual per-token price increase and listed price increase.", "SemiAnalysis series analysis points out that the InP substrate market has been based on telecom demand scale for decades; silicon wafers have already entered the 12-inch era while InP wafers remain at 3-4 inches, creating a generational gap in materials and processes. InP is the only III-V material whose lattice constant allows growth of alloys that emit light at 1310nm and 1550nm wavelengths (fiber optic communication's core window), making it irreplaceable in AI data center optical interconnects. SemiAnalysis notes that as AI cluster scales expand, surging optical communication bandwidth demands are exposing structural bottlenecks in InP production capacity and processes.", "Seattle startup CopilotKit closes $27M Series A led by Glilot Capital, NFX, and SignalFire. The company is dedicated to helping developers natively embed AI agent functionality into their applications, enabling apps to automatically execute complex multi-step tasks. The round will be used to expand the team and accelerate product development.", "Voice AI company ElevenLabs discloses new investors including asset management giant BlackRock, actors Jamie Foxx and Eva Longoria among other notable figures. The company also announces annual recurring revenue (ARR) has reached $500M, with enterprise customer base continuing to expand. ElevenLabs currently offers voice cloning, text-to-speech, and dubbing product lines.", "San Francisco-based startup Altara announces completion of $7 million seed round, co-founded by Catherine Yeo and Eva Tuecke. Altara positions itself as a scientific intelligence platform for the physical world, addressing data fragmentation in semiconductors, batteries, and advanced materials. The platform leverages agentic AI to unify scattered technical data onto a single platform, enabling researchers to accelerate scientific and industrial breakthroughs.", "Anthropic Fellows team releases Model Spec Midtraining (MSM) research, proposing a new phase inserted after pretraining and before alignment training: letting models learn to understand their model spec (behavior specification document). Traditional alignment methods train AI to exhibit desired behaviors through examples, but generalization capabilities are limited. MSM enables researchers to empirically test which principles yield the best generalization from alignment training, with the paper showing improvements in alignment generalization across multiple settings.", "Epoch AI releases research report analyzing limitations of traditional reasoning benchmarks, noting current benchmarks must sacrifice at least one of: pure text format, short time span, easy evaluation, or human expert advantage. As frontier models approach saturation on classic benchmarks, evaluation effectiveness is declining rapidly. The report explores possible directions for next-generation evaluation frameworks, including longer time spans, multimodal interaction, and open-ended task design.", "ByteDance releases Agent-World paper, proposing a self-evolving training framework (self-evolving training arena) to advance general agent capabilities through scalable real-world environment synthesis. Current large models can call hundreds to thousands of external tools, but still have weaknesses in multi-tool coordination, complex state management, and long-horizon interaction tasks. Agent-World attempts to let agents co-evolve with environments rather than training only in fixed environments.", "Anthropic co-founder Jack Clark stated in Import AI that he now believes recursive self-improvement has a 60% probability of being achieved by end of 2028—that AI systems can automatically improve their own capabilities. Clark notes that the trend of current AI participating in optimizing its own training infrastructure is accelerating, which is an early signal of recursive improvement. This prediction has sparked widespread discussion in the AI community about safety timelines and alignment urgency.", "Andrew Ng analyzes differences in how coding agents accelerate various types of software work, citing Citadel Research report that AI accelerates software engineering most significantly among all professions. However, acceleration is not evenly distributed—automation levels vary for code generation, debugging, testing, and other tasks. He emphasizes that team architecture design needs to understand these differences, matching different AI-assisted strategies to specific work types rather than adopting a one-size-fits-all approach.", "Luma AI releases UNI-1.1 API, a model capable of reasoning about brief content and understanding aesthetic contexts of different visual traditions. Currently supports various visual creation applications including interior design studios, fashion tools, jewelry configurators, and storyboard generators. UNI-1.1 positions itself as a general-purpose visual generation model, providing API-level integration capabilities for professional creators.", "Instant model shifts from 'faster' to 'more accurate + more personalized', halving hallucinations is a substantial safety improvement for hundreds of millions of users; High Capability rating means even lightweight instant models have reached capability thresholds requiring stricter regulation", "Apple shifts from closed AI ecosystem to open model selection, mobile AI distribution landscape will transition from single entry point to multi-model competition", "Microsoft extends AI agents from desktop to mobile, enterprise workflow automation enters full-platform stage", "Organizational adjustments at top academic institutions reflect AI research transitioning from scattered exploration to systematic integration stage", "Vertical domain AI agent competition intensifies, template mode lowers implementation barriers", "Large model pricing strategies shifting from pure capability to cost-performance, output length becoming key consideration", "Optical communication materials iteration far lags behind compute expansion speed, InP supply chain worth investment attention", "Application-native AI agent track gains capital recognition, developer tool layer competition intensifies", "Voice AI commercialization accelerates, top-tier investors entering signals track maturity improvement", "AI for Science expanding from life sciences to physical sciences, data infrastructure layer entrepreneurial opportunities emerging", "Anthropic opens new path of 'midtraining' in alignment research, shifting from passive imitation to active understanding of specifications", "AI benchmarks facing effectiveness crisis, evaluation paradigm urgently needs fundamental change", "Agent research shifting from tool calling to environment interaction, self-evolving paradigm may become next-generation Agent training standard", "AI capability timeline becoming industry focus, 60% probability judgment more aggressive than previous industry consensus", "AI coding tool implementation requires precise matching of work types, general-purpose solutions not optimal", "Visual AI penetrating professional creation tools, multimodal capabilities continuously expanding", "OpenAI releases GPT-5.5 Instant, reducing hallucinations by 52.5% in high-risk domains, replacing GPT-5.3 Instant as ChatGPT default model", "OpenAI releases GPT-5.5 Instant, replacing GPT-5.3 In…", "Microsoft Copilot Cowork Expands to Mobile, New Ski…", "OpenRouter Tests GPT-5.5: Cost Increases 49-92%, But Output tok…", "CopilotKit Completes $27M Series A Funding, Helping Developers Deploy App-Native A…", "ElevenLabs Receives New Investment from BlackRock, Annual Recurring Revenue Reaches $500M…", "Anthropic Releases Model Spec Midtraining Research…", "Anthropic Co-Founder Jack Clark Predicts AI Will Achieve Recursive Self… in 2028", "← Previous Issue", "Next Issue &rarr;", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.issue-next',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (!isEn) {
+                    // Switching back to Chinese: restore cached innerHTML
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                    idx++;
+                    return;
+                }
+
+                // Switching to English
+                if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                if (sel === '.card-note') {
+                    var label = el.querySelector('.note-label');
+                    if (label) {
+                        el.textContent = '';
+                        el.appendChild(label);
+                        el.append(' ' + en);
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    el.textContent = en;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>06月02日周二 AI前沿动态</title>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-page: #FAF9F6;
+            --text: #1a1a1a;
+            --text-2: #444444;
+            --text-3: #888888;
+            --border: #D9D8D6;
+            --note-bg: #f4eff5;
+            --pill-bg: #EFEDEA;
+            --purple: #660874;
+            --purple-80: #843990;
+            --purple-60: #a36bac;
+            --purple-40: #c29cc8;
+            --purple-20: #e8dce9;
+            --sidebar-w: 220px;
+            --max-w: 740px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --bg-page: #0a0a0a;
+                --text: #e5e5e5;
+                --text-2: #aaaaaa;
+                --text-3: #666666;
+                --border: #1e1e1e;
+                --note-bg: #1a111b;
+                --pill-bg: #161412;
+                --purple: #b87cc4;
+                --purple-80: #a06aad;
+                --purple-60: #8a5d96;
+                --purple-40: #6e3f7a;
+                --purple-20: #3d1e45;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== Particle BG ========== */
+        #particle-bg {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            -webkit-mask-composite: source-over;
+            mask-image:
+                linear-gradient(to right, black 5%, transparent 25%, transparent 75%, black 95%),
+                linear-gradient(to bottom, black 8%, transparent 30%, transparent 70%, black 92%);
+            mask-composite: add;
+        }
+
+        /* ========== Top Bar ========== */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 48px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .topbar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple);
+            letter-spacing: -0.3px;
+        }
+        .topbar-tagline {
+            font-size: 11px;
+            color: var(--text-3);
+            letter-spacing: 0.2px;
+        }
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .topbar-btn {
+            font-size: 12px;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .topbar-btn:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 8px;
+            height: 28px;
+            margin-right: 4px;
+        }
+        .topbar-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 100px;
+            font-family: inherit;
+        }
+        .topbar-search input::placeholder {
+            color: var(--text-3);
+        }
+        .topbar-search .search-icon {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-right: 4px;
+        }
+
+        /* ========== Search Dropdown ========== */
+        .search-dropdown {
+            position: fixed;
+            top: 52px;
+            right: 32px;
+            width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 200;
+        }
+        .search-dropdown.active { display: block; }
+        .search-empty {
+            padding: 20px 16px;
+            font-size: 13px;
+            color: var(--text-3);
+            text-align: center;
+        }
+        .search-result {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--purple-20); }
+        .search-result-date {
+            font-size: 11px;
+            color: var(--text-3);
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .search-result-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-result-cat {
+            font-size: 11px;
+            color: var(--purple-80);
+            flex-shrink: 0;
+        }
+
+        /* ========== Page wrapper ========== */
+        .page {
+            max-width: calc(var(--max-w) + var(--sidebar-w) + 80px);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* --- Header (above layout) --- */
+        .header {
+            padding: 28px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-date {
+            font-size: 12px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        /* --- Summary / Briefing (above layout) --- */
+        .summary {
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sum-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .sum-cat {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .sum-cat:last-child {
+            margin-bottom: 0;
+        }
+        .sum-cat-name {
+            display: inline-block;
+            background: var(--purple-20);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sum-item {
+            background: var(--pill-bg);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* ========== Layout (sidebar + content) ========== */
+        .layout {
+            display: flex;
+        }
+
+        /* ========== Sidebar ========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            padding: 20px 16px 20px 0;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar::-webkit-scrollbar { width: 0; }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 16px;
+        }
+
+        .nav-details {
+            margin-bottom: 2px;
+        }
+        .nav-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .nav-details summary::-webkit-details-marker { display: none; }
+        .nav-details summary::before {
+            content: "\25BE";
+            font-size: 9px;
+            color: var(--text-3);
+            margin-right: 5px;
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .nav-details:not([open]) summary::before {
+            transform: rotate(-90deg);
+        }
+        .nav-count {
+            font-size: 10px;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+            padding-left: 4px;
+        }
+
+        .nav-articles {
+            padding-left: 14px;
+            border-left: 1px solid var(--border);
+            margin: 2px 0 12px;
+        }
+        .nav-item {
+            display: block;
+            padding: 3px 8px;
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            line-height: 1.45;
+            transition: color 0.15s ease;
+        }
+        .nav-item:hover {
+            color: var(--text-2);
+        }
+        .nav-item.active {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        /* ========== Main ========== */
+        .main {
+            flex: 1;
+            max-width: var(--max-w);
+            padding: 20px 0 0 24px;
+            min-width: 0;
+        }
+
+        /* --- Section --- */
+        .sec {
+            margin-bottom: 32px;
+            scroll-margin-top: 64px;
+        }
+        .sec-h {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        /* --- Card --- */
+        .card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 64px;
+            cursor: default;
+        }
+        .card:last-child { border-bottom: none; }
+        .card-h {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 8px;
+        }
+
+        .ent {
+            font-weight: 500;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-2);
+        }
+        .card-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card-note {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--note-bg);
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-2);
+            border-radius: 2px;
+        }
+        .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--purple-80);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .card-src {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .card-src a {
+            color: var(--text-3);
+            text-decoration: none;
+        }
+        .card-src a:hover {
+            color: var(--text);
+        }
+
+        /* ========== Bottom (independent) ========== */
+        .bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding: 20px 0 32px;
+        }
+
+        /* --- Issue Navigation --- */
+        .issue-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .issue-nav a {
+            font-size: 13px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-3);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .issue-nav a:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+        .footer-top {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+        .footer-top:hover {
+            color: var(--text);
+            border-color: var(--text-3);
+        }
+
+        /* ========== Mobile TOC ========== */
+        .mob-toc {
+            display: none;
+            overflow-x: auto;
+            gap: 0;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 48px; z-index: 50;
+            height: 40px;
+            align-items: center;
+        }
+        .mob-toc::-webkit-scrollbar { display: none; }
+        .mob-toc a {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .mob-toc a:hover { color: var(--text); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mob-toc { display: flex !important; }
+            .main {
+                max-width: 100%;
+                padding: 24px 20px 48px;
+            }
+            .header { padding: 20px 0 16px; }
+            .header h1 { font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .main { padding: 20px 16px 40px; }
+            .header { padding: 16px 0 12px; }
+            .header h1 { font-size: 18px; }
+            .card-h { font-size: 15px; }
+            .topbar-tagline { display: none; }
+            .topbar-search { display: none; }
+            .search-dropdown { display: none !important; }
+        }
+
+/* ── Lang toggle ── */
+.lang-toggle {
+    background: var(--purple-20);
+    color: var(--purple);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.lang-toggle:hover {
+    background: var(--purple);
+    color: #fff;
+}
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">AI Daily News</span>
+            <span class="topbar-tagline">Keep Informed with Link-X Capital</span>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-search">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search" placeholder="搜索新闻..." autocomplete="off">
+            </div>
+            
+            <button class="lang-toggle" id="lang-toggle">EN</button>
+            <a href="index.html" class="topbar-btn">往期动态</a>
+            <a href="topics.html" class="topbar-btn">专题报告</a>
+        </div>
+    </div>
+
+    <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- Mobile TOC -->
+    <div class="mob-toc" id="mob-toc">
+        <a href="#s-模型前沿">模型前沿</a><a href="#s-产业动态">产业动态</a><a href="#s-算力追踪">算力追踪</a><a href="#s-初创and融资">初创&融资</a><a href="#s-研究关注">研究关注</a>
+    </div>
+
+    <!-- Page wrapper: header + briefing above, sidebar + content below -->
+    <div class="page">
+        <header class="header">
+            <div class="header-date">2026-06-02</div>
+            <h1>NVIDIA Cosmos 3发布：物理AI开放世界基础模型，GTC Taipei亮相</h1>
+            <div class="header-sub">20 stories, 24h window</div>
+        </header>
+
+        
+            <div class="summary">
+                <div class="sum-label">Briefing</div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">模型前沿</span>
+                    <span class="sum-item">NVIDIA Cosmos 3发布：物理AI开放世界基础模型</span>
+                    <span class="sum-item">Qwen3.7-Plus发布：多模态智能体基座，编程Agent benchmark领先</span>
+                    <span class="sum-item">MiniMax发布M3模型：编程能力接近Opus 4.7</span>
+                    <span class="sum-item">JetBrains发布Mellum2：120亿参数稀疏MoE编程模型</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">产业动态</span>
+                    <span class="sum-item">OpenAI引入Salesforce全球合作伙伴VP</span>
+                    <span class="sum-item">Unitree发布H2+人形机器人：75 DOF灵巧操作</span>
+                    <span class="sum-item">Luma成立OPAL Lab：开放物理AI研究</span>
+                    <span class="sum-item">Meta AI支持聊天机器人被绕过：黑客借此劫持多个Instagram账户</span>
+                    <span class="sum-item">OpenRouter Auto Router新增成本-质量权衡调参功能</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">算力追踪</span>
+                    <span class="sum-item">OpenAI密歇根破土动工1GW数据中心，系Stargate项目最大单点投资</span>
+                    <span class="sum-item">NVIDIA AI Cloud生态扩张至六大洲，合作伙伴加速AI工厂部署</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">初创&融资</span>
+                    <span class="sum-item">Anthropic向SEC秘密提交S-1草案：$965B估值IPO进程启动</span>
+                    <span class="sum-item">The Mall发布AI驱动的通用购物feed应用</span>
+                </div>
+                <div class="sum-cat">
+                    <span class="sum-cat-name">研究关注</span>
+                    <span class="sum-item">LLM teams在间接推理和文化知识任务上仍存局限</span>
+                    <span class="sum-item">LinTree：显式树结构搜索历史提升LLM推理效率</span>
+                    <span class="sum-item">S2L-PO：小模型作为GRPO自然探索器</span>
+                    <span class="sum-item">Materials Property Axiom：三阶段材料属性预测</span>
+                    <span class="sum-item">DisjunctiveNet：可微分凸化优化层实现神经符号学习新突破</span>
+                </div>
+            </div>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-label">Contents</div>
+                
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>模型前沿</span>
+                <span class="nav-count">4</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-模型前沿-0" class="nav-item">NVIDIA Cosmos 3发布：物理AI开放世界基础模型，GTC T…</a>
+                <a href="#c-模型前沿-1" class="nav-item">Qwen3.7-Plus发布：多模态智能体基座，编程Agent benc…</a>
+                <a href="#c-模型前沿-2" class="nav-item">MiniMax发布M3模型：开源编程战场再加一员</a>
+                <a href="#c-模型前沿-3" class="nav-item">JetBrains发布Mellum2：120亿参数稀疏MoE编程模型</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>产业动态</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-产业动态-0" class="nav-item">OpenAI引入Salesforce全球合作伙伴VP，加速企业渠道布局</a>
+                <a href="#c-产业动态-1" class="nav-item">Unitree发布H2+人形机器人：75 DOF灵巧操作，搭载NVIDI…</a>
+                <a href="#c-产业动态-2" class="nav-item">Luma成立OPAL Lab：开放物理AI研究，解决机器人泛化问题</a>
+                <a href="#c-产业动态-3" class="nav-item">Meta AI支持聊天机器人被绕过：黑客借此劫持多个Instagram账…</a>
+                <a href="#c-产业动态-4" class="nav-item">OpenRouter Auto Router新增成本-质量权衡调参功能</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>算力追踪</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-算力追踪-0" class="nav-item">OpenAI密歇根破土动工1GW数据中心，系Stargate项目最大单点…</a>
+                <a href="#c-算力追踪-1" class="nav-item">NVIDIA AI Cloud生态扩张至六大洲，合作伙伴加速AI工厂部署</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>初创&融资</span>
+                <span class="nav-count">2</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-初创and融资-0" class="nav-item">Anthropic已向SEC秘密提交S-1草案：$965B估值IPO进程…</a>
+                <a href="#c-初创and融资-1" class="nav-item">The Mall发布AI驱动的通用购物feed应用</a>
+            </div>
+        </details>
+        <details class="nav-details" open>
+            <summary class="nav-section">
+                <span>研究关注</span>
+                <span class="nav-count">5</span>
+            </summary>
+            <div class="nav-articles">
+                <a href="#c-研究关注-0" class="nav-item">LLM teams在间接推理和文化知识任务上仍存局限</a>
+                <a href="#c-研究关注-1" class="nav-item">LinTree：显式树结构搜索历史提升LLM推理效率</a>
+                <a href="#c-研究关注-2" class="nav-item">S2L-PO：小模型作为GRPO自然探索器，提升数学推理准确率</a>
+                <a href="#c-研究关注-3" class="nav-item">Materials Property Axiom：三阶段训练框架提升材料…</a>
+                <a href="#c-研究关注-4" class="nav-item">DisjunctiveNet：可微分凸化优化层实现神经符号学习新突破</a>
+            </div>
+        </details>
+            </nav>
+
+            <!-- Main content -->
+            <div class="main">
+                
+        <section class="sec" id="s-模型前沿">
+            <h2 class="sec-h">模型前沿</h2>
+        <article class="card" id="c-模型前沿-0">
+            <h3 class="card-h"><span class="ent">NVIDIA</span> Cosmos 3发布：物理AI开放世界基础模型，GTC Taipei亮相</h3>
+            <p class="card-body"><span class="ent">NVIDIA</span>在GTC Taipei发布<strong>Cosmos 3</strong>世界基础模型，采用Mixture-of-Transformers架构，结合视觉推理和多模态生成（文本、视频、图像、环境音、动作）于单一模型。架构分为推理块（解析场景）和生成块（基于上下文生成物理仿真输出），支持原生动作生成（关节角度、夹爪位置、轨迹点等数值数据）。Agile Robots、<span class="ent">NVIDIA</span> GEAR团队等已在用Cosmos 3生成动作条件化机器人数据。Cosmos 3 Nano后训练策略在RoboLab和RoboArena上领先。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Cosmos 3将"看懂场景→预测→生成动作"闭环统一到单一模型，是物理AI从感知到控制端到端化的关键一步。</div>
+            <div class="card-src"><a href="https://blogs.nvidia.com/blog/cosmos-3-physical-ai-open-world-foundation-model/" target="_blank">NVIDIA Blog</a></div>
+        </article>
+        <article class="card" id="c-模型前沿-1">
+            <h3 class="card-h"><span class="ent">Qwen</span>3.7-Plus发布：多模态智能体基座，编程Agent benchmark领先</h3>
+            <p class="card-body">通义千问发布<span class="ent">Qwen</span>3.7-Plus，定位为将视觉与语言统一的多模态智能体基座。纯文本方面，Coding Agent在<strong>Terminal Bench 2.0达70.3</strong>（超Opus-4.6 Max 65.4和<span class="ent">DeepSeek</span>-V4-Pro 67.9），<strong>SWE-Pro 57.6</strong>与头部模型持平。多模态方面，<strong>ScreenSpot Pro 79.0</strong>、<strong>AndroidWorld 81.0</strong>、<strong>MathVision 90.3</strong>显著超越Opus-4.6 Max和<span class="ent">Gemini</span>-3.1 Pro。模型在单一智能体循环中融合GUI操作、CLI工具调用和视觉推理，支持跨框架（<span class="ent">Claude Code</span>/OpenClaw/<span class="ent">Qwen</span> Code）部署。已通过阿里云百炼API提供服务。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Qwen</span>3.7-Plus在多模态Agent能力上实现系统性突破，GUI操作和视觉编程benchmark全面领先同级别模型。</div>
+            <div class="card-src"><a href="https://qwen.ai/blog?id=qwen3.7-plus" target="_blank">Qwen Blog</a> / <a href="https://x.com/Alibaba_Qwen/status/2061506644367069392#m" target="_blank">@Alibaba_Qwen</a></div>
+        </article>
+        <article class="card" id="c-模型前沿-2">
+            <h3 class="card-h">MiniMax发布M3模型：开源编程战场再加一员</h3>
+            <p class="card-body">中国AI公司MiniMax发布M3大语言模型，编程能力接近<strong><span class="ent">Anthropic</span> Opus 4.7</strong>水平。该模型特别适合编程和AI agent的复杂多步任务，支持文本、图像和视频多模态输入。MiniMax称M3可与头部闭源编程模型竞争，推动开源编程赛道进一步升温。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 开源编程模型赛道继续升温，MiniMax M3加入后与Code<span class="ent">Qwen</span>、CodeLlama等形成正面竞争。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/chinas-minimax-launches-new-model-open-source-ai-coding-battle-heats" target="_blank">The Information</a> / <a href="https://x.com/MiniMax_AI/status/2061266317815296322" target="_blank">@MiniMax_AI</a></div>
+        </article>
+        <article class="card" id="c-模型前沿-3">
+            <h3 class="card-h">JetBrains发布Mellum2：120亿参数稀疏MoE编程模型</h3>
+            <p class="card-body">JetBrains发布Mellum2，120亿参数稀疏混合专家模型，专为代码场景优化。该模型采用稀疏激活机制降低推理成本，支持长上下文处理，已集成至JetBrains IDE生态。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> JetBrains通过Mellum2将MoE架构引入IDE原生编程辅助，稀疏激活是成本敏感场景的关键。</div>
+            <div class="card-src"><a href="https://huggingface.co/blog/JetBrains/mellum2-launch" target="_blank">HuggingFace Blog</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-产业动态">
+            <h2 class="sec-h">产业动态</h2>
+        <article class="card" id="c-产业动态-0">
+            <h3 class="card-h"><span class="ent">OpenAI</span>引入Salesforce全球合作伙伴VP，加速企业渠道布局</h3>
+            <p class="card-body">Salesforce前执行副总裁<strong>Brian Landsman</strong>在LinkedIn宣布加入<span class="ent">OpenAI</span>，担任全球合作伙伴VP，负责合作伙伴关系和应用商店业务。此前<span class="ent">OpenAI</span>已引入首席营收官<strong>Denise Dresser</strong>等多位Salesforce高管。Landsman此前在Salesforce任职14年，领导其全球合作伙伴和应用商店业务。此番引入销售渠道老将，<span class="ent">OpenAI</span>正从技术驱动转向企业生态和渠道驱动的商业化阶段。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">OpenAI</span>引入Salesforce背景高管表明AI商业化从技术竞争转向生态和渠道驱动。</div>
+            <div class="card-src"><a href="https://www.theinformation.com/briefings/openai-taps-salesforce-executive-lead-global-partnerships" target="_blank">The Information</a></div>
+        </article>
+        <article class="card" id="c-产业动态-1">
+            <h3 class="card-h">Unitree发布H2+人形机器人：75 DOF灵巧操作，搭载<span class="ent">NVIDIA</span> Jetson Thor</h3>
+            <p class="card-body">Unitree发布H2+人形机器人，全身<strong>75个自由度</strong>（手部22个主动DOF），搭载<strong><span class="ent">NVIDIA</span> Jetson Thor</strong>芯片（Blackwell GPU，FP4 2070 TFLOPS），配备128GB统一内存。机器人集成双SharpaWave触觉五指灵巧手，支持高级灵巧操作。额定臂部负载<strong>7kg</strong>，峰值<strong>15kg</strong>，配备15Ah电池（约3小时续航）。基于<strong><span class="ent">NVIDIA</span> Isaac GR00T</strong>开放基础模型开发，支持人形推理、学习和多任务行为。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Unitree H2+的完整硬件规格和灵巧手配置表明国产人形机器人正从原型演示转向工业级操作能力。</div>
+            <div class="card-src"><a href="https://www.unitree.com/H2plus/" target="_blank">Unitree</a> / <a href="https://x.com/UnitreeRobotics/status/2061319330965475713#m" target="_blank">@UnitreeRobotics</a></div>
+        </article>
+        <article class="card" id="c-产业动态-2">
+            <h3 class="card-h">Luma成立OPAL Lab：开放物理AI研究，解决机器人泛化问题</h3>
+            <p class="card-body">Luma宣布成立Open Physical AI Lab（OPAL Lab），定位为开放科学实验室，解决物理AI的泛化危机。Luma指出当前机器人只能在特定环境重放特定任务，存在数据缺口和泛化瓶颈，而扩大遥操作采集在物理和经济上都不可行。Luma过去4年训练了3D、图像、视频和统一语言-视觉生成的frontier基础模型，积累了从原始多模态数据学习物理和交互的基础设施。OPAL Lab将研发World Models，与学术界和产业伙伴（芯片、硬件、物理agent系统）合作，所有成果开放可用。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Luma以开放科学路线切入物理AI，对抗少数公司垄断物理智能基础设施的趋势，是其从多模态生成向具身智能的战略延伸。</div>
+            <div class="card-src"><a href="https://x.com/gravicle/status/2061476460217737294#m" target="_blank">@gravicle</a></div>
+        </article>
+        <article class="card" id="c-产业动态-3">
+            <h3 class="card-h"><span class="ent">Meta</span> AI支持聊天机器人被绕过：黑客借此劫持多个Instagram账户</h3>
+            <p class="card-body">多名Instagram用户报告账户被劫持，黑客通过欺骗<span class="ent">Meta</span> AI支持聊天机器人获取账户访问权限。攻击者利用AI聊天机器人的指令遵循能力，绕过正常身份验证流程重置账户密码。TechCrunch详细披露了攻击手法。<span class="ent">Meta</span>尚未公开回应安全漏洞详情或修复时间表。该事件暴露了AI聊天机器人集成到用户支持场景时，缺乏权限边界控制的系统性安全风险。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI聊天机器人集成到安全敏感产品暴露新型攻击面，AI安全不仅是模型层问题。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/01/hackers-hijacked-instagram-accounts-by-tricking-meta-ai-support-chatbot-into-granting-access/" target="_blank">TechCrunch</a></div>
+        </article>
+        <article class="card" id="c-产业动态-4">
+            <h3 class="card-h">OpenRouter Auto Router新增成本-质量权衡调参功能</h3>
+            <p class="card-body">OpenRouter为其Auto Router新增功能，允许用户自定义调整成本与质量的权重比例。新参数可精细控制路由策略，在成本敏感和质量优先场景间灵活切换。官方提供详细文档说明配置方法。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> Auto Router的权衡参数将路由策略控制权交给用户，满足差异化需求是路由工具的核心竞争力。</div>
+            <div class="card-src"><a href="https://x.com/OpenRouter/status/2061476882470580329#m" target="_blank">@openrouter</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-算力追踪">
+            <h2 class="sec-h">算力追踪</h2>
+        <article class="card" id="c-算力追踪-0">
+            <h3 class="card-h"><span class="ent">OpenAI</span>密歇根破土动工1GW数据中心，系Stargate项目最大单点投资</h3>
+            <p class="card-body"><span class="ent">OpenAI</span>在密歇根动工建设1GW数据中心，作为Stargate项目的重要组成部分。官方称该设施将支撑AI推理和训练需求，扩展AI访问范围并创造本地就业。这是Stargate框架下披露的规模最大的单点基础设施投资。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 1GW级数据中心标志着AI基础设施进入GW时代，电力供应能力正成为AI扩张的核心约束。</div>
+            <div class="card-src"><a href="https://openai.com/index/stargate-michigan-data-center" target="_blank">OpenAI News</a></div>
+        </article>
+        <article class="card" id="c-算力追踪-1">
+            <h3 class="card-h"><span class="ent">NVIDIA</span> AI Cloud生态扩张至六大洲，合作伙伴加速AI工厂部署</h3>
+            <p class="card-body"><span class="ent">NVIDIA</span>宣布AI Cloud生态系统已扩展至<strong>六大洲</strong>，合作伙伴包括CoreWeave、Firmus、IREN、Nscale等，正在全球部署面向训练、推理和agentic AI的专用云基础设施。Jensen Huang表示"每家公司和每个国家都需要AI工厂基础设施将数据转化为智能"。区域扩展方面，东南亚、澳大利亚和美洲增长加速，新增非洲Cassava和南美Claro。合作伙伴采用<span class="ent">NVIDIA</span> DSX参考架构和液冷模块化设计，以降低单token成本并提升能效。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">NVIDIA</span>通过合作伙伴网络绕过自建产能瓶颈，生态扩展速度是决定其AI基础设施市场份额的关键。</div>
+            <div class="card-src"><a href="https://blogs.nvidia.com/blog/ai-cloud-ecosystem/" target="_blank">NVIDIA Blog</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-初创and融资">
+            <h2 class="sec-h">初创&融资</h2>
+        <article class="card" id="c-初创and融资-0">
+            <h3 class="card-h"><span class="ent">Anthropic</span>已向SEC秘密提交S-1草案：$965B估值IPO进程启动</h3>
+            <p class="card-body"><span class="ent">Anthropic</span>确认已向美国证券交易委员会秘密提交S-1注册声明草案，等待SEC审查完成。此前<span class="ent">Anthropic</span>刚完成<strong>$65B Series H融资</strong>，由Altimeter Capital、Dragoneer、Greenoaks和Sequoia Capital领投，投后估值<strong>$965B</strong>。具体IPO时间表、发行股数和定价尚未披露。<span class="ent">Anthropic</span>为<span class="ent">OpenAI</span>主要竞争对手，此前已获<span class="ent">Amazon</span>数十亿美元投资。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> <span class="ent">Anthropic</span>以近万亿美元估值启动IPO，代表AI公司进入资本市场新阶段，其与<span class="ent">Amazon</span>的合作关系后续动向值得关注。</div>
+            <div class="card-src"><a href="https://www.anthropic.com/news/confidential-draft-s1-sec" target="_blank">Anthropic News</a> / <a href="https://x.com/AnthropicAI/status/2061478052257841495#m" target="_blank">@anthropicai</a></div>
+        </article>
+        <article class="card" id="c-初创and融资-1">
+            <h3 class="card-h">The Mall发布AI驱动的通用购物feed应用</h3>
+            <p class="card-body">初创公司The Mall上线同名购物应用，通过爬取零售网站目录构建跨品牌商品数据库，当前覆盖<strong>超10000个品牌</strong>。后端使用LLM和自研模型对商品自动标注，支持按品类搜索和价格比对。用户关注品牌后可实时追踪促销、补货和新品推送，还可发现相似低价替代品。由Ellie Konsker（Tom Ford/Karla Otto背景）和Stanford CS的Sreya Halder于2025年10月创立，定位为"购物版的Spotify"。目前邀请制开放，预计夏末全面上线，商业模式为面向品牌的匿名数据分析工具和广告推荐位。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> AI驱动的跨零售商商品聚合和自动标注，解决了碎片化电商时代的品牌发现和价格追踪痛点。</div>
+            <div class="card-src"><a href="https://techcrunch.com/2026/06/01/a-new-app-the-mall-is-building-a-universal-feed-for-online-shopping/" target="_blank">TechCrunch</a></div>
+        </article>
+        </section>
+        <section class="sec" id="s-研究关注">
+            <h2 class="sec-h">研究关注</h2>
+        <article class="card" id="c-研究关注-0">
+            <h3 class="card-h">LLM teams在间接推理和文化知识任务上仍存局限</h3>
+            <p class="card-body">Anastasia Kotelnikova等人评估LLM teams在ChGK问答游戏（需要间接推理和文化知识）上的表现。使用572道2025年发布的题目，对比Voting、Silent Team和Talkative Team三种策略。六个开源模型实验显示团队策略准确率提升最高达<strong>20个百分点</strong>，最佳团队达<strong>44.23%</strong>，接近人类团队水平。分析发现模型间分歧强烈预示低准确率，但解释性沟通能缓解下降。研究结论指出LLM teams主要作为<strong>答案选择和错误过滤机制</strong>而非新解生成器。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> LLM团队在复杂推理场景的局限性反映单模型能力的边界，多智能体协作尚需突破。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.30459" target="_blank">arXiv cs.CL</a></div>
+        </article>
+        <article class="card" id="c-研究关注-1">
+            <h3 class="card-h">LinTree：显式树结构搜索历史提升LLM推理效率</h3>
+            <p class="card-body">Liwei Kang、Yee Whye Teh和Wee Sun Lee发现LLM推理轨迹作为线性化搜索树，原始搜索历史不足以可靠超越仅观察局部状态的启发式搜索。原因是回溯时未显式标记回到哪个早期状态。通过添加父指针显式表示线性化树结构（LinTree），在Blocks World、Grid Navigation和Sokoban三个环境中同时提升了<strong>任务性能和搜索效率</strong>。结果表明搜索历史在树结构显式化时最有用。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> LLM推理中的隐式回溯是效率瓶颈，显式结构化表示是提升推理搜索质量的有效方向。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.31492" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-2">
+            <h3 class="card-h">S2L-PO：小模型作为GRPO自然探索器，提升数学推理准确率</h3>
+            <p class="card-body">Yiming Ren等人提出S2L-PO（Small-to-Large Policy Optimization），利用同族小模型作为天然探索器训练大模型。发现小模型在采样量增大时pass@k更高，其多样性具有时间相关性且保持逻辑一致性，优于token级随机噪声。通过渐进退火策略从小模型离线rollout过渡到大模型自身采样，避免小模型容量限制导致的中期性能下降。在AIME 24上使用1.7B模型引导8B模型，准确率提升<strong>+8.8%</strong>，同时减少rollout计算量。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 同族小模型作为策略级探索源比token级噪声更有效，为高效RL训练提供了新范式。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.30789" target="_blank">arXiv</a></div>
+        </article>
+        <article class="card" id="c-研究关注-3">
+            <h3 class="card-h">Materials Property Axiom：三阶段训练框架提升材料属性预测</h3>
+            <p class="card-body">DeepPrinciple提出Materials Property Axiom（MPA），将LLM的三阶段训练范式（预训练→对齐→后训练）适配到材料属性预测。预训练基于约<strong>6400万</strong>优化材料几何的3D自监督，中间阶段按目标属性的物理相关性选择辅助数据，后训练针对具体实验端点微调。在<strong>40个实验属性</strong>上将MAE平均降低<strong>10%</strong>，单项OOD任务最高降低<strong>51%</strong>。最大提升出现在中间训练信号与目标属性物理机制匹配时。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 材料属性预测的迁移效果取决于共享物理而非数据统计，按物理相关性选辅助数据是关键创新。</div>
+            <div class="card-src"><a href="https://blog.deepprinciple.com/introducing-materials-property-axiom/" target="_blank">DeepPrinciple Blog</a></div>
+        </article>
+        <article class="card" id="c-研究关注-4">
+            <h3 class="card-h">DisjunctiveNet：可微分凸化优化层实现神经符号学习新突破</h3>
+            <p class="card-body">Shraman Pal和Can Li提出DisjunctiveNet，通过可微分凸化优化层在神经网络中强制执行硬性混合整数线性约束。方法将逻辑规则表示为析取约束，经层次化凸松弛获得凸包形式，生成可嵌入为可微分优化层的线性约束并实现精确规则满足。在真实数据集上实现<strong>完美规则满足</strong>和强预测性能，克服了现有方法仅能近似满足约束的局限。</p>
+            <div class="card-note"><span class="note-label">Insight by AI</span> 神经符号学习正在从离散优化与梯度学习的对立走向融合，稀疏数据场景是其差异化应用方向。</div>
+            <div class="card-src"><a href="https://arxiv.org/abs/2605.30456" target="_blank">arXiv</a></div>
+        </article>
+        </section>
+            </div>
+        </div>
+
+        <!-- Bottom: independent of layout -->
+        <div class="bottom">
+            <div class="issue-nav">
+                <a href="daily-ai-news-2026-06-01.html" class="issue-prev">&larr; 上一期</a>
+                <a href="daily-ai-news-2026-06-03.html" class="issue-next">下一期 &rarr;</a>
+            </div>
+            <div class="footer">
+                <span class="footer-copy">&copy; 2026 &middot; AI Daily News by Link-X Capital</span>
+                <a href="#" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll spy -->
+    <script>
+    (function() {
+        const cards = document.querySelectorAll('.card[id]');
+        const navs = document.querySelectorAll('.nav-item[href^="#c-"]');
+        if (!cards.length || !navs.length) return;
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navs.forEach(n => n.classList.remove('active'));
+                    const hit = document.querySelector('.nav-item[href="#' + e.target.id + '"]');
+                    if (hit) hit.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -65% 0px' });
+        cards.forEach(c => obs.observe(c));
+    })();
+
+    // Search — real-time, fetches HTML pages in browser
+    (function() {
+        const input = document.getElementById('search');
+        const dropdown = document.getElementById('search-dropdown');
+        if (!input || !dropdown) return;
+
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.sec[id]');
+        const details = document.querySelectorAll('.nav-details');
+
+        let searchData = [];
+        let totalFiles = 0, loadedCount = 0, started = false;
+
+        function stripTag(s) { return s.replace(/<[^>]+>/g, ''); }
+
+        function parseHtml(html, url) {
+            const dm = url.match(/(\d{4})-(\d{2})-(\d{2})/);
+            const date = dm ? dm[2] + '-' + dm[3] : '';
+            let articles = [], currentCat = '';
+            const parts = html.split(/<h2 class="sec-h"[^>]*>(.*?)<\/h2>/);
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) currentCat = stripTag(parts[i]).trim();
+                else if (i > 0 && currentCat) {
+                    const tRe = /<h3 class="card-h"[^>]*>(.*?)<\/h3>/g, bRe = /<p class="card-body">(.*?)<\/p>/g;
+                    const ts = [], bs = [];
+                    let m;
+                    while ((m = tRe.exec(parts[i])) !== null) ts.push(m[1]);
+                    while ((m = bRe.exec(parts[i])) !== null) bs.push(m[1]);
+                    for (let j = 0; j < ts.length; j++) {
+                        const t = stripTag(ts[j]).trim();
+                        const b = j < bs.length ? stripTag(bs[j]).trim().slice(0, 120) : '';
+                        if (t) articles.push({ d: date, t, b, c: currentCat, f: url });
+                    }
+                }
+            }
+            return articles;
+        }
+
+        function startLoad() {
+            if (started) return;
+            started = true;
+            // Fetch index.html to get the file list
+            fetch('index.html').then(r => r.text()).then(html => {
+                const re = /href="(daily-ai-news-20\d{2}-[^"]+\.html)"/g;
+                const files = []; let m;
+                while ((m = re.exec(html)) !== null) files.push(m[1]);
+                totalFiles = files.length;
+                files.forEach(url => {
+                    fetch(url).then(r => r.text()).then(h => {
+                        searchData = searchData.concat(parseHtml(h, url));
+                        loadedCount++;
+                    }).catch(() => { loadedCount++; });
+                });
+            }).catch(() => {});
+        }
+
+        input.addEventListener('focus', startLoad);
+
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+
+            if (!q) {
+                cards.forEach(c => c.style.display = '');
+                sections.forEach(s => s.style.display = '');
+                details.forEach(d => d.style.display = '');
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // In-page filter
+            cards.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            sections.forEach(sec => {
+                const vis = sec.querySelectorAll('.card:not([style*="none"])');
+                sec.style.display = vis.length ? '' : 'none';
+            });
+            details.forEach(det => {
+                const link = det.querySelector('.nav-item');
+                if (!link) return;
+                const sec = document.querySelector(link.getAttribute('href'));
+                det.style.display = (sec && sec.style.display !== 'none') ? '' : 'none';
+            });
+
+            // Cross-archive dropdown
+            if (!searchData.length) {
+                if (started) {
+                    dropdown.innerHTML = '<div class="search-empty">正在加载 (' + loadedCount + '/' + totalFiles + ')...</div>';
+                    dropdown.classList.add('active');
+                }
+                return;
+            }
+            const results = searchData.filter(item =>
+                item.t.toLowerCase().includes(q) || item.b.toLowerCase().includes(q)
+            ).slice(0, 15);
+
+            if (!results.length) {
+                dropdown.innerHTML = '<div class="search-empty">无匹配结果</div>';
+            } else {
+                dropdown.innerHTML = results.map(r =>
+                    '<a href="' + r.f + '" class="search-result">' +
+                    '<span class="search-result-date">' + r.d + '</span>' +
+                    '<span class="search-result-title">' + r.t + '</span>' +
+                    '<span class="search-result-cat">' + r.c + '</span>' +
+                    '</a>'
+                ).join('');
+            }
+            dropdown.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.topbar-search') && !e.target.closest('.search-dropdown')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { dropdown.classList.remove('active'); input.blur(); }
+        });
+    })();
+
+    // Diamond-frame particle network with ripple energy
+    (function() {
+        const canvas = document.getElementById('particle-bg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const rgb = isDark ? '184,124,196' : '102,8,116';
+
+        let W, H;
+        const MAX_D = 160, RIPPLE_SPEED = 80, RIPPLE_LIFE = 3.5;
+        let nodes = [], ripples = [];
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            // Diamond frame distribution
+            const cx = W / 2, cy = H / 2;
+            const dw = W * 0.42, dh = H * 0.42;
+            const dEdges = [
+                [cx, cy - dh, cx + dw, cy],
+                [cx + dw, cy, cx, cy + dh],
+                [cx, cy + dh, cx - dw, cy],
+                [cx - dw, cy, cx, cy - dh]
+            ];
+            const count = Math.max(20, Math.round(50 * (W * H) / (1600 * 900)));
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                if (Math.random() < 0.80) {
+                    const ei = Math.random() * 4 | 0;
+                    const t = Math.random();
+                    const e = dEdges[ei];
+                    x = e[0] + (e[2] - e[0]) * t + (Math.random() - 0.5) * 20;
+                    y = e[1] + (e[3] - e[1]) * t + (Math.random() - 0.5) * 20;
+                } else {
+                    x = Math.random() * W;
+                    y = Math.random() * H;
+                }
+                nodes.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.20,
+                    r: 1.2 + Math.random() * 1.8,
+                    energy: 0
+                });
+            }
+            ripples = [];
+        }
+
+        let t0 = performance.now(), lastF = 0, fc = 0;
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (now - lastF < 16.67) return;
+            lastF = now;
+            const t = (now - t0) / 1000;
+            fc++;
+
+            // Spawn ripple every ~2s
+            if (fc % 120 === 0 && nodes.length) {
+                const s = nodes[Math.random() * nodes.length | 0];
+                ripples.push({ x: s.x, y: s.y, born: t });
+            }
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if (t - ripples[i].born > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+
+            // Move & energy
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+                n.energy *= 0.94;
+                for (const r of ripples) {
+                    const dx = n.x - r.x, dy = n.y - r.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const ringR = RIPPLE_SPEED * (t - r.born);
+                    if (Math.abs(dist - ringR) < 18) n.energy = Math.min(1, n.energy + 0.5);
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ripple rings
+            for (const r of ripples) {
+                const age = t - r.born;
+                const radius = RIPPLE_SPEED * age;
+                const alpha = 0.12 * Math.max(0, 1 - age / RIPPLE_LIFE);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d > MAX_D) continue;
+                    const distA = 1 - d / MAX_D;
+                    const maxE = Math.max(a.energy, b.energy);
+                    const alpha = distA * (0.08 + 0.22 * maxE);
+                    ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes (dots)
+            for (const n of nodes) {
+                const alpha = 0.22 + 0.40 * n.energy;
+                const r = n.r + n.energy * 1.5;
+                ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+    })();
+    </script>
+<script>
+
+// ── Bilingual toggle ──
+(function() {
+    const EN = ["NVIDIA Cosmos 3 Released: Physical AI Open World Foundation Model, Debuts at GTC Taipei", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "NVIDIA Cosmos 3 Released: Physical AI Open World Foundation Model, Debuts at GTC Taipei", "Qwen3.7-Plus Released: Multimodal Agent Foundation, Leads in Coding Agent Benchmarks", "MiniMax Releases M3 Model: Another Contestant in Open-Source Coding Battlefield", "JetBrains Releases Mellum2: 120B Parameter Sparse MoE Programming Model", "OpenAI Hires Salesforce Global Partner VP, Accelerating Enterprise Channel Expansion", "Unitree Releases H2+ Humanoid Robot: 75 DOF Dexterous Manipulation, Powered by NVIDIA Jetson Thor", "Luma Establishes OPAL Lab: Open Physical AI Research, Solving Robot Generalization Problem", "Meta AI-Supported Chatbot Bypassed: Hackers Hijack Multiple Instagram Accounts", "OpenRouter Auto Router Adds Cost-Quality Trade-off Tuning Feature", "OpenAI Breaks Ground on 1GW Data Center in Michigan, Largest Single-Point Investment in Stargate Project", "NVIDIA AI Cloud Ecosystem Expands to Six Continents, Partners Accelerate AI Factory Deployment", "Anthropic Secretly Files S-1 Draft with SEC: $965B Valuation IPO Process Initiated", "The Mall Releases AI-Powered Universal Shopping Feed Application", "LLM Teams Still Have Limitations in Indirect Reasoning and Cultural Knowledge Tasks", "LinTree: Explicit Tree-Structured Search History Improves LLM Reasoning Efficiency", "S2L-PO: Small Models as GRPO Natural Explorers, Improving Math Reasoning Accuracy", "Materials Property Axiom: Three-Stage Training Framework Improves Material Property Prediction", "DisjunctiveNet: Differentiable Convexification Optimization Layer Achieves Neurosymbolic Learning Breakthrough", "NVIDIA Releases Cosmos 3 World Foundation Model at GTC Taipei, Using Mixture-of-Transformers Architecture, Combining Visual Reasoning and Multimodal Generation (text, video, image, environmental audio, action) in a Single Model. Architecture Divides into Inference Blocks (parsing scenes) and Generation Blocks (generating physics simulation outputs based on context), Supporting Native Motion Generation (numerical data like joint angles, gripper positions, trajectory points). Agile Robots, NVIDIA GEAR Team, etc. are Already Using Cosmos 3 to Generate Action-Conditioned Robot Data. Cosmos 3 Nano Post-Training Strategy Leads on RoboLab and RoboArena.", "Tongyi Qianwen Releases Qwen3.7-Plus, Positioned as a Multimodal Agent Foundation Unifying Vision and Language. On Pure Text, Coding Agent Scores 70.3 on Terminal Bench 2.0 (Surpassing Opus-4.6 Max 65.4 and DeepSeek-V4-Pro 67.9), SWE-Pro 57.6 on Par with Top Models. On Multimodal, ScreenSpot Pro 79.0, AndroidWorld 81.0, MathVision 90.3 Significantly Surpass Opus-4.6 Max and Gemini-3.1 Pro. Model Integrates GUI Operation, CLI Tool Invocation, and Visual Reasoning in a Single Agent Loop, Supporting Cross-Framework (Claude Code/OpenClaw/Qwen Code) Deployment. Available via Alibaba Cloud Bailian API.", "Chinese AI Company MiniMax Releases M3 Large Language Model with Coding Capabilities Approaching Anthropic Opus 4.7 Level. Model Particularly Suited for Complex Multi-Step Tasks in Programming and AI Agents, Supporting Text, Image, and Video Multimodal Inputs. MiniMax Claims M3 Can Compete with Top Closed-Source Programming Models, Further Heating Up Open-Source Coding Track.", "JetBrains Releases Mellum2, 120B Parameter Sparse Mixture-of-Experts Model, Optimized for Code Scenarios. Model Uses Sparse Activation Mechanism to Reduce Inference Costs, Supports Long-Context Processing, Integrated into JetBrains IDE Ecosystem.", "Former Salesforce Executive Vice President Brian Landsman Announces on LinkedIn His Join OpenAI as Global Partner VP, Responsible for Partnership and App Store Business. OpenAI Previously Hired Chief Revenue Officer Denise Dresser and Multiple Salesforce Executives. Landsman Previously Spent 14 Years at Salesforce, Leading Its Global Partner and App Store Business. This Hire Signals OpenAI's Transition from Technology-Driven to Enterprise Ecosystem and Channel-Driven Commercialization Stage.", "Unitree Releases H2+ Humanoid Robot, 75 DOF Full Body (22 Active Hand DOF), Powered by NVIDIA Jetson Thor Chip (Blackwell GPU, FP4 2070 TFLOPS), 128GB Unified Memory. Robot Integrates Dual SharpaWave Tactile Five-Finger Dexterous Hands, Supporting Advanced Dexterous Manipulation. Rated Arm Load 7kg, Peak 15kg, Equipped with 15Ah Battery (~3 Hours Runtime). Developed Based on NVIDIA Isaac GR00T Open Foundation Model, Supporting Humanoid Reasoning, Learning, and Multi-Task Behaviors.", "Luma Announces Establishment of Open Physical AI Lab (OPAL Lab), Positioned as an Open Science Lab Solving Physical AI Generalization Crisis. Luma Points Out Current Robots Can Only Replay Specific Tasks in Specific Environments, Presenting Data Gaps and Generalization Bottlenecks, While Expanding Teleoperation Data Collection is Physically and Economically Infeasible. Luma Has Trained Frontier Foundation Models for 3D, Images, Video, and Unified Language-Vision Generation Over Past 4 Years, Accumulating Infrastructure for Learning Physics and Interaction from Raw Multimodal Data. OPAL Lab Will Develop World Models, Collaborating with Academic and Industry Partners (chips, hardware, physical agent systems), All Outputs Openly Available.", "Multiple Instagram users report account takeovers, with hackers gaining account access by deceiving Meta's AI support chatbot. Attackers leveraged the AI chatbot's instruction-following capability to bypass normal authentication processes and reset account passwords. TechCrunch detailed the attack methodology. Meta has not publicly responded regarding the security vulnerability details or remediation timeline. The incident exposes systemic security risks from lacking permission boundary controls when integrating AI chatbots into user support scenarios.", "OpenRouter adds new functionality to Auto Router, allowing users to customize the weight ratio between cost and quality. The new parameter enables fine-grained control of routing strategies, enabling flexible switching between cost-sensitive and quality-priority scenarios. The official documentation provides detailed configuration instructions.", "OpenAI breaks ground on a 1GW data center in Michigan as a critical component of the Stargate project. The facility will support AI inference and training needs, expanding AI access and creating local jobs. This represents the largest single infrastructure investment disclosed under the Stargate framework.", "NVIDIA announces its AI Cloud ecosystem has expanded to six continents, with partners including CoreWeave, Firmus, IREN, and Nscale deploying dedicated cloud infrastructure globally for training, inference, and agentic AI. Jensen Huang stated \"every company and every country needs AI factory infrastructure to transform data into intelligence\". Regional expansion is accelerating in Southeast Asia, Australia, and the Americas, with new additions Africa Cassava and South America Claro. Partners are adopting NVIDIA DSX reference architecture and liquid cooling modular design to reduce per-token cost and improve energy efficiency.", "Anthropic confirms it has confidentially submitted a draft S-1 registration statement to the SEC, awaiting review completion. Previously, Anthropic just completed a $65B Series H funding round led by Altimeter Capital, Dragoneer, Greenoaks, and Sequoia Capital, with post-money valuation at $965B. Specific IPO timeline, share count, and pricing remain undisclosed. Anthropic is OpenAI's primary competitor and has previously received billions of dollars in investment from Amazon.", "Startup The Mall launches its eponymous shopping app, building a cross-brand product database by scraping retail site catalogs, currently covering over 10,000 brands. The backend uses LLMs and proprietary models for automatic product tagging, supporting category search and price comparison. Users following brands can track promotions, restocks, and new product alerts in real-time, and discover similar lower-priced alternatives. Founded in October 2025 by Ellie Konsker (Tom Ford/Karla Otto background) and Stanford CS graduate Sreya Halder, positioned as \"Spotify for shopping\". Currently invite-only, full launch expected by late summer. Business model relies on anonymous brand data analytics tools and advertising placements.", "Anastasia Kotelnikova et al. evaluate LLM teams on the ChGK quiz game, which requires indirect reasoning and cultural knowledge. Using 572 questions released in 2025, they compare three strategies: Voting, Silent Team, and Talkative Team. Experiments with six open-source models show team strategies boosting accuracy by up to 20 percentage points, with the best team achieving 44.23%, approaching human team levels. Analysis reveals strong inter-model disagreement predicts low accuracy, but explanatory communication can mitigate the decline. The study concludes LLM teams primarily function as answer selection and error filtering mechanisms rather than novel solution generators.", "Liwei Kang, Yee Whye Teh, and Wee Sun Lee discover that as LLM reasoning trajectories form linearized search trees, raw search history is insufficient to reliably outperform heuristic search observing only local states. The reason is that backtracking does not explicitly mark which earlier state was returned to. By adding parent pointers to explicitly represent the linearized tree structure (LinTree), they simultaneously improve task performance and search efficiency across Blocks World, Grid Navigation, and Sokoban environments. Results indicate search history is most useful when tree structure is made explicit.", "Yiming Ren et al. propose S2L-PO (Small-to-Large Policy Optimization), leveraging same-family small models as natural explorers to train large models. They discover that small models achieve higher pass@k as sampling increases, with their diversity exhibiting temporal correlation while maintaining logical consistency, superior to token-level random noise. Through progressive annealing strategy transitioning from small model offline rollouts to the large model's own sampling, they avoid mid-stage performance degradation caused by small model capacity limitations. On AIME 24, using a 1.7B model to guide an 8B model achieves +8.8% accuracy improvement while reducing rollout computation.", "DeepPrinciple proposes Materials Property Axiom (MPA), adapting LLM's three-stage training paradigm (pretraining→alignment→post-training) for materials property prediction. Pretraining is based on approximately 64 million 3D self-supervised optimized material geometries. The intermediate stage selects auxiliary data based on physical relevance to target properties, with post-training fine-tuned for specific experimental endpoints. Across 40 experimental properties, MAE is reduced by 10% on average, with a maximum reduction of 51% in individual OOD tasks. The greatest improvements occur when intermediate training signals align with the physical mechanisms of target properties.", "Shraman Pal and Can Li propose DisjunctiveNet, enforcing hard mixed-integer linear constraints in neural networks through differentiable convex optimization layers. The method represents logical rules as disjunctive constraints, deriving convex hull forms through hierarchical convex relaxation, generating linear constraints embeddable as differentiable optimization layers and achieving precise rule satisfaction. On real datasets, it achieves perfect rule satisfaction and strong predictive performance, overcoming limitations of existing methods that can only approximately satisfy constraints.", "Cosmos 3 unifies the \"scene understanding→prediction→action generation\" loop in a single model, representing a critical step for physical AI end-to-endization from perception to control.", "Qwen3.7-Plus achieves systematic breakthrough in multimodal Agent capabilities, with GUI operation and visual programming benchmarks comprehensively outperforming same-level models.", "Open-source programming model赛道 continues to heat up, with MiniMax M3 joining to directly compete with CodeQwen, CodeLlama and others.", "JetBrains introduces MoE architecture into IDE-native programming assistance through Mellum2, where sparse activation is crucial for cost-sensitive scenarios.", "OpenAI's hiring of an executive with Salesforce background signals AI commercialization shifting from technology competition to ecosystem and channel-driven approaches.", "Unitree H2+'s complete hardware specifications and dexterous hand configuration indicate domestic humanoid robots transitioning from prototype demonstrations to industrial-grade operational capabilities.", "Luma takes an open science approach to physical AI, countering the trend of a few companies monopolizing physical intelligence infrastructure, marking its strategic extension from multimodal generation to embodied intelligence.", "Integration of AI chatbots into security-sensitive products exposes novel attack surfaces, indicating AI security is not merely a model-layer issue.", "Auto Router's trade-off parameters hand routing strategy control to users, with meeting differentiated needs being the core competitive advantage for routing tools.", "1GW-class data centers mark AI infrastructure entering the GW era, with power supply capacity becoming the core constraint for AI expansion.", "NVIDIA bypasses self-built production capacity bottlenecks through partner network, with ecosystem expansion speed being the key to determining its AI infrastructure market share.", "Anthropic launching IPO at nearly trillion-dollar valuation represents AI companies entering a new capital market phase, with its partnership dynamics with Amazon worth following.", "AI-driven cross-retailer product aggregation and automatic tagging addresses brand discovery and price tracking pain points in the fragmented e-commerce era.", "LLM teams' limitations in complex reasoning scenarios reflect single-model capability boundaries, with multi-agent collaboration still requiring breakthroughs.", "Implicit backtracking in LLM reasoning is an efficiency bottleneck, and explicit structured representation is an effective direction for improving reasoning search quality.", "Same-family small models as policy-level exploration sources are more effective than token-level noise, providing a new paradigm for efficient RL training.", "Transfer effectiveness in materials property prediction depends on shared physics rather than data statistics, selecting auxiliary data based on physical relevance is a key innovation.", "Neurosymbolic learning is moving from the opposition of discrete optimization and gradient-based learning toward convergence, with sparse data scenarios as its differentiated application direction.", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "NVIDIA Cosmos 3 Released: Physical AI Open World Foundation Model", "Qwen3.7-Plus Released: Multimodal Agent Foundation, Leads in Coding Agent Benchmarks", "MiniMax Releases M3 Model: Programming Capability Close to Opus 4.7", "JetBrains Releases Mellum2: 120B Parameter Sparse MoE Programming Model", "OpenAI Brings in Salesforce Global Partnership VP", "Unitree Releases H2+ Humanoid Robot: 75 DOF Dexterous Manipulation", "Luma Establishes OPAL Lab: Open Physical AI Research", "Meta AI-Supported Chatbot Bypassed: Hackers Hijack Multiple Instagram Accounts", "OpenRouter Auto Router Adds Cost-Quality Trade-off Tuning Feature", "OpenAI Breaks Ground on 1GW Data Center in Michigan, Largest Single-Point Investment in Stargate Project", "NVIDIA AI Cloud Ecosystem Expands to Six Continents, Partners Accelerate AI Factory Deployment", "Anthropic Secretly Submits S-1 Draft to SEC: $965B Valuation IPO Process Initiated", "The Mall Releases AI-Powered Universal Shopping Feed Application", "LLM Teams Still Have Limitations in Indirect Reasoning and Cultural Knowledge Tasks", "LinTree: Explicit Tree-Structured Search History Improves LLM Reasoning Efficiency", "S2L-PO: Small Models as GRPO Natural Explorers", "Materials Property Axiom: Three-Stage Materials Property Prediction", "DisjunctiveNet: Differentiable Convexification Optimization Layer Achieves Neurosymbolic Learning Breakthrough", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "NVIDIA Cosmos 3 Released: Physical AI Open World Foundation Model, GTC T...", "Qwen3.7-Plus Released: Multimodal Agent Foundation, Programming Agent benc...", "MiniMax Releases M3 Model: Another Contestant in Open-Source Coding Battlefield", "JetBrains Releases Mellum2: 120B Parameter Sparse MoE Programming Model", "OpenAI Hires Salesforce Global Partner VP, Accelerating Enterprise Channel Expansion", "Unitree Releases H2+ Humanoid Robot: 75 DOF Dexterous Manipulation, Powered by NVIDI...", "Luma Establishes OPAL Lab: Open Physical AI Research, Solving Robot Generalization Problem", "Meta AI-Supported Chatbot Bypassed: Hackers Hijack Multiple Instagram Acco...", "OpenRouter Auto Router Adds Cost-Quality Trade-off Tuning Feature", "OpenAI Breaks Ground on 1GW Data Center in Michigan, Largest Single Site of Stargate Project...", "NVIDIA AI Cloud Ecosystem Expands to Six Continents, Partners Accelerate AI Factory Deployment", "Anthropic Has Secretly Submitted S-1 Draft to SEC: $965B Valuation IPO Process...", "The Mall Releases AI-Powered Universal Shopping Feed Application", "LLM Teams Still Have Limitations in Indirect Reasoning and Cultural Knowledge Tasks", "LinTree: Explicit Tree-Structured Search History Improves LLM Reasoning Efficiency", "S2L-PO: Small Models as GRPO Natural Explorers, Improving Math Reasoning Accuracy", "Materials Property Axiom: Three-Stage Training Framework Enhances Materials...", "DisjunctiveNet: Differentiable Convexification Optimization Layer Achieves Neurosymbolic Learning Breakthrough", "Model Frontier", "Industry Dynamics", "Computing Power Tracking", "Startup & Funding", "Research Focus", "← Previous Issue", "Past News", "Special Report"];
+    const PH_EN = "Search news...";
+
+    // Selectors in the SAME ORDER as Python extract_texts()
+    const SEL = [
+        'h1',
+        '.sec-h',
+        '.card-h',
+        '.card-body',
+        '.card-note',
+        '.sum-cat-name',
+        '.sum-item',
+        'summary.nav-section > span:not(.nav-count)',
+        '.nav-item',
+        '.mob-toc a',
+        '.issue-prev',
+        '.topbar-btn',
+    ];
+
+    let isEn = localStorage.getItem('lang-pref') === 'en';
+    const cache = new Map();
+
+    function applyLang() {
+        let idx = 0;
+        SEL.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                if (idx >= EN.length) return;
+                var en = EN[idx];
+                if (!en) { idx++; return; }
+
+                if (isEn) {
+                    if (!cache.has(idx)) cache.set(idx, el.innerHTML);
+                    if (sel === '.card-note') {
+                        var label = el.querySelector('.note-label');
+                        if (label) {
+                            el.textContent = '';
+                            el.appendChild(label);
+                            el.append(' ' + en);
+                        } else {
+                            el.textContent = en;
+                        }
+                    } else {
+                        el.textContent = en;
+                    }
+                } else {
+                    var saved = cache.get(idx);
+                    if (saved) el.innerHTML = saved;
+                }
+                idx++;
+            });
+        });
+
+        var search = document.getElementById('search');
+        if (search) {
+            if (isEn) {
+                if (!cache.has('_ph')) cache.set('_ph', search.placeholder);
+                search.placeholder = PH_EN;
+            } else {
+                var saved = cache.get('_ph');
+                if (saved) search.placeholder = saved;
+            }
+        }
+
+        var btn = document.getElementById('lang-toggle');
+        if (btn) btn.textContent = isEn ? '中文' : 'EN';
+        localStorage.setItem('lang-pref', isEn ? 'en' : 'zh');
+    }
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.addEventListener('click', function() { isEn = !isEn; applyLang(); });
+
+    if (isEn) applyLang();
+})();
+
+    </script>
+</body>
+</html>
