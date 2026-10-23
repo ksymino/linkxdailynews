@@ -489,7 +489,14 @@ def main():
     try:
         subprocess.run(['git', 'add', f'twitter-preview-{date_str_for_git}.md'], check=True, capture_output=True, cwd=Path(__file__).resolve().parent)
         subprocess.run(['git', 'commit', '-m', f'twitter preview {date_str_for_git}'], check=True, capture_output=True, cwd=Path(__file__).resolve().parent)
-        subprocess.run(['git', 'push'], check=True, capture_output=True, cwd=Path(__file__).resolve().parent)
+        for _attempt in range(3):
+            try:
+                subprocess.run(['git', 'push'], check=True, capture_output=True, cwd=Path(__file__).resolve().parent)
+                break
+            except subprocess.CalledProcessError:
+                if _attempt == 2:
+                    raise
+                __import__('time').sleep(30)
         print('   ✅ GitHub push 成功')
     except subprocess.CalledProcessError:
         print('   ⚠️ GitHub push 失败')

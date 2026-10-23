@@ -8,7 +8,7 @@
 
 - 产业动态：Agility Robotics 的 Digit 5 获 Mobile Robotics 2026 年度产品读者选择投票
 - 算力追踪：Lava 称中国电信关联网络发现 32 颗 Nvidia B300 芯片; Google 联手 Voltus 以 1 吉瓦虚拟电厂应对高峰电力需求
-- 初创&融资：报道称 OpenAI 拟完成 300 亿美元融资，投前估值最高 1.25 万亿美元; 报道称 OpenAI 筹备 300 亿美元融资，投前估值拟达 1.25 万亿美元; 物理 AI 初创公司 Tractian 完成 1.3 亿美元 D 轮融资，估值 14 亿美元; 具身智能数据公司星忆智能完成数千万元种子轮及种子+轮融资; AI工程设计公司Mach9完成3400万美元A轮融资，平台已落地2500余个基建项目
+- 初创&融资：报道称 OpenAI 拟完成 300 亿美元融资，投前估值最高 1.25 万亿美元; 物理 AI 初创公司 Tractian 完成 1.3 亿美元 D 轮融资，估值 14 亿美元; 具身智能数据公司星忆智能完成数千万元种子轮及种子+轮融资; AI工程设计公司Mach9完成3400万美元A轮融资，平台已落地2500余个基建项目
 - 研究关注：BeNice!：让循环模型跨层共享 KV Cache，长上下文首字延迟最多降低 83.6%; 直接 Pass@k 剪枝：平衡测试时推理候选的质量与多样性，八个开放权重模型上优于既有策略; Softmax 数值双缺陷修复：消除 Slingshot，并稳定蒸馏与权重衰减训练; 扩散语言模型黑盒攻击：以自然语言分布替代随机映射，字符级困惑度降至 3–5
 - X讨论：三支团队一个月内推进LLM解码megakernels，覆盖TPU、AMD与GB300平台
 
@@ -34,10 +34,6 @@
    - 来源: [The Information](https://www.theinformation.com/briefings/google-pay-homes-businesses-curb-energy-usage)
 
 ### 初创&融资
-**报道称 OpenAI 拟完成 300 亿美元融资，投前估值最高 1.25 万亿美元**
-- 据报道，OpenAI 正争取在接下来一周结束前完成一轮 300 亿美元融资，投前估值最高可达 1.25 万亿美元，不包含本轮新增投资。纽约投资机构 Coatue Management 与来自阿拉伯联合酋长国的投资者据称将领投该轮融资。相关交易条款仍可能调整，OpenAI 未予置评。
-  > 💡 若融资按报道中的规模落地，OpenAI 将刷新私募公司估值纪录；UAE 投资者参与还可能把资金与当地算力供给合作联系起来，但具体安排尚未确认。
-   - 来源: [The Information](https://www.theinformation.com/briefings/openai-fundraising-round-set-close-soon-uae-investors-coatue-leading-investment)
 
 **报道称 OpenAI 筹备 300 亿美元融资，投前估值拟达 1.25 万亿美元**
 - 报道称，OpenAI 正推进最高 300 亿美元的融资，拟采用 1.25 万亿美元投前估值，由 Coatue 和阿联酋投资者领投，相关条款仍在谈判。OpenAI 拒绝了置评请求。公司已于 6 月秘密提交 IPO 文件，最近一次融资在 3 月完成，投后估值为 8520 亿美元。报道还称，阿联酋融资可能同时涉及向 OpenAI 提供更多算力容量的协议。

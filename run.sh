@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+[ -f "$HOME/.ai-daily-news.env" ] && source "$HOME/.ai-daily-news.env"
 # AI 前沿动态：生成、校验并发布指定日期的日报。
 #
 # 成功的唯一判据是 archive/manifests/<date>.json 中 status=published。
@@ -236,8 +237,13 @@ if "$GIT_BIN" diff --cached --quiet -- "${publish_files[@]}"; then
 else
     "$GIT_BIN" commit -m "Update: $REPORT_DATE" -- "${publish_files[@]}" 'daily-ai-news-*.html'
 fi
-"$GIT_BIN" push
-
+push_ok=0
+for i in 1 2 3; do
+    if "$GIT_BIN" push; then push_ok=1; break; fi
+    log "⚠️ git push 第 $i 次失败，30 秒后重试"
+    sleep 30
+done
+[ "$push_ok" = 1 ] || { log "❌ git push 连续 3 次失败"; exit 1; }
 # 通知是可选集成：未配置凭据时明确跳过；一旦配置，发送失败必须阻断 published。
 if [ -n "${FEISHU_WEBHOOK:-}" ] || [ -n "${PUSHPLUS_TOKEN:-}" ] || [ -n "${EMAIL_RECIPIENTS:-}" ]; then
     log "▶️ 发送日报通知"
