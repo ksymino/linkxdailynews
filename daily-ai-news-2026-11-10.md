@@ -1,0 +1,126 @@
+## 11月10日 AI 前沿动态
+
+> 自动汇总 | 时间窗口: 24h | 全局精选 20 条
+
+---
+
+## 要点汇总
+
+- 模型前沿：Meta 发布轻量模型 Muse Ember：每百万输入 token 收费 0.1 美元，面向高频智能体任务
+- 产业动态：NVIDIA 宣布计划投资韩国初创企业，覆盖基础模型、Physical AI 与 AI 芯片; 报道称 Fireworks AI 遭严重入侵，部分客户数据暴露; NVIDIA 推进韩国 Physical AI 生态：覆盖芯片制造、机器人与自动驾驶; 英伟达与合作方在 CoRL 展示机器人仿真训练，强化齿轮对准与线缆连接等精细操作
+- 算力追踪：Anthropic 斥资 34 亿美元购买天然气轮机，锁定最高 1.7 吉瓦发电能力; Google 发布 TPU 8tx 与 TPU 8i Max：面向高负载和加密敏感数据; Fervo 地热电力订单增至 118 亿美元：Google 项目计划 2028 年并网
+- 初创&融资：具身智能企业优理奇机器人完成 5 亿元 Pre-A 轮融资，推进人形机器人量产交付; 商务 AI Agent 平台 Firmly 获 1500 万美元 A 轮融资; AI 硬件工程平台 Nominal 获 2.4 亿美元 C 轮融资：估值升至 30 亿美元; 电力科技研发商 Vensum 获 900 万欧元 A 轮融资：推进 SDPC 电能转换技术; 时空智能数据基础设施商 coScene 获近亿元 Pre-A 轮融资
+- 研究关注：真实湿实验引入 Physical AI Verifier，验证 AI 科学方案的实际效果; LowRAM：解耦键值结构压缩 KV Cache，4 倍压缩下峰值解码吞吐最高提升 5 倍; P²-MOPD：参数先验加速多教师在线蒸馏，1.7B 模型平均恢复率达 94.7%
+
+---
+
+## 📖 详细参考
+
+### 模型前沿
+**Meta 发布轻量模型 Muse Ember：每百万输入 token 收费 0.1 美元，面向高频智能体任务**
+- Meta Superintelligence Labs 发布轻量模型 Muse Ember，定位复杂推理执行及智能体反复进行的工具调用、编码子任务、路由、信息提取和长文档解析。其每百万输入 token 价格为 0.1 美元，Meta 称其单任务成本具有竞争力，并援引 Artificial Analysis 综合基准与 Haiku、Luna 等竞品进行比较。Ember 支持文本、图像和音频输入，可处理截图、图表、扫描文档和语音备忘录，也可与更大模型 Muse Wonder 配合执行智能体任务。
+  > 💡 Ember 的核心卖点是以较低单位成本承担规模化、重复性智能体工作，Meta 由此形成大型模型规划、轻量模型处理批量的分层组合，但现有证据未披露完整的任务成本对比结果。
+   - 来源: [TechCrunch](https://techcrunch.com/2026/11/09/meta-releases-muse-ember-a-new-lightweight-model-for-agent-execution)
+
+### 产业动态
+**NVIDIA 宣布计划投资韩国初创企业，覆盖基础模型、Physical AI 与 AI 芯片**
+- 韩国科学技术信息通信部与 NVIDIA 在 COEX 举办 MSIT-NVIDIA AI Startup Partnership Forum。两国代表与来自基础模型、Physical AI、AI 基础设施和 AI 半导体领域的 20 多家韩国初创企业交流。NVIDIA 同时宣布投资韩国初创企业 Point2，并披露了其他计划投资。
+  > 💡 此次合作把 NVIDIA 的产业资源进一步延伸至韩国 AI 创业生态，覆盖从模型到芯片和基础设施的多个层级；具体投资金额与后续落地安排尚未披露。
+   - 来源: [NVIDIA Blog](https://blogs.nvidia.com/blog/korean-startup-investments-msit)
+
+**报道称 Fireworks AI 遭严重入侵，部分客户数据暴露**
+- 据报道，Fireworks 上周向包括 Harvey 在内的一些大型客户通报了一次更严重的系统入侵事件。Fireworks 周一表示，事件暴露了部分客户的数据。报道还称，一些每年在 Fireworks 服务上花费数百万美元的客户正在考虑转向其他提供商。
+  > 💡 面向开源模型运行与训练的平台一旦发生安全事件，客户可能直接迁移服务，事件对收入稳定性和企业采购信任的影响值得关注。
+   - 来源: [The Information](https://www.theinformation.com/articles/new-fireworks-hack-threatens-1-billion-business)
+
+**NVIDIA 推进韩国 Physical AI 生态：覆盖芯片制造、机器人与自动驾驶**
+- NVIDIA 表示正利用韩国制造业和工程能力推动 Physical AI 生态发展。韩国产业领导者正将加速计算、AI 和仿真应用于半导体制造、机器人及自动驾驶等领域。这些实践正在推动 Physical AI 从研发阶段进入真实世界的生产环节。
+  > 💡 NVIDIA 将加速计算、仿真与韩国制造体系结合，有助于把 Physical AI 从模型验证推进到产业部署，但具体应用效果仍需以落地项目为准。
+   - 来源: [NVIDIA Blog](https://blogs.nvidia.com/blog/korea-physical-ai-ecosystem)
+
+**英伟达与合作方在 CoRL 展示机器人仿真训练，强化齿轮对准与线缆连接等精细操作**
+- 英伟达与合作方在 CoRL 展示机器人仿真领域的新进展，应用范围已从行走、翻滚和跳跃等运动控制延伸至精细操作。仿真环境现可支持机器人练习齿轮对准、线缆连接和小型组件组装等需要精细控制的任务。此次展示聚焦操作技能训练，而非仅关注机器人的运动能力。
+  > 💡 机器人仿真的价值正从通用运动训练转向可复现的精细操作训练，英伟达正通过生态合作扩大该能力的行业覆盖。
+   - 来源: [NVIDIA Blog](https://blogs.nvidia.com/blog/robotics-simulation-advancements-corl)
+
+### 算力追踪
+**Anthropic 斥资 34 亿美元购买天然气轮机，锁定最高 1.7 吉瓦发电能力**
+- 据报道，Anthropic 斥资 34 亿美元购买 Caterpillar 天然气轮机，这些设备由供应商 OnePWR 最初订购，Anthropic 后直接向制造商采购。相关轮机最高可提供 1.7 吉瓦发电能力。Anthropic 过去通常倾向于租用基础设施，但其 5 月提交的 S-1 文件显示，公司截至 2029 年 5 月每月向 xAI 支付 12.5 亿美元以使用其计算资源，并预计签署更多类似服务合同。
+  > 💡 Anthropic 同时扩大自有发电资产和外部算力租赁，表明其正在应对算力增长带来的电力约束；直接购买轮机也可能意在避免发电能力落入其他 AI 公司手中。
+   - 来源: [TechCrunch](https://techcrunch.com/2026/11/09/anthropic-joins-ais-natural-gas-frenzy-buys-3-4b-worth-of-turbines)
+
+**Google 发布 TPU 8tx 与 TPU 8i Max：面向高负载和加密敏感数据**
+- Google 宣布推出新一代 AI 芯片 TPU 8tx 和 TPU 8i Max，并称其相比此前产品更安全、能够承担更重的工作负载。TPU 8tx 面向加密和敏感数据处理场景，也面向受监管业务。Google 的 TPU 业务持续扩张，正对 Nvidia 在 AI 芯片市场的地位形成压力。
+  > 💡 Google 同步强化算力性能与数据安全能力，显示大型云厂商正通过自研芯片降低对通用 GPU 供应的依赖，并争夺受监管工作负载。
+   - 来源: [The Information](https://www.theinformation.com/briefings/google-announces-new-tpus-says-powerful-secure)
+
+**Fervo 地热电力订单增至 118 亿美元：Google 项目计划 2028 年并网**
+- Fervo 在第三季度业绩中表示，公司已签约收入达到 119 亿美元，上一季度为 72 亿美元。公司计划在 2028 年底前为 Google 完成一座 396 兆瓦电站，Fervo 今年已将首座 100 兆瓦电站接入电网。Google 项目现名为 Cape Google 400，将通过协议接入电网；其位于犹他州 Cape Station 的资源具备 8.4 吉瓦发电潜力。
+  > 💡 接近 120 亿美元的已签约收入表明，AI 数据中心的电力需求正在为地热项目提供可观的商业确定性，分阶段建设也有利于缩短项目交付周期。
+   - 来源: [TechCrunch](https://techcrunch.com/2026/11/09/fervo-now-has-12b-in-orders-for-its-geothermal-power-tech)
+
+### 初创&融资
+**具身智能企业优理奇机器人完成 5 亿元 Pre-A 轮融资，推进人形机器人量产交付**
+- 优理奇机器人 UniX AI 完成 5 亿元 Pre-A 轮融资，谢诺投资与涌铧投资连续多轮追加投资，绿地集团、柯力传感、华工创投等产业及财务机构新进。公司核心产品为全尺寸轮式和双足通用人形机器人，已实现批量量产及交付，并覆盖泛商业服务场景。
+  > 💡 本轮融资由产业资本与财务投资机构共同参与，且公司已有量产交付进展，反映具身智能融资正从技术研发进一步延伸至产业化验证。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707343)
+
+**商务 AI Agent 平台 Firmly 获 1500 万美元 A 轮融资**
+- Firmly 成立于 2019 年，是面向商家和渠道的 AI Agent 平台，可将产品发现转化为即时购买。其智能代理平台把商务活动嵌入用户意向节点，覆盖从提问到转化的流程。公司近日获得 1500 万美元 A 轮融资，由 Squarepoint Capital 领投。
+  > 💡 本轮融资显示资本正在关注能够直接连接商品发现、交易意图和渠道转化的 AI Agent，平台商业价值将取决于实际转化表现。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707506)
+
+**AI 硬件工程平台 Nominal 获 2.4 亿美元 C 轮融资：估值升至 30 亿美元**
+- Nominal 周一宣布完成 2.4 亿美元 C 轮融资，由 Lightspeed Venture Partners 领投、Insight Partners 联合领投，公司估值由此前的 10 亿美元升至 30 亿美元。该公司为飞机、核反应堆和智能工厂等复杂硬件提供 AI 工程与测试平台，Anduril 是其重要客户。Nominal 称其已服务 80 家商业和政府组织，并于 10 月获得美国空军 7120 万美元 STRATFI 投资。
+  > 💡 八个月内估值增至三倍，表明资本正押注复杂硬件工程与测试环节的 AI 化；政府资金、商业客户和国防客户同时到位，也提升了其市场验证度。
+   - 来源: [TechCrunch](https://techcrunch.com/2026/11/09/ai-hardware-startup-nominal-triples-valuation-to-3b-in-8-months)
+
+**电力科技研发商 Vensum 获 900 万欧元 A 轮融资：推进 SDPC 电能转换技术**
+- 电力科技研发商 Vensum 近日完成 900 万欧元 A 轮融资，由 Lifeline Ventures、Larsen & Toubro Group 和 Eviny Ventures 联合领投。Vensum 主打软件定义功率变换 SDPC™ 技术，可在宽负载区间实现近无损电能转换，目标应用包括 EV 快充、储能、直流微电网和 AI 数据中心供电。
+  > 💡 这笔融资显示投资者正关注能够覆盖多类高功率供电场景的新型电能转换技术，其潜在需求同时来自交通电气化、储能和 AI 数据中心。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707461)
+
+**时空智能数据基础设施商 coScene 获近亿元 Pre-A 轮融资**
+- 刻行时空 coScene 近日完成新一轮近亿元人民币融资，由咏归基金领投，天机 TIANJI、常州智融等跟投。公司为时空智能领域企业提供运维、算法开发和研发支持所需的数据基础设施产品与解决方案。其平台已应用于清洁机器人、割草机器人、中低速自动驾驶车辆及具身智能人形机器人等领域。
+  > 💡 近亿元 Pre-A 轮融资反映资本正押注具身智能与自动驾驶的数据支撑环节；应用已覆盖多类机器人，说明公司正从时空数据底座向行业场景延伸。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707443)
+
+**机器人训练仿真平台 Physicl 获 1000 万美元种子轮融资**
+- 机器人训练仿真平台开发商 Physicl 近日获得 1000 万美元种子轮融资，由 iNovia Capital 领投。其核心产品 Physicl Studio 处于私有 Beta 阶段，支持通过文本生成室内仿真场景，并自动扰动布局和光照等变量。平台可逐帧输出深度、分割掩码和相机位姿等真值数据，为人形机器人、移动机器人及世界模型提供训练数据集。Physicl 不进行策略训练，而是专注仿真数据供给，并面向机器人研发团队采用 SaaS 订阅模式，目前处于早期验证阶段。
+  > 💡 种子轮资金将用于验证面向机器人研发团队的仿真数据订阅模式，其差异化定位在于只解决训练数据供给，而非直接承担策略训练。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707483)
+
+**物理 AI 平台 Neurabody 获 NEC 日本电气战略投资**
+- 物理 AI 平台研发商 Neurabody 近日获得战略投资，投资方为 NEC 日本电气。该公司原名 Posture AI，主打融合压力传感与计算机视觉的人体运动智能底座。Neurabody 已研发 NeuraSit 智能坐垫、NeuraStep 步态鞋垫和 NeuraVision 视觉姿态 AI，可输出标准化人体姿态、步态数据与实时干预方案。
+  > 💡 NEC 日本电气的战略投资为 Neurabody 引入产业资本，其多形态传感产品也显示人体运动智能正从单一视觉姿态识别向融合感知拓展。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707459)
+
+**国防工业解决方案商 Onodrim 获 13 亿美元 A 轮融资，押注欧洲防务与工业基础平台**
+- Onodrim 为欧洲大陆的防务和工业基础提供科技驱动的规模化平台，并为防务、航空航天和制造等行业提供技术、资本与运营专长服务。该公司近日获得 13 亿美元 A 轮融资，投资方包括 Lux Capital、General Catalyst Partners 和 Lakestar。
+  > 💡 单笔 13 亿美元 A 轮融资显示，资本市场正以大额资金押注欧洲防务工业基础设施及其规模化平台机会。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707504)
+
+**AI 药物分子设计商 Fathom Tx 获 5500 万美元 A+ 轮融资，扩展细胞动态模拟**
+- Fathom Tx 利用量子化学与人工智能预测活细胞行为，以设计新型药物分子。其药物设计引擎 Microcosmos 通过专有算法以原子分辨率模拟蛋白质运动，并生成难以大规模捕获的动态行为数据。该公司近日获得 5500 万美元 A+ 轮融资，由 Sutter Hill Ventures 领投，Kos Biotechnology Partners 参投。
+  > 💡 这笔融资将支持一家以蛋白质动态模拟为技术基础的药物设计公司继续拓展 AI 制药路线，其差异化重点落在原子尺度的动态行为数据。
+   - 来源: [IT桔子](https://www.itjuzi.com/investevent/14707507)
+
+### 研究关注
+**真实湿实验引入 Physical AI Verifier，验证 AI 科学方案的实际效果**
+- Anthropic 此前展示了 AI for Science 研究成果，Claude 在 64 小时内生成 31.8 万个蛋白质设计方案。经筛选后，共有 211 个方案被送入湿实验室。相关工作进一步引入 Physical AI Verifier，将真实湿实验纳入 AI 科学方案的验证环节。
+  > 💡 真实湿实验能够补足纯计算筛选难以覆盖的物理有效性，是评估 AI 科学产出质量的重要增量；当前证据未给出完整实验结果和验证指标。
+   - 来源: [机器之心](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw%3D%3D&mid=2651073140&idx=1&sn=4ea07aeb526d7f8730cdf320ba182d9d&chksm=85713b1a4e0b74d51d9eb2ac95c87419f050039d5d063607fc647601c60720578d6fa3b517dd&scene=0&xtrack=1)
+
+**LowRAM：解耦键值结构压缩 KV Cache，4 倍压缩下峰值解码吞吐最高提升 5 倍**
+- 论文提出 LowRAM，将值缓存摊销与跨层低秩键压缩组合为可组合的非对称 KV Cache 压缩流程。该方法仅重建部分键值对，使解码开销保持较低，并在三种模型家族上接近无损。实验显示，LowRAM 在 4 倍压缩下最高实现 5 倍峰值解码吞吐；与量化和逐出机制组合后，长上下文压缩率达到 26.9 倍，同时保持基线性能的 94.5%。
+  > 💡 LowRAM 证明键与值并非同等冗余，分别建模二者结构可为长上下文推理同时争取内存和吞吐收益。
+   - 来源: [HuggingFace Daily Papers](https://huggingface.co/papers/2611.07025)
+
+**P²-MOPD：参数先验加速多教师在线蒸馏，1.7B 模型平均恢复率达 94.7%**
+- 论文提出 P²-MOPD，将学生与专家参数的线性组合视为单一可微模型，并在同一在线蒸馏目标下联合优化混合系数与学生权重。该方法保持学生可训练，使专家充当参数先验，而不受冻结学生和专家参数张成空间的限制。在四个领域及 1.7B、4B 两种规模上，P²-MOPD 的恢复速度更快且更均衡；训练结束时，1.7B 模型平均恢复率达到 94.7%，而 MOPD 为 80.9%。
+  > 💡 将专家模型从固定合并端点转为参数先验，有助于提升多教师蒸馏的恢复效率，并减少对冻结参数组合空间的限制。
+   - 来源: [HuggingFace Daily Papers](https://huggingface.co/papers/2611.03953)
+
+
+---
+*更新时间: 2026-11-10 09:19*
